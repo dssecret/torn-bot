@@ -29,7 +29,7 @@ client = discord.client.Client()
 
 file = open("log.txt", "a")
 
-APIKEY = "TORN_API_KEY"
+APIKEY = "TORN_API_KEY"  # Enter the Torn API Key here
 
 d = {
     'K': 3,
@@ -109,7 +109,7 @@ async def withdraw(ctx, arg):
             else:
                 channel = None
                 for guild in bot.guilds:
-                    channel = discord.utils.get(guild.channels, name=(f'command-chat'))
+                    channel = discord.utils.get(guild.channels, name=(f'channel'))  # Enter the channel name (e.g. "name=(f'chat')")
 
                     file.write(str(datetime.datetime.now()) + " -- " + sender + " has successfully requested " + arg + " from the vault.\n")
                     await ctx.send("Your request has been forwarded to the faction leadership.")
@@ -120,4 +120,4 @@ async def withdraw(ctx, arg):
         file.write(str(datetime.datetime.now()) + " -- " + sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".\n")
         await ctx.send(sender + " is not a member of " + faction.json()["name"] + ".")
 
-bot.run("BOT_TOKEN")
+bot.run("BOT_TOKEN")  # Enter the bot token here
