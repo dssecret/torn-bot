@@ -1,6 +1,6 @@
-# Foobar
+# torn-bot
 
-Foobar is a Discord bot for [Torn City](https://www.torn.com) using the [discord.py](https://github.com/Rapptz/discord.py) module.
+torn-bot is a Discord bot for [Torn City](https://www.torn.com) using the [discord.py](https://github.com/Rapptz/discord.py) module.
 
 ## Installation
 
