@@ -20,7 +20,6 @@ import requests
 import datetime
 from decimal import Decimal
 import re
-import json
 from configparser import ConfigParser
 
 prefix = "?"
@@ -53,6 +52,15 @@ except FileNotFoundError:
             "role": ""
         }
         config.write(config_file)
+
+
+def num_to_text(num):
+    num = float('{:.3g}'.format(num))
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
 
 
 def text_to_num(text):
@@ -146,7 +154,10 @@ async def withdraw(ctx, arg):
 
                     embed = discord.Embed()
                     embed.title = "Money Request"
-                    embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    if config["VAULT"]["Role"] == "":
+                        embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    else:
+                        embed.description = config["VAULT"]["Role"] + " " + sender + " is requesting " + arg + " from the faction vault."
                     await channel.send(embed=embed)
                     return None
     else:
@@ -219,6 +230,20 @@ async def setvaultchannel(ctx):
     embed = discord.Embed()
     embed.title = "Vault Channel"
     embed.description = "Vault Channel has been set to " + config["VAULT"]["Channel"] + "."
+    await ctx.send(embed=embed)
+
+    with open('config.ini', 'w') as config_file:
+        config.write(config_file)
+
+
+@bot.command()
+async def setvaultrole(ctx, role: discord.Role):
+    config["VAULT"]["Role"] = str(role.mention)
+    file.write(str(datetime.datetime.now()) + " -- Vault Role has been set to " + config["VAULT"]["Role"] + ".\n")
+
+    embed = discord.Embed()
+    embed.title = "Vault Role"
+    embed.description = "Vault Role has been set to " + config["VAULT"]["Role"] + "."
     await ctx.send(embed=embed)
 
     with open('config.ini', 'w') as config_file:
