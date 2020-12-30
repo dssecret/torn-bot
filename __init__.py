@@ -105,7 +105,7 @@ async def ping(ctx):
 @bot.command()
 async def withdraw(ctx, arg):
     '''
-    Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the specific faction).
+    Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the specific faction)
     '''
     sender = None
     if ctx.message.author.nick is None:
@@ -173,7 +173,7 @@ async def withdraw(ctx, arg):
 @bot.command()
 async def balance(ctx):
     '''
-    Returns the balance of your funds in the vault (assuming you are a member of the specific faction).
+    Returns the balance of your funds in the vault (assuming you are a member of the specific faction)
     '''
     sender = None
     if ctx.message.author.nick is None:
@@ -222,7 +222,7 @@ async def balance(ctx):
 @bot.command()
 async def setvaultchannel(ctx):
     '''
-    Sets the channel that withdrawl messages are sent to.
+    Sets the channel that withdrawal messages are sent to
     '''
     config["VAULT"]["Channel"] = str(ctx.message.channel)
     file.write(str(datetime.datetime.now()) + " -- Vault Channel has been set to " + config["VAULT"]["Channel"] + ".\n")
@@ -238,6 +238,9 @@ async def setvaultchannel(ctx):
 
 @bot.command()
 async def setvaultrole(ctx, role: discord.Role):
+    '''
+    Sets the role is pinged with withdrawal messages
+    '''
     config["VAULT"]["Role"] = str(role.mention)
     file.write(str(datetime.datetime.now()) + " -- Vault Role has been set to " + config["VAULT"]["Role"] + ".\n")
 
