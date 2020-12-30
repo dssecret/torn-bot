@@ -40,8 +40,8 @@ decimal = {
 }
 
 try:
-    file = open('config.ini')
-    file.close()
+    config_file = open('config.ini')
+    config_file.close()
 except FileNotFoundError:
     with open('config.ini', 'w') as config_file:
         config["DEFAULT"] = {
@@ -87,7 +87,11 @@ async def ping(ctx):
 
     latency = bot.latency
     file.write(str(datetime.datetime.now()) + " -- Latency: " + str(latency) + ".\n")
-    await ctx.send(latency)
+
+    embed = discord.Embed()
+    embed.title = "Latency"
+    embed.description = str(latency) + " seconds"
+    await ctx.send(embed=embed)
 
 
 @bot.command()
@@ -113,8 +117,11 @@ async def withdraw(ctx, arg):
     file.write(str(datetime.datetime.now()) + " -- The Torn API has responded with HTTP status code " + str(response_status) + ".\n")
 
     if response_status != 200:
-        await ctx.send("Something has possibly gone wrong. HTTP status code " + str(response_status) +
-                       " has been given at " + str(datetime.datetime.now()))
+        embed = discord.Embed()
+        embed.title("Error")
+        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
+                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
+        await ctx.send(embed=embed)
         return None
 
     json_response = response.json()['donations']
@@ -131,13 +138,25 @@ async def withdraw(ctx, arg):
                     channel = discord.utils.get(guild.channels, name=config["VAULT"]["Channel"])
 
                     file.write(str(datetime.datetime.now()) + " -- " + sender + " has successfully requested " + arg + " from the vault.\n")
-                    await ctx.send("Your request has been forwarded to the faction leadership.")
-                    await channel.send(sender + " is requesting " + arg + " from the faction vault.")
+
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = "Your request has been forwarded to the faction leadership."
+                    await ctx.send(embed=embed)
+
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    await channel.send(embed=embed)
                     return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
         file.write(str(datetime.datetime.now()) + " -- " + sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".\n")
-        await ctx.send(sender + " is not a member of " + faction.json()["name"] + ".")
+
+        embed = discord.Embed()
+        embed.title = "Money Request"
+        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+        await ctx.send(embed=embed)
 
 
 @bot.command()
@@ -161,8 +180,11 @@ async def balance(ctx):
     file.write(str(datetime.datetime.now()) + " -- The Torn API has responded with HTTP status code " + str(response_status) + ".\n")
 
     if response_status != 200:
-        await ctx.send("Something has possibly gone wrong. HTTP status code " + str(response_status) +
-                       " has been given at " + str(datetime.datetime.now()))
+        embed = discord.Embed()
+        embed.title("Error")
+        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
+                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
+        await ctx.send(embed=embed)
         return None
 
     json_response = response.json()['donations']
@@ -170,12 +192,20 @@ async def balance(ctx):
     for user in json_response:
         if json_response[user]["name"] == sender:
             file.write(str(datetime.datetime.now()) + " -- " + sender + " has " + str(json_response[user]["money_balance"]) + " in the vault.\n")
-            await ctx.send("You have " + str(json_response[user]["money_balance"]) + " in the faction vault.")
+
+            embed = discord.Embed()
+            embed.title = "Vault Balance for " + sender
+            embed.description = "You have " + str(json_response[user]["money_balance"]) + " in the faction vault."
+            await ctx.send(embed=embed)
             return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
         file.write(str(datetime.datetime.now()) + " -- " + sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.\n")
-        await ctx.send(sender + " is not a member of " + faction.json()["name"] + ".")
+
+        embed = discord.Embed()
+        embed.title = "Vault Balance for " + sender
+        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+        await ctx.send(embed=embed)
 
 
 @bot.command()
@@ -184,8 +214,12 @@ async def setvaultchannel(ctx):
     Sets the channel that withdrawl messages are sent to.
     '''
     config["VAULT"]["Channel"] = str(ctx.message.channel)
-    await ctx.send("Vault Channel has been set to " + config["VAULT"]["Channel"] + ".")
     file.write(str(datetime.datetime.now()) + " -- Vault Channel has been set to " + config["VAULT"]["Channel"] + ".\n")
+
+    embed = discord.Embed()
+    embed.title = "Vault Channel"
+    embed.description = "Vault Channel has been set to " + config["VAULT"]["Channel"] + "."
+    await ctx.send(embed=embed)
 
     with open('config.ini', 'w') as config_file:
         config.write(config_file)
