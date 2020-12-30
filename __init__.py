@@ -202,11 +202,11 @@ async def balance(ctx):
 
     for user in json_response:
         if json_response[user]["name"] == sender:
-            file.write(str(datetime.datetime.now()) + " -- " + sender + " has " + str(json_response[user]["money_balance"]) + " in the vault.\n")
+            file.write(str(datetime.datetime.now()) + " -- " + sender + " has " + num_to_text(json_response[user]["money_balance"]) + " in the vault.\n")
 
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
-            embed.description = "You have " + str(json_response[user]["money_balance"]) + " in the faction vault."
+            embed.description = "You have " + num_to_text(json_response[user]["money_balance"]) + " in the faction vault."
             await ctx.send(embed=embed)
             return None
     else:

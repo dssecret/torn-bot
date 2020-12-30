@@ -4,7 +4,7 @@ torn-bot is a Discord bot for [Torn City](https://www.torn.com) using the [disco
 
 ## Installation
 
-Will be added soon.
+Install the required packages by running `pip install -r requirements.txt`. Then set the config file manually or run `__init__.py` once (and allow the program to error out), manually add the Discord bot token to `config.ini`, and run the bot and use the commands to set up other tokens, keys, channels, and roles.
 
 ## Usage
 
