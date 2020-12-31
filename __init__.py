@@ -31,7 +31,8 @@ except FileNotFoundError:
     with open('config.ini', 'w') as config_file:
         config["DEFAULT"] = {
             "tornapikey": "",
-            "bottoken": ""
+            "bottoken": "",
+            "prefix": ""
         }
         config["VAULT"] = {
             "channel": "",
@@ -42,6 +43,9 @@ except FileNotFoundError:
 config.read("config.ini")
 
 prefix = "?"
+if config["DEFAULT"]["Prefix"] != "":
+    prefix = config["DEFAULT"]["Prefix"]
+
 bot = commands.Bot(command_prefix=prefix)
 
 client = discord.client.Client()
@@ -245,6 +249,23 @@ async def setvaultrole(ctx, role: discord.Role):
     embed = discord.Embed()
     embed.title = "Vault Role"
     embed.description = "Vault Role has been set to " + config["VAULT"]["Role"] + "."
+    await ctx.send(embed=embed)
+
+    with open('config.ini', 'w') as config_file:
+        config.write(config_file)
+
+
+@bot.command()
+async def setprefix(ctx, arg):
+    '''
+    Sets the prefix for the bot
+    '''
+    config["DEFAULT"]["Prefix"] = str(arg)
+    file.write(str(datetime.datetime.now()) + " -- Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ".\n")
+
+    embed = discord.Embed()
+    embed.title = "Bot Prefix"
+    embed.description = "Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ". The bot requires a restart for the prefix change to go into effect."
     await ctx.send(embed=embed)
 
     with open('config.ini', 'w') as config_file:
