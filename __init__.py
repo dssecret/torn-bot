@@ -22,21 +22,7 @@ from decimal import Decimal
 import re
 from configparser import ConfigParser
 
-prefix = "?"
-bot = commands.Bot(command_prefix=prefix)
-
-client = discord.client.Client()
-
-file = open("log.txt", "a")
-
 config = ConfigParser()
-config.read("config.ini")
-
-decimal = {
-    'K': 3,
-    "M": 6,
-    "B": 9
-}
 
 try:
     config_file = open('config.ini')
@@ -52,6 +38,21 @@ except FileNotFoundError:
             "role": ""
         }
         config.write(config_file)
+
+config.read("config.ini")
+
+prefix = "?"
+bot = commands.Bot(command_prefix=prefix)
+
+client = discord.client.Client()
+
+file = open("log.txt", "a")
+
+decimal = {
+    'K': 3,
+    "M": 6,
+    "B": 9
+}
 
 
 def num_to_text(num):
@@ -154,11 +155,8 @@ async def withdraw(ctx, arg):
 
                     embed = discord.Embed()
                     embed.title = "Money Request"
-                    if config["VAULT"]["Role"] == "":
-                        embed.description = sender + " is requesting " + arg + " from the faction vault."
-                    else:
-                        embed.description = config["VAULT"]["Role"] + " " + sender + " is requesting " + arg + " from the faction vault."
-                    await channel.send(embed=embed)
+                    embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    await channel.send(config["VAULT"]["Role"], embed=embed)
                     return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
