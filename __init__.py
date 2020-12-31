@@ -77,6 +77,10 @@ def text_to_num(text):
         return Decimal(text)
 
 
+def check_admin(member):
+    return True if member.guild_permissions.administrator else False
+
+
 def remove_torn_id(name):
     return re.sub("[\(\[].*?[\)\]]", "", name)[:-1]
 
@@ -230,6 +234,16 @@ async def setvaultchannel(ctx):
     '''
     Sets the channel that withdrawal messages are sent to
     '''
+
+    if not check_admin(ctx.message.author):
+        embed = discord.Embed()
+        embed.title = "Permission Denied"
+        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
+        await ctx.send(embed=embed)
+
+        log(ctx.message.author + " has attempted to run setvaultchannel, but is not an Administrator.")
+        return None
+
     config["VAULT"]["Channel"] = str(ctx.message.channel)
     log("Vault Channel has been set to " + config["VAULT"]["Channel"] + ".")
 
@@ -247,6 +261,16 @@ async def setvaultrole(ctx, role: discord.Role):
     '''
     Sets the role is pinged with withdrawal messages
     '''
+
+    if not check_admin(ctx.message.author):
+        embed = discord.Embed()
+        embed.title = "Permission Denied"
+        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
+        await ctx.send(embed=embed)
+
+        log(ctx.message.author + " has attempted to run setvaultrole, but is not an Administrator.")
+        return None
+
     config["VAULT"]["Role"] = str(role.mention)
     log("Vault Role has been set to " + config["VAULT"]["Role"] + ".")
 
@@ -264,6 +288,16 @@ async def setprefix(ctx, arg):
     '''
     Sets the prefix for the bot
     '''
+
+    if not check_admin(ctx.message.author):
+        embed = discord.Embed()
+        embed.title = "Permission Denied"
+        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
+        await ctx.send(embed=embed)
+
+        log(ctx.message.author + " has attempted to run setprefix, but is not an Administrator.")
+        return None
+
     config["DEFAULT"]["Prefix"] = str(arg)
     log("Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ".")
 
