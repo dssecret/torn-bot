@@ -81,6 +81,10 @@ def remove_torn_id(name):
     return re.sub("[\(\[].*?[\)\]]", "", name)[:-1]
 
 
+def log(message):
+    file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
+
+
 @bot.event
 async def on_ready():
     guild_count = 0
@@ -99,7 +103,7 @@ async def ping(ctx):
     '''
 
     latency = bot.latency
-    file.write(str(datetime.datetime.now()) + " -- Latency: " + str(latency) + ".\n")
+    log("Latency: " + str(latency) + ".")
 
     embed = discord.Embed()
     embed.title = "Latency"
@@ -122,12 +126,12 @@ async def withdraw(ctx, arg):
 
     value = text_to_num(arg)
 
-    file.write(str(datetime.datetime.now()) + " -- " + sender + " has submitted a request for " + arg + ".\n")
+    log(sender + " has submitted a request for " + arg + ".")
 
     response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
     response_status = response.status_code
 
-    file.write(str(datetime.datetime.now()) + " -- The Torn API has responded with HTTP status code " + str(response_status) + ".\n")
+    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
 
     if response_status != 200:
         embed = discord.Embed()
@@ -142,7 +146,7 @@ async def withdraw(ctx, arg):
     for user in json_response:
         if json_response[user]["name"] == sender:
             if int(value) > json_response[user]["money_balance"]:
-                file.write(str(datetime.datetime.now()) + " -- " + sender + " has requested " + str(arg) + ", but only has " + str(json_response[user]["money_balance"]) + " in the vault.\n")
+                log(sender + " has requested " + str(arg) + ", but only has " + str(json_response[user]["money_balance"]) + " in the vault.")
                 await ctx.send("You do not have " + arg + " in the faction vault.")
                 return None
             else:
@@ -150,7 +154,7 @@ async def withdraw(ctx, arg):
                 for guild in bot.guilds:
                     channel = discord.utils.get(guild.channels, name=config["VAULT"]["Channel"])
 
-                    file.write(str(datetime.datetime.now()) + " -- " + sender + " has successfully requested " + arg + " from the vault.\n")
+                    log(sender + " has successfully requested " + arg + " from the vault.")
 
                     embed = discord.Embed()
                     embed.title = "Money Request"
@@ -164,7 +168,7 @@ async def withdraw(ctx, arg):
                     return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-        file.write(str(datetime.datetime.now()) + " -- " + sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".\n")
+        log(sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".")
 
         embed = discord.Embed()
         embed.title = "Money Request"
@@ -185,12 +189,12 @@ async def balance(ctx):
 
     sender = remove_torn_id(sender)
 
-    file.write(str(datetime.datetime.now()) + " -- " + sender + " is checking their balance in the faction vault.\n")
+    log(sender + " is checking their balance in the faction vault.")
 
     response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
     response_status = response.status_code
 
-    file.write(str(datetime.datetime.now()) + " -- The Torn API has responded with HTTP status code " + str(response_status) + ".\n")
+    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
 
     if response_status != 200:
         embed = discord.Embed()
@@ -204,7 +208,7 @@ async def balance(ctx):
 
     for user in json_response:
         if json_response[user]["name"] == sender:
-            file.write(str(datetime.datetime.now()) + " -- " + sender + " has " + num_to_text(json_response[user]["money_balance"]) + " in the vault.\n")
+            log(sender + " has " + num_to_text(json_response[user]["money_balance"]) + " in the vault.")
 
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
@@ -213,7 +217,7 @@ async def balance(ctx):
             return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-        file.write(str(datetime.datetime.now()) + " -- " + sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.\n")
+        log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.")
 
         embed = discord.Embed()
         embed.title = "Vault Balance for " + sender
@@ -227,7 +231,7 @@ async def setvaultchannel(ctx):
     Sets the channel that withdrawal messages are sent to
     '''
     config["VAULT"]["Channel"] = str(ctx.message.channel)
-    file.write(str(datetime.datetime.now()) + " -- Vault Channel has been set to " + config["VAULT"]["Channel"] + ".\n")
+    log("Vault Channel has been set to " + config["VAULT"]["Channel"] + ".")
 
     embed = discord.Embed()
     embed.title = "Vault Channel"
@@ -244,7 +248,7 @@ async def setvaultrole(ctx, role: discord.Role):
     Sets the role is pinged with withdrawal messages
     '''
     config["VAULT"]["Role"] = str(role.mention)
-    file.write(str(datetime.datetime.now()) + " -- Vault Role has been set to " + config["VAULT"]["Role"] + ".\n")
+    log("Vault Role has been set to " + config["VAULT"]["Role"] + ".")
 
     embed = discord.Embed()
     embed.title = "Vault Role"
@@ -261,7 +265,7 @@ async def setprefix(ctx, arg):
     Sets the prefix for the bot
     '''
     config["DEFAULT"]["Prefix"] = str(arg)
-    file.write(str(datetime.datetime.now()) + " -- Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ".\n")
+    log("Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ".")
 
     embed = discord.Embed()
     embed.title = "Bot Prefix"
@@ -274,3 +278,4 @@ async def setprefix(ctx, arg):
 
 if __name__ == "__main__":
     bot.run(config["DEFAULT"]["BotToken"])
+    file.close()
