@@ -30,9 +30,11 @@ try:
     config_file.close()
 except FileNotFoundError:
     with open('config.ini', 'w') as config_file:
+        bottoken = input("Please input the bot token: ")
+
         config["DEFAULT"] = {
             "tornapikey": "",
-            "bottoken": "",
+            "bottoken": bottoken,
             "prefix": ""
         }
         config["VAULT"] = {
@@ -47,7 +49,7 @@ prefix = "?"
 if config["DEFAULT"]["Prefix"] != "":
     prefix = config["DEFAULT"]["Prefix"]
 
-bot = commands.Bot(command_prefix=prefix)
+bot = commands.Bot(command_prefix=prefix, help_command=None)
 client = discord.client.Client()
 intents = discord.Intents.default()
 intents.reactions = True
