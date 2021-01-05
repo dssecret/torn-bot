@@ -139,6 +139,7 @@ async def withdraw(ctx, arg):
     '''
     Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the specific faction)
     '''
+
     sender = None
     if ctx.message.author.nick is None:
         sender = ctx.message.author.name
@@ -329,6 +330,27 @@ async def setprefix(ctx, arg):
 
     with open('config.ini', 'w') as config_file:
         config.write(config_file)
+
+
+@bot.command()
+async def help(ctx, arg=None):
+    embed = discord.Embed()
+    command_list = [command.name for command in bot.commands]
+
+    if not arg:
+        embed.description = "Server: " + ctx.guild.name + "\nPrefix: " + ctx.prefix
+        embed.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
+        embed.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
+        embed.add_field(name="Documentation", value="Not Finished")
+        embed.add_field(name="Torn City User", value="https://www.torn.com/profiles.php?XID=2383326")
+        embed.add_field(name="Discord User", value="dssecret#8137")
+        embed.add_field(name="For More Information", value="Please contact me (preferably on Discord or Github).")
+    elif arg in command_list:
+        embed.add_field(name=arg, value=bot.get_command(arg).help)
+    else:
+        embed.description = "This command does not exist."
+
+    await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":
