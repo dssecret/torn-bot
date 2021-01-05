@@ -21,6 +21,7 @@ import datetime
 from decimal import Decimal
 import re
 from configparser import ConfigParser
+import time
 
 config = ConfigParser()
 
@@ -47,8 +48,9 @@ if config["DEFAULT"]["Prefix"] != "":
     prefix = config["DEFAULT"]["Prefix"]
 
 bot = commands.Bot(command_prefix=prefix)
-
 client = discord.client.Client()
+intents = discord.Intents.default()
+intents.reactions = True
 
 file = open("log.txt", "a")
 
@@ -87,6 +89,21 @@ def remove_torn_id(name):
 
 def log(message):
     file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
+    file.flush()
+
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    if reaction.emoji == "✅" and not user.bot:
+        log(user.name + " has fulfilled the request (" + reaction.message.embeds[0].description + ").")
+
+        embed = discord.Embed()
+        embed.title = "Money Request"
+        embed.description = "The request has been fulfilled by " + user.name + " at " + time.ctime() + "."
+        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+
+        await reaction.message.edit(embed=embed)
+        await reaction.message.clear_reactions()
 
 
 @bot.event
@@ -168,7 +185,9 @@ async def withdraw(ctx, arg):
                     embed = discord.Embed()
                     embed.title = "Money Request"
                     embed.description = sender + " is requesting " + arg + " from the faction vault."
-                    await channel.send(config["VAULT"]["Role"], embed=embed)
+                    message = await channel.send(config["VAULT"]["Role"], embed=embed)
+                    await message.add_reaction('✅')
+
                     return None
     else:
         faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
