@@ -278,7 +278,7 @@ async def setvaultchannel(ctx):
         config.write(config_file)
 
 
-@bot.command()
+@bot.command(aliases=["svr"])
 async def setvaultrole(ctx, role: discord.Role):
     '''
     Sets the role is pinged with withdrawal messages
