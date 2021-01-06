@@ -346,6 +346,12 @@ async def prefix(ctx):
 
 @bot.command()
 async def help(ctx, arg=None):
+    '''
+    Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
+    as a paramter. If a command is passed as a paramter, the help command returns the help message of the passed
+    command.
+    '''
+
     embed = discord.Embed()
     command_list = [command.name for command in bot.commands]
 
