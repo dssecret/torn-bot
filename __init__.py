@@ -306,7 +306,7 @@ async def setvaultrole(ctx, role: discord.Role):
 
 
 @bot.command()
-async def setprefix(ctx, arg):
+async def setprefix(ctx, arg="?"):
     '''
     Sets the prefix for the bot
     '''
@@ -341,7 +341,7 @@ async def help(ctx, arg=None):
         embed.description = "Server: " + ctx.guild.name + "\nPrefix: " + ctx.prefix
         embed.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
         embed.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
-        embed.add_field(name="Documentation", value="Not Finished")
+        embed.add_field(name="Documentation (Under Construction)", value="https://github.com/dssecret/torn-bot/wiki")
         embed.add_field(name="Torn City User", value="https://www.torn.com/profiles.php?XID=2383326")
         embed.add_field(name="Discord User", value="dssecret#8137")
         embed.add_field(name="For More Information", value="Please contact me (preferably on Discord or Github).")
