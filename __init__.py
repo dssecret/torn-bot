@@ -134,7 +134,7 @@ async def ping(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command()
+@bot.command(aliases=["req", "with"])
 async def withdraw(ctx, arg):
     '''
     Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the specific faction)
@@ -202,7 +202,7 @@ async def withdraw(ctx, arg):
         await ctx.send(embed=embed)
 
 
-@bot.command()
+@bot.command(aliases=["bal"])
 async def balance(ctx):
     '''
     Returns the balance of your funds in the vault (assuming you are a member of the specific faction)
@@ -251,7 +251,7 @@ async def balance(ctx):
         await ctx.send(embed=embed)
 
 
-@bot.command()
+@bot.command(aliases=["svc"])
 async def setvaultchannel(ctx):
     '''
     Sets the channel that withdrawal messages are sent to
@@ -305,7 +305,7 @@ async def setvaultrole(ctx, role: discord.Role):
         config.write(config_file)
 
 
-@bot.command()
+@bot.command(aliases=["sp"])
 async def setprefix(ctx, arg="?"):
     '''
     Sets the prefix for the bot
@@ -330,6 +330,18 @@ async def setprefix(ctx, arg="?"):
 
     with open('config.ini', 'w') as config_file:
         config.write(config_file)
+
+
+@bot.command()
+async def prefix(ctx):
+    '''
+    Returns the prefix for the bot
+    '''
+
+    embed = discord.Embed()
+    embed.title = "Bot Prefix"
+    embed.description = "The bot prefix is " + config["DEFAULT"]["Prefix"] + "."
+    await ctx.send(embed=embed)
 
 
 @bot.command()

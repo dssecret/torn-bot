@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Custom help command with important links
  - Changelog
  - Documentation on GitHub Wiki
+ - Aliases for most commands
+ - Prefix command that returns the prefix
 ### Changed
  - Input on first launch of bot to request Discord bot token
  - Setprefix to have a default parameter value of `?`
