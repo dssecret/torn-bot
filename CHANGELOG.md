@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Setprefix to have a default parameter value of `?`
  - License from GNU GPLv3 to GNU APGLv3
  - Balance to have an exact and simplified command
+ - Readme to include features and TODO list
 
 ## [1.0] - 2020-12-31
 ### Added

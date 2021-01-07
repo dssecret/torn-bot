@@ -15,5 +15,15 @@ To run the bot, run the `__init__.py` file after installing the required modules
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+## Features
+ - Faction vault withdrawals
+ - Faction vault balance
+
+## TODO List
+ - JSON based storage for vault withdrawals
+ - Automatic updates for vault withdrawals
+ - Restructuring of bot into cogs
+ - Secondary (and possibly children) factions
+
 ## License
 [GNU AGPL v3](https://github.com/dssecret/torn-bot/blob/main/LICENSE)
