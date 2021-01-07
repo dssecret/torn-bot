@@ -202,10 +202,10 @@ async def withdraw(ctx, arg):
         await ctx.send(embed=embed)
 
 
-@bot.command(aliases=["bal"])
-async def balance(ctx):
+@bot.command()
+async def bal(ctx):
     '''
-    Returns the balance of your funds in the vault (assuming you are a member of the specific faction)
+    Returns a simplified version of the balance of your funds in the vault (assuming you are a member of the specific faction)
     '''
     sender = None
     if ctx.message.author.nick is None:
@@ -239,6 +239,56 @@ async def balance(ctx):
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
             embed.description = "You have " + num_to_text(json_response[user]["money_balance"]) + " in the faction vault."
+            await ctx.send(embed=embed)
+            return None
+    else:
+        faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
+        log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.")
+
+        embed = discord.Embed()
+        embed.title = "Vault Balance for " + sender
+        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+        await ctx.send(embed=embed)
+
+
+@bot.command()
+async def balance(ctx):
+    '''
+    Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)
+    '''
+
+    sender = None
+    if ctx.message.author.nick is None:
+        sender = ctx.message.author.name
+    else:
+        sender = ctx.message.author.nick
+
+    sender = remove_torn_id(sender)
+
+    log(sender + " is checking their balance in the faction vault.")
+
+    response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
+    response_status = response.status_code
+
+    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
+
+    if response_status != 200:
+        embed = discord.Embed()
+        embed.title("Error")
+        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
+                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
+        await ctx.send(embed=embed)
+        return None
+
+    json_response = response.json()['donations']
+
+    for user in json_response:
+        if json_response[user]["name"] == sender:
+            log(sender + " has " + str(json_response[user]["money_balance"]) + " in the vault.")
+
+            embed = discord.Embed()
+            embed.title = "Vault Balance for " + sender
+            embed.description = "You have " + str(json_response[user]["money_balance"]) + " in the faction vault."
             await ctx.send(embed=embed)
             return None
     else:
