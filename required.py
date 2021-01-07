@@ -53,3 +53,7 @@ def remove_torn_id(name):
 def log(message, file):
     file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
     file.flush()
+
+
+def commas(number):
+    return "{:,}".format(number)

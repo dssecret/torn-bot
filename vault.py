@@ -206,7 +206,8 @@ class Vault(commands.Cog):
     
                 embed = discord.Embed()
                 embed.title = "Vault Balance for " + sender
-                embed.description = "You have " + str(json_response[user]["money_balance"]) + " in the faction vault."
+                embed.description = "You have " + commas(json_response[user]["money_balance"]) + \
+                                    " in the faction vault."
                 await ctx.send(embed=embed)
                 return None
         else:
