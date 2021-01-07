@@ -15,13 +15,12 @@
 
 from discord.ext import commands
 import discord
-import requests
 
-import datetime
-from decimal import Decimal
-import re
 from configparser import ConfigParser
-import time
+
+import vault
+import admin
+from required import *
 
 config = ConfigParser()
 
@@ -56,56 +55,8 @@ intents.reactions = True
 
 file = open("log.txt", "a")
 
-
-def num_to_text(num):
-    num = float('{:.3g}'.format(num))
-    magnitude = 0
-    while abs(num) >= 1000:
-        magnitude += 1
-        num /= 1000.0
-    return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
-
-
-def text_to_num(text):
-    decimal = {
-        'K': 3,
-        "M": 6,
-        "B": 9
-    }
-
-    text = text.upper()
-    if text[-1] in decimal:
-        num, magnitude = text[:-1], text[-1]
-        return Decimal(num) * 10 ** decimal[magnitude]
-    else:
-        return Decimal(text)
-
-
-def check_admin(member):
-    return True if member.guild_permissions.administrator else False
-
-
-def remove_torn_id(name):
-    return re.sub("[\(\[].*?[\)\]]", "", name)[:-1]
-
-
-def log(message):
-    file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
-    file.flush()
-
-
-@bot.event
-async def on_reaction_add(reaction, user):
-    if reaction.emoji == "✅" and not user.bot:
-        log(user.name + " has fulfilled the request (" + reaction.message.embeds[0].description + ").")
-
-        embed = discord.Embed()
-        embed.title = "Money Request"
-        embed.description = "The request has been fulfilled by " + user.name + " at " + time.ctime() + "."
-        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
-
-        await reaction.message.edit(embed=embed)
-        await reaction.message.clear_reactions()
+bot.add_cog(vault.Vault(bot, config, file))
+bot.add_cog(admin.Admin(config, file))
 
 
 @bot.event
@@ -126,260 +77,12 @@ async def ping(ctx):
     '''
 
     latency = bot.latency
-    log("Latency: " + str(latency) + ".")
+    log("Latency: " + str(latency) + ".", file)
 
     embed = discord.Embed()
     embed.title = "Latency"
     embed.description = str(latency) + " seconds"
     await ctx.send(embed=embed)
-
-
-@bot.command(aliases=["req", "with"])
-async def withdraw(ctx, arg):
-    '''
-    Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the specific faction)
-    '''
-
-    sender = None
-    if ctx.message.author.nick is None:
-        sender = ctx.message.author.name
-    else:
-        sender = ctx.message.author.nick
-
-    sender = remove_torn_id(sender)
-
-    value = text_to_num(arg)
-
-    log(sender + " has submitted a request for " + arg + ".")
-
-    response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-    response_status = response.status_code
-
-    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
-
-    if response_status != 200:
-        embed = discord.Embed()
-        embed.title("Error")
-        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
-        await ctx.send(embed=embed)
-        return None
-
-    json_response = response.json()['donations']
-
-    for user in json_response:
-        if json_response[user]["name"] == sender:
-            if int(value) > json_response[user]["money_balance"]:
-                log(sender + " has requested " + str(arg) + ", but only has " + str(json_response[user]["money_balance"]) + " in the vault.")
-                await ctx.send("You do not have " + arg + " in the faction vault.")
-                return None
-            else:
-                channel = None
-                for guild in bot.guilds:
-                    channel = discord.utils.get(guild.channels, name=config["VAULT"]["Channel"])
-
-                    log(sender + " has successfully requested " + arg + " from the vault.")
-
-                    embed = discord.Embed()
-                    embed.title = "Money Request"
-                    embed.description = "Your request has been forwarded to the faction leadership."
-                    await ctx.send(embed=embed)
-
-                    embed = discord.Embed()
-                    embed.title = "Money Request"
-                    embed.description = sender + " is requesting " + arg + " from the faction vault."
-                    message = await channel.send(config["VAULT"]["Role"], embed=embed)
-                    await message.add_reaction('✅')
-
-                    return None
-    else:
-        faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-        log(sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".")
-
-        embed = discord.Embed()
-        embed.title = "Money Request"
-        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
-        await ctx.send(embed=embed)
-
-
-@bot.command()
-async def bal(ctx):
-    '''
-    Returns a simplified version of the balance of your funds in the vault (assuming you are a member of the specific faction)
-    '''
-    sender = None
-    if ctx.message.author.nick is None:
-        sender = ctx.message.author.name
-    else:
-        sender = ctx.message.author.nick
-
-    sender = remove_torn_id(sender)
-
-    log(sender + " is checking their balance in the faction vault.")
-
-    response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-    response_status = response.status_code
-
-    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
-
-    if response_status != 200:
-        embed = discord.Embed()
-        embed.title("Error")
-        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
-        await ctx.send(embed=embed)
-        return None
-
-    json_response = response.json()['donations']
-
-    for user in json_response:
-        if json_response[user]["name"] == sender:
-            log(sender + " has " + num_to_text(json_response[user]["money_balance"]) + " in the vault.")
-
-            embed = discord.Embed()
-            embed.title = "Vault Balance for " + sender
-            embed.description = "You have " + num_to_text(json_response[user]["money_balance"]) + " in the faction vault."
-            await ctx.send(embed=embed)
-            return None
-    else:
-        faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-        log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.")
-
-        embed = discord.Embed()
-        embed.title = "Vault Balance for " + sender
-        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
-        await ctx.send(embed=embed)
-
-
-@bot.command()
-async def balance(ctx):
-    '''
-    Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)
-    '''
-
-    sender = None
-    if ctx.message.author.nick is None:
-        sender = ctx.message.author.name
-    else:
-        sender = ctx.message.author.nick
-
-    sender = remove_torn_id(sender)
-
-    log(sender + " is checking their balance in the faction vault.")
-
-    response = requests.get('https://api.torn.com/faction/?selections=donations&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-    response_status = response.status_code
-
-    log("The Torn API has responded with HTTP status code " + str(response_status) + ".")
-
-    if response_status != 200:
-        embed = discord.Embed()
-        embed.title("Error")
-        embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                          str(response_status) + " has been given at " + str(datetime.datetime.now()))
-        await ctx.send(embed=embed)
-        return None
-
-    json_response = response.json()['donations']
-
-    for user in json_response:
-        if json_response[user]["name"] == sender:
-            log(sender + " has " + str(json_response[user]["money_balance"]) + " in the vault.")
-
-            embed = discord.Embed()
-            embed.title = "Vault Balance for " + sender
-            embed.description = "You have " + str(json_response[user]["money_balance"]) + " in the faction vault."
-            await ctx.send(embed=embed)
-            return None
-    else:
-        faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' + str(config["DEFAULT"]["TornAPIKey"]))
-        log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.")
-
-        embed = discord.Embed()
-        embed.title = "Vault Balance for " + sender
-        embed.description = sender + " is not a member of " + faction.json()["name"] + "."
-        await ctx.send(embed=embed)
-
-
-@bot.command(aliases=["svc"])
-async def setvaultchannel(ctx):
-    '''
-    Sets the channel that withdrawal messages are sent to
-    '''
-
-    if not check_admin(ctx.message.author):
-        embed = discord.Embed()
-        embed.title = "Permission Denied"
-        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
-        await ctx.send(embed=embed)
-
-        log(ctx.message.author + " has attempted to run setvaultchannel, but is not an Administrator.")
-        return None
-
-    config["VAULT"]["Channel"] = str(ctx.message.channel)
-    log("Vault Channel has been set to " + config["VAULT"]["Channel"] + ".")
-
-    embed = discord.Embed()
-    embed.title = "Vault Channel"
-    embed.description = "Vault Channel has been set to " + config["VAULT"]["Channel"] + "."
-    await ctx.send(embed=embed)
-
-    with open('config.ini', 'w') as config_file:
-        config.write(config_file)
-
-
-@bot.command(aliases=["svr"])
-async def setvaultrole(ctx, role: discord.Role):
-    '''
-    Sets the role is pinged with withdrawal messages
-    '''
-
-    if not check_admin(ctx.message.author):
-        embed = discord.Embed()
-        embed.title = "Permission Denied"
-        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
-        await ctx.send(embed=embed)
-
-        log(ctx.message.author + " has attempted to run setvaultrole, but is not an Administrator.")
-        return None
-
-    config["VAULT"]["Role"] = str(role.mention)
-    log("Vault Role has been set to " + config["VAULT"]["Role"] + ".")
-
-    embed = discord.Embed()
-    embed.title = "Vault Role"
-    embed.description = "Vault Role has been set to " + config["VAULT"]["Role"] + "."
-    await ctx.send(embed=embed)
-
-    with open('config.ini', 'w') as config_file:
-        config.write(config_file)
-
-
-@bot.command(aliases=["sp"])
-async def setprefix(ctx, arg="?"):
-    '''
-    Sets the prefix for the bot
-    '''
-
-    if not check_admin(ctx.message.author):
-        embed = discord.Embed()
-        embed.title = "Permission Denied"
-        embed.description = "This command requires the sender to be an Administrator. This interaction has been logged."
-        await ctx.send(embed=embed)
-
-        log(ctx.message.author + " has attempted to run setprefix, but is not an Administrator.")
-        return None
-
-    config["DEFAULT"]["Prefix"] = str(arg)
-    log("Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ".")
-
-    embed = discord.Embed()
-    embed.title = "Bot Prefix"
-    embed.description = "Bot prefix has been set to " + config["DEFAULT"]["Prefix"] + ". The bot requires a restart for the prefix change to go into effect."
-    await ctx.send(embed=embed)
-
-    with open('config.ini', 'w') as config_file:
-        config.write(config_file)
 
 
 @bot.command()
