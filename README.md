@@ -20,9 +20,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - Faction vault balance
 
 ## TODO List
- - JSON based storage for vault withdrawals
+ - JSON based storage for vault withdrawals (In Progress)
  - Automatic updates for vault withdrawals
- - Restructuring of bot into cogs
+ - Restructuring of bot into cogs (In Progress)
  - Secondary (and possibly children) factions
 
 ## License
