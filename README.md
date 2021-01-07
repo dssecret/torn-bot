@@ -22,8 +22,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## TODO List
  - JSON based storage for vault withdrawals (In Progress)
  - Automatic updates for vault withdrawals
- - Restructuring of bot into cogs (In Progress)
  - Secondary (and possibly children) factions
+ - Automatic role for under level 15
 
 ## License
 [GNU AGPL v3](https://github.com/dssecret/torn-bot/blob/main/LICENSE)
