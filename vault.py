@@ -30,17 +30,17 @@ class Vault(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        if reaction.emoji == "✅" and not user.bot:
+        if reaction.emoji == "✅" and user.bot is not True:
             log(user.name + " has fulfilled the request (" + reaction.message.embeds[0].description + ").",
                 self.log_file)
 
-        embed = discord.Embed()
-        embed.title = "Money Request"
-        embed.description = "The request has been fulfilled by " + user.name + " at " + time.ctime() + "."
-        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+            embed = discord.Embed()
+            embed.title = "Money Request"
+            embed.description = "The request has been fulfilled by " + user.name + " at " + time.ctime() + "."
+            embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
 
-        await reaction.message.edit(embed=embed)
-        await reaction.message.clear_reactions()
+            await reaction.message.edit(embed=embed)
+            await reaction.message.clear_reactions()
 
     @commands.command(aliases=["req", "with"])
     async def withdraw(self, ctx, arg):

@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Balance to have an exact and simplified command
  - Readme to include features and TODO list
  - Bot to use Cogs
+### Fixed
+ - Issue #5
 
 ## [1.0] - 2020-12-31
 ### Added
