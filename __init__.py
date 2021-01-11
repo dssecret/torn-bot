@@ -20,6 +20,8 @@ from configparser import ConfigParser
 
 import vault
 import admin
+import moderation
+import superuser
 from required import *
 
 config = ConfigParser()
@@ -34,11 +36,16 @@ except FileNotFoundError:
         config["DEFAULT"] = {
             "tornapikey": "",
             "bottoken": bottoken,
-            "prefix": ""
+            "prefix": "",
+            "serverid": "",
+            "superuser": ""
         }
         config["VAULT"] = {
             "channel": "",
             "role": ""
+        }
+        config['ROLES'] = {
+            "noob": ""
         }
         config.write(config_file)
 
@@ -48,15 +55,19 @@ prefix = "?"
 if config["DEFAULT"]["Prefix"] != "":
     prefix = config["DEFAULT"]["Prefix"]
 
-bot = commands.Bot(command_prefix=prefix, help_command=None)
 client = discord.client.Client()
 intents = discord.Intents.default()
 intents.reactions = True
+intents.members = True
+
+bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
 
 file = open("log.txt", "a")
 
 bot.add_cog(vault.Vault(bot, config, file))
-bot.add_cog(admin.Admin(config, file))
+bot.add_cog(admin.Admin(config, file, bot, client))
+bot.add_cog(moderation.Moderation(config, file))
+bot.add_cog(superuser.Superuser(client, config, file, bot))
 
 
 @bot.event

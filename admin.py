@@ -15,19 +15,22 @@
 
 from discord.ext import commands
 import discord
+import requests
 
 from required import *
 
 
 class Admin(commands.Cog):
-    def __init__(self, config, log_file):
+    def __init__(self, config, log_file, bot, client):
         self.config = config
         self.log_file = log_file
+        self.bot = bot
+        self.client = client
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
         '''
-        Sets the channel that withdrawal messages are sent to
+        Sets the channel that withdrawal messages are sent to in config.ini
         '''
 
         if not check_admin(ctx.message.author):
@@ -55,7 +58,7 @@ class Admin(commands.Cog):
     @commands.command(aliases=["svr"])
     async def setvaultrole(self, ctx, role: discord.Role):
         '''
-        Sets the role is pinged with withdrawal messages
+        Sets the role is pinged with withdrawal messages in config.ini
         '''
 
         if not check_admin(ctx.message.author):
@@ -82,7 +85,7 @@ class Admin(commands.Cog):
     @commands.command(aliases=["sp"])
     async def setprefix(self, ctx, arg="?"):
         '''
-        Sets the prefix for the bot
+        Sets the prefix for the bot in config.ini
         '''
 
         if not check_admin(ctx.message.author):
@@ -106,3 +109,67 @@ class Admin(commands.Cog):
 
         with open('config.ini', 'w') as config_file:
             self.config.write(config_file)
+
+    @commands.command(aliases=["snr"])
+    async def setnoobrole(self, ctx, role: discord.Role):
+        '''
+        Sets the role given to users under level 15 in config.ini
+        '''
+
+        if not check_admin(ctx.message.author):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run setnoobrole, but is not an Administrator.", self.log_file)
+            return None
+
+        self.config["ROLES"]["Noob"] = str(role.id)
+        log("Noob Role has been set to " + self.config["ROLES"]["Noob"] + ".", self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Noob Role"
+        embed.description = "Noob Role has been set to " + role.name + "."
+        await ctx.send(embed=embed)
+
+        with open('config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
+    @commands.command()
+    async def runnoob(self, ctx):
+        '''
+        Adds the noob role from all users under level 15. Removes the noob role from all users who have the noob role,
+        but are above level 15.
+        '''
+        response = requests.get('https://api.torn.com/faction/?selections=&key=' +
+                                str(self.config["DEFAULT"]["TornAPIKey"]))
+        log("The Torn API has responded with HTTP status code " + str(response.status_code) + ".", self.log_file)
+
+        members = list(response.json()["members"].keys())
+
+        for member in members:
+            request = requests.get('https://api.torn.com/user/' + member + "?selections=basic,discord&key=" +
+                                   str(self.config["DEFAULT"]["TornAPIKey"]))
+            log("The Torn API has responded with HTTP status code " + str(request.status_code) + ".", self.log_file)
+
+            discordid = request.json()["discord"]["discordID"]
+            if discordid == "":
+                continue
+
+            discord_member = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).get_member(int(discordid))
+            noob = ctx.guild.get_role(int(self.config["ROLES"]["noob"]))
+
+            if discord_member is None:
+                continue
+
+            if request.json()["level"] <= 15:
+                await discord_member.add_roles(noob)
+                await ctx.send("The Noob role has been added to " + str(discord_member) + ".")
+                log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
+            else:
+                if noob in discord_member.roles:
+                    await discord_member.remove_roles(noob)
+                    await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
+                    log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)

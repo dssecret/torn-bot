@@ -115,7 +115,7 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def bal(self, ctx):
+    async def b(self, ctx):
         '''
         Returns a simplified version of the balance of your funds in the vault (assuming you are a member of the
         specific faction)
@@ -169,7 +169,7 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def balance(self, ctx):
+    async def bal(self, ctx):
         '''
         Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)
         '''
