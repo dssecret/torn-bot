@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Noob role for users under level 15
  - Purge command
  - Superuser shutdown and restart commands
+ - Superuser check to admin commands
 ### Changed
  - Readme's TODO updated
  - Balance command to bal

@@ -33,7 +33,7 @@ class Admin(commands.Cog):
         Sets the channel that withdrawal messages are sent to in config.ini
         '''
 
-        if not check_admin(ctx.message.author):
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -61,7 +61,7 @@ class Admin(commands.Cog):
         Sets the role is pinged with withdrawal messages in config.ini
         '''
 
-        if not check_admin(ctx.message.author):
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -88,7 +88,7 @@ class Admin(commands.Cog):
         Sets the prefix for the bot in config.ini
         '''
 
-        if not check_admin(ctx.message.author):
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -116,7 +116,7 @@ class Admin(commands.Cog):
         Sets the role given to users under level 15 in config.ini
         '''
 
-        if not check_admin(ctx.message.author):
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -143,6 +143,17 @@ class Admin(commands.Cog):
         Adds the noob role from all users under level 15. Removes the noob role from all users who have the noob role,
         but are above level 15.
         '''
+
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run runnoob, but is not an Administrator.", self.log_file)
+            return None
+
         response = requests.get('https://api.torn.com/faction/?selections=&key=' +
                                 str(self.config["DEFAULT"]["TornAPIKey"]))
         log("The Torn API has responded with HTTP status code " + str(response.status_code) + ".", self.log_file)
