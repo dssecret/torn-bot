@@ -184,3 +184,27 @@ class Admin(commands.Cog):
                     await discord_member.remove_roles(noob)
                     await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
+
+    @commands.command()
+    async def setguild(self, ctx):
+        '''
+        Sets the guild ID in config.ini
+        '''
+
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run setguild, but is not an Administrator.", self.log_file)
+            return None
+
+        self.config["DEFAULT"]["serverid"] = str(ctx.guild.id)
+        log("The server ID has been set to " + str(ctx.guild.id) + ".", self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Server ID"
+        embed.description = "The server ID has been set to " + str(ctx.guild.id) + "."
+        await ctx.send(embed=embed)
