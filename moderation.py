@@ -14,6 +14,7 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 from discord.ext import commands
+import discord
 
 from required import *
 
@@ -28,6 +29,16 @@ class Moderation(commands.Cog):
         '''
         Purges specified number of messages in the channel the command is invoked in
         '''
+
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run purge, but is not an Administrator.", self.log_file)
+            return None
 
         await ctx.message.delete()
         await ctx.message.channel.purge(limit=nummessages, check=None, before=None)

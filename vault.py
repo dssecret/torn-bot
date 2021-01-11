@@ -168,7 +168,7 @@ class Vault(commands.Cog):
             embed.description = sender + " is not a member of " + faction.json()["name"] + "."
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["balance"])
     async def bal(self, ctx):
         '''
         Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)

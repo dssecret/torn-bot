@@ -185,7 +185,7 @@ class Admin(commands.Cog):
                     await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
 
-    @commands.command()
+    @commands.command(pass_context=True)
     async def setguild(self, ctx):
         '''
         Sets the guild ID in config.ini

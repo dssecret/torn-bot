@@ -9,10 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Superuser shutdown and restart commands
  - Superuser check to admin commands
  - Setguild command
+ - Balance as alias for full balance command
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
  - Bal command to b
+### Fixed
+ - Issue #6
 
 ## [1.1] - 2021-01-07
 ### Added
