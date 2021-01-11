@@ -23,7 +23,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - JSON based storage for vault withdrawals (In Progress)
  - Automatic updates for vault withdrawals
  - Secondary (and possibly children) factions
- - Automatic role for under level 15
+ - Automatic role for under level 15 (In Progress)
 
 ## License
 [GNU AGPL v3](https://github.com/dssecret/torn-bot/blob/main/LICENSE)
