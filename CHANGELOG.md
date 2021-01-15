@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Superuser check to admin commands
  - Setguild command
  - Balance as alias for full balance command
+ - Automatic running of noob function every hour
 ### Changed
  - Readme's TODO updated
  - Balance command to bal

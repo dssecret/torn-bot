@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 import discord
 import requests
 
@@ -26,6 +26,8 @@ class Admin(commands.Cog):
         self.log_file = log_file
         self.bot = bot
         self.client = client
+
+        self.noob.start()
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
@@ -183,6 +185,38 @@ class Admin(commands.Cog):
                 if noob in discord_member.roles:
                     await discord_member.remove_roles(noob)
                     await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
+                    log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
+
+    @tasks.loop(hours=1)
+    async def noob(self):
+        response = requests.get('https://api.torn.com/faction/?selections=&key=' +
+                                str(self.config["DEFAULT"]["TornAPIKey"]))
+        log("The Torn API has responded with HTTP status code " + str(response.status_code) + ".", self.log_file)
+
+        members = list(response.json()["members"].keys())
+
+        for member in members:
+            request = requests.get('https://api.torn.com/user/' + member + "?selections=basic,discord&key=" +
+                                   str(self.config["DEFAULT"]["TornAPIKey"]))
+            log("The Torn API has responded with HTTP status code " + str(request.status_code) + ".", self.log_file)
+
+            discordid = request.json()["discord"]["discordID"]
+            if discordid == "":
+                continue
+
+            discord_member = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).get_member(int(discordid))
+            noob = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).\
+                get_role(int(self.config["ROLES"]["noob"]))
+
+            if discord_member is None:
+                continue
+
+            if request.json()["level"] <= 15:
+                await discord_member.add_roles(noob)
+                log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
+            else:
+                if noob in discord_member.roles:
+                    await discord_member.remove_roles(noob)
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
 
     @commands.command(pass_context=True)
