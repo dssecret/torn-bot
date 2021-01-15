@@ -21,11 +21,12 @@ from required import *
 
 
 class Admin(commands.Cog):
-    def __init__(self, config, log_file, bot, client):
+    def __init__(self, config, log_file, bot, client, server):
         self.config = config
         self.log_file = log_file
         self.bot = bot
         self.client = client
+        self.server = server
 
         self.noob.start()
 
@@ -171,8 +172,8 @@ class Admin(commands.Cog):
             if discordid == "":
                 continue
 
-            discord_member = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).get_member(int(discordid))
-            noob = ctx.guild.get_role(int(self.config["ROLES"]["noob"]))
+            discord_member = self.server.get_member(int(discordid))
+            noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
 
             if discord_member is None:
                 continue
@@ -204,8 +205,8 @@ class Admin(commands.Cog):
             if discordid == "":
                 continue
 
-            discord_member = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).get_member(int(discordid))
-            noob = self.bot.get_guild(int(self.config["DEFAULT"]["serverid"])).\
+            discord_member = self.server.get_member(int(discordid))
+            noob = self.server.\
                 get_role(int(self.config["ROLES"]["noob"]))
 
             if discord_member is None:

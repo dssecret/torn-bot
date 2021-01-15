@@ -64,8 +64,10 @@ bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
 
 file = open("log.txt", "a")
 
+server = bot.get_guild(int(config["DEFAULT"]["serverid"]))
+
 bot.add_cog(vault.Vault(bot, config, file))
-bot.add_cog(admin.Admin(config, file, bot, client))
+bot.add_cog(admin.Admin(config, file, bot, client, server))
 bot.add_cog(moderation.Moderation(config, file))
 bot.add_cog(superuser.Superuser(client, config, file, bot))
 
