@@ -38,7 +38,8 @@ except FileNotFoundError:
             "bottoken": bottoken,
             "prefix": "",
             "serverid": "",
-            "superuser": ""
+            "superuser": "",
+            "noob": ""
         }
         config["VAULT"] = {
             "channel": "",

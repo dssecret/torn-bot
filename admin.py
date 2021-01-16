@@ -28,7 +28,7 @@ class Admin(commands.Cog):
         self.client = client
         self.server = server
 
-        # self.noob.start()
+        self.noob.start()
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
@@ -199,6 +199,10 @@ class Admin(commands.Cog):
 
     @tasks.loop(hours=1)
     async def noob(self):
+        if self.config["DEFAULT"]["noob"] != "True":
+            log("The automatic noob function has been aborted due to the noob flag not being set or the noob flag"
+                "being set to False", self.log_file)
+
         if self.config["ROLES"]["noob"] == "":
             log("There is no noob role set, so the noob setting process has been aborted.", self.log_file)
             return None
@@ -261,3 +265,61 @@ class Admin(commands.Cog):
         embed.title = "Server ID"
         embed.description = "The server ID has been set to " + str(ctx.guild.id) + "."
         await ctx.send(embed=embed)
+
+        with open('config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
+    @commands.command()
+    async def enablenoob(self, ctx):
+        '''
+        Enables automatic running of the noob function every day
+        '''
+
+        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULTS"]["superuser"]:
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run enablenoob, but is not an Administrator.", self.log_file)
+            return None
+
+        self.config["DEFAULT"]["noob"] = "True"
+        log("The automatic noob status has been set to True.", self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Automatic Noob Status"
+        embed.description = "The automatic noob status has been set to True, and the noob function will run everyday."
+        await ctx.send(embed=embed)
+
+        with open('config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
+    @commands.command()
+    async def disablenoob(self, ctx):
+        '''
+        Disables automatic running of the noob function every day
+        '''
+
+        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULTS"]["superuser"]:
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = "This command requires the sender to be an Administrator. " \
+                                "This interaction has been logged."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + " has attempted to run disablenoob, but is not an Administrator.", self.log_file)
+            return None
+
+        self.config["DEFAULT"]["noob"] = "False"
+        log("The automatic noob status has been set to False.", self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Automatic Noob Status"
+        embed.description = "The automatic noob status has been set to False, and the noob function will not" \
+                            " run everyday."
+        await ctx.send(embed=embed)
+
+        with open('config.ini', 'w') as config_file:
+            self.config.write(config_file)

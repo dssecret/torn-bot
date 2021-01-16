@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Automatic running of noob function every hour
  - Wait until bot is ready for noob function
  - Check to stop the runnoob command and noob function if the noob role has not been set
+ - Noob status to enable or to disable the automatic noob function
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
