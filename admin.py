@@ -28,7 +28,7 @@ class Admin(commands.Cog):
         self.client = client
         self.server = server
 
-        self.noob.start()
+        # self.noob.start()
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
@@ -157,6 +157,15 @@ class Admin(commands.Cog):
             log(ctx.message.author + " has attempted to run runnoob, but is not an Administrator.", self.log_file)
             return None
 
+        if self.config["ROLES"]["noob"] == "":
+            embed = discord.Embed()
+            embed.title = "Missing Role Configuration"
+            embed.description = "There needs to be a noob role setup for this command to add that role."
+            await ctx.send(embed=embed)
+
+            log(ctx.message.author + "has attempted to run runnoob, but there is no noob role set.", self.log_file)
+            return None
+
         response = requests.get('https://api.torn.com/faction/?selections=&key=' +
                                 str(self.config["DEFAULT"]["TornAPIKey"]))
         log("The Torn API has responded with HTTP status code " + str(response.status_code) + ".", self.log_file)
@@ -190,6 +199,10 @@ class Admin(commands.Cog):
 
     @tasks.loop(hours=1)
     async def noob(self):
+        if self.config["ROLES"]["noob"] == "":
+            log("There is no noob role set, so the noob setting process has been aborted.", self.log_file)
+            return None
+
         response = requests.get('https://api.torn.com/faction/?selections=&key=' +
                                 str(self.config["DEFAULT"]["TornAPIKey"]))
         log("The Torn API has responded with HTTP status code " + str(response.status_code) + ".", self.log_file)

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Balance as alias for full balance command
  - Automatic running of noob function every hour
  - Wait until bot is ready for noob function
+ - Check to stop the runnoob command and noob function if the noob role has not been set
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
