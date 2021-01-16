@@ -39,7 +39,7 @@ except FileNotFoundError:
             "prefix": "",
             "serverid": "",
             "superuser": "",
-            "noob": ""
+            "noob": "False"
         }
         config["VAULT"] = {
             "channel": "",
