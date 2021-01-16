@@ -89,20 +89,20 @@ class Vault(commands.Cog):
                     for guild in self.bot.guilds:
                         channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel"])
     
-                        log(sender + " has successfully requested " + arg + " from the vault.", self.log_file)
-    
-                        embed = discord.Embed()
-                        embed.title = "Money Request"
-                        embed.description = "Your request has been forwarded to the faction leadership."
-                        await ctx.send(embed=embed)
-    
-                        embed = discord.Embed()
-                        embed.title = "Money Request"
-                        embed.description = sender + " is requesting " + arg + " from the faction vault."
-                        message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
-                        await message.add_reaction('✅')
-    
-                        return None
+                    log(sender + " has successfully requested " + arg + " from the vault.", self.log_file)
+
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = "Your request has been forwarded to the faction leadership."
+                    await ctx.send(embed=embed)
+
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
+                    await message.add_reaction('✅')
+
+                    return None
         else:
             faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' +
                                    str(self.config["DEFAULT"]["TornAPIKey"]))

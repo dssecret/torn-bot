@@ -11,12 +11,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Setguild command
  - Balance as alias for full balance command
  - Automatic running of noob function every hour
+ - Wait until bot is ready for noob function
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
  - Bal command to b
+ - Indentation on withdrawal command
 ### Fixed
  - Issue #6
+ - Issue #8
 
 ## [1.1] - 2021-01-07
 ### Added

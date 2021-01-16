@@ -220,6 +220,11 @@ class Admin(commands.Cog):
                     await discord_member.remove_roles(noob)
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
 
+    @noob.before_loop
+    async def before_noob(self):
+        print("Waiting for bot to be ready...")
+        await self.bot.wait_until_ready()
+
     @commands.command(pass_context=True)
     async def setguild(self, ctx):
         '''
