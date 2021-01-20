@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Balance command to bal
  - Bal command to b
  - Indentation on withdrawal command
+ - discord.py version from 1.5.1 to 1.6.0
 ### Fixed
  - Issue #6
  - Issue #8
