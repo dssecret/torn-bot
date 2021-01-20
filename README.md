@@ -18,6 +18,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## Features
  - Faction vault withdrawals
  - Faction vault balance
+ - Noob role for users under level 15 (in Torn)
 
 ## TODO List
  - JSON based storage for vault withdrawals (In Progress)
