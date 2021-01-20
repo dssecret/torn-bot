@@ -14,12 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Wait until bot is ready for noob function
  - Check to stop the runnoob command and noob function if the noob role has not been set
  - Noob status to enable or to disable the automatic noob function
+ - Over15 key to config.ini
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
  - Bal command to b
- - Indentation on withdrawal command
- - discord.py version from 1.5.1 to 1.6.0
+ - Indentation on withdrawal command 
+ - Automatic noob function to run every 12 hours from every hour
+ - Automatic noob function and runnoob command to not check users in the list of users as value for over15 key in config.ini
 ### Fixed
  - Issue #6
  - Issue #8
