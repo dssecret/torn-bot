@@ -172,6 +172,18 @@ class Admin(commands.Cog):
 
         members = list(response.json()["members"].keys())
 
+        over15 = self.config["VAULT"]["over15"].split(",")
+
+        if "" in over15:
+            over15.remove("")
+
+        for memberover15 in over15:
+            if memberover15 == "":
+                break
+            members.remove(memberover15)
+
+        noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
+
         for member in members:
             request = requests.get('https://api.torn.com/user/' + member + "?selections=basic,discord&key=" +
                                    str(self.config["DEFAULT"]["TornAPIKey"]))
@@ -182,26 +194,35 @@ class Admin(commands.Cog):
                 continue
 
             discord_member = self.server.get_member(int(discordid))
-            noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
 
             if discord_member is None:
                 continue
 
-            if request.json()["level"] <= 15:
-                await discord_member.add_roles(noob)
-                await ctx.send("The Noob role has been added to " + str(discord_member) + ".")
-                log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
-            else:
+            if request.json()["level"] > 15:
+                over15.append(member)
+
                 if noob in discord_member.roles:
                     await discord_member.remove_roles(noob)
                     await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
+                continue
 
-    @tasks.loop(hours=1)
+            await discord_member.add_roles(noob)
+            await ctx.send("The Noob role has been added to " + str(discord_member) + ".")
+            log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
+
+            outover15 = ",".join(over15)
+            self.config["VAULT"]["over15"] = outover15
+
+            with open("config.ini", "w") as config_file:
+                self.config.write(config_file)
+
+    @tasks.loop(hours=12)
     async def noob(self):
         if self.config["DEFAULT"]["noob"] != "True":
             log("The automatic noob function has been aborted due to the noob flag not being set or the noob flag"
                 "being set to False", self.log_file)
+            return None
 
         if self.config["ROLES"]["noob"] == "":
             log("There is no noob role set, so the noob setting process has been aborted.", self.log_file)
@@ -213,29 +234,48 @@ class Admin(commands.Cog):
 
         members = list(response.json()["members"].keys())
 
+        over15 = self.config["VAULT"]["over15"].split(",")
+
+        if "" in over15:
+            over15.remove("")
+
+        for memberover15 in over15:
+            if memberover15 == "":
+                break
+            members.remove(memberover15)
+
+        noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
+
         for member in members:
             request = requests.get('https://api.torn.com/user/' + member + "?selections=basic,discord&key=" +
                                    str(self.config["DEFAULT"]["TornAPIKey"]))
             log("The Torn API has responded with HTTP status code " + str(request.status_code) + ".", self.log_file)
 
             discordid = request.json()["discord"]["discordID"]
+
             if discordid == "":
                 continue
-
             discord_member = self.server.get_member(int(discordid))
-            noob = self.server.\
-                get_role(int(self.config["ROLES"]["noob"]))
 
             if discord_member is None:
                 continue
 
-            if request.json()["level"] <= 15:
-                await discord_member.add_roles(noob)
-                log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
-            else:
+            if request.json()["level"] > 15:
+                over15.append(member)
+
                 if noob in discord_member.roles:
                     await discord_member.remove_roles(noob)
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
+                continue
+
+            await discord_member.add_roles(noob)
+            log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
+
+        outover15 = ",".join(over15)
+        self.config["VAULT"]["over15"] = outover15
+
+        with open("config.ini", "w") as config_file:
+            self.config.write(config_file)
 
     @noob.before_loop
     async def before_noob(self):

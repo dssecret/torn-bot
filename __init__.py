@@ -43,7 +43,8 @@ except FileNotFoundError:
         }
         config["VAULT"] = {
             "channel": "",
-            "role": ""
+            "role": "",
+            "over15": ""
         }
         config['ROLES'] = {
             "noob": ""
