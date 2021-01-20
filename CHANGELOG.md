@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Readme's TODO updated
  - Balance command to bal
  - Bal command to b
- - Indentation on withdrawal command
+ - Indentation on withdrawal command 
  - Automatic noob function to run every 12 hours from every hour
  - Automatic noob function and runnoob command to not check users in the list of users as value for over15 key in config.ini
 ### Fixed
