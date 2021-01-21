@@ -19,6 +19,8 @@ import requests
 
 from required import *
 
+import time
+
 
 class Admin(commands.Cog):
     def __init__(self, config, log_file, bot, client, server):
@@ -147,6 +149,8 @@ class Admin(commands.Cog):
         but are above level 15.
         '''
 
+        start = time.time()
+
         if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULTS"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
@@ -165,6 +169,11 @@ class Admin(commands.Cog):
 
             log(ctx.message.author + "has attempted to run runnoob, but there is no noob role set.", self.log_file)
             return None
+
+        embed = discord.Embed()
+        embed.title = "Noob Function"
+        embed.description = "The noob function is currently running."
+        message = await ctx.send(embed=embed)
 
         response = requests.get('https://api.torn.com/faction/?selections=&key=' +
                                 str(self.config["DEFAULT"]["TornAPIKey"]))
@@ -203,22 +212,27 @@ class Admin(commands.Cog):
 
                 if noob in discord_member.roles:
                     await discord_member.remove_roles(noob)
-                    await ctx.send("The Noob role has been removed from " + str(discord_member) + ".")
                     log("The Noob role has been removed from " + str(discord_member) + ".", self.log_file)
                 continue
 
             await discord_member.add_roles(noob)
-            await ctx.send("The Noob role has been added to " + str(discord_member) + ".")
             log("The Noob role has been added to " + str(discord_member) + ".", self.log_file)
 
-            outover15 = ",".join(over15)
-            self.config["VAULT"]["over15"] = outover15
+        outover15 = ",".join(over15)
+        self.config["VAULT"]["over15"] = outover15
 
-            with open("config.ini", "w") as config_file:
-                self.config.write(config_file)
+        with open("config.ini", "w") as config_file:
+            self.config.write(config_file)
+
+        embed.description = "The noob function has finished running and ran for " + str(time.time() - start) \
+                            + " seconds."
+        await message.edit(embed=embed)
+        log("The noob function ran for " + str(time.time() - start) + " seconds.", self.log_file)
 
     @tasks.loop(hours=12)
     async def noob(self):
+        start = time.time()
+
         if self.config["DEFAULT"]["noob"] != "True":
             log("The automatic noob function has been aborted due to the noob flag not being set or the noob flag"
                 "being set to False", self.log_file)
@@ -276,6 +290,8 @@ class Admin(commands.Cog):
 
         with open("config.ini", "w") as config_file:
             self.config.write(config_file)
+
+        log("The noob function ran for " + str(time.time() - start) + " seconds.", self.log_file)
 
     @noob.before_loop
     async def before_noob(self):
