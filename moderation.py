@@ -30,7 +30,7 @@ class Moderation(commands.Cog):
         Purges specified number of messages in the channel the command is invoked in
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULTS"]["superuser"]:
+        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULT"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
