@@ -38,7 +38,7 @@ class Admin(commands.Cog):
         Sets the channel that withdrawal messages are sent to in config.ini
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -66,7 +66,7 @@ class Admin(commands.Cog):
         Sets the role is pinged with withdrawal messages in config.ini
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -93,7 +93,7 @@ class Admin(commands.Cog):
         Sets the prefix for the bot in config.ini
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -121,7 +121,7 @@ class Admin(commands.Cog):
         Sets the role given to users under level 15 in config.ini
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -151,7 +151,7 @@ class Admin(commands.Cog):
 
         start = time.time()
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -229,7 +229,7 @@ class Admin(commands.Cog):
         await message.edit(embed=embed)
         log("The noob function ran for " + str(time.time() - start) + " seconds.", self.log_file)
 
-    @tasks.loop(hours=12)
+    @tasks.loop(hours=24)
     async def noob(self):
         start = time.time()
 
@@ -304,7 +304,7 @@ class Admin(commands.Cog):
         Sets the guild ID in config.ini
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -331,7 +331,7 @@ class Admin(commands.Cog):
         Enables automatic running of the noob function every day
         '''
 
-        if not check_admin(ctx.message.author) or ctx.message.author.id != int(self.config["DEFAULT"]["superuser"]):
+        if not check_admin(ctx.message.author) and ctx.message.author.id != int(self.config["DEFAULT"]["superuser"]):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -358,7 +358,7 @@ class Admin(commands.Cog):
         Disables automatic running of the noob function every day
         '''
 
-        if not check_admin(ctx.message.author) or ctx.message.author.id != int(self.config["DEFAULT"]["superuser"]):
+        if not check_admin(ctx.message.author) and ctx.message.author.id != int(self.config["DEFAULT"]["superuser"]):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
