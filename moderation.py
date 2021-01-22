@@ -37,7 +37,7 @@ class Moderation(commands.Cog):
                                 "This interaction has been logged."
             await ctx.send(embed=embed)
 
-            log(ctx.message.author + " has attempted to run purge, but is not an Administrator.", self.log_file)
+            log(ctx.message.author.name + " has attempted to run purge, but is not an Administrator.", self.log_file)
             return None
 
         await ctx.message.delete()
