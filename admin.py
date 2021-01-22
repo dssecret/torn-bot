@@ -331,7 +331,7 @@ class Admin(commands.Cog):
         Enables automatic running of the noob function every day
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) or ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \
@@ -358,7 +358,7 @@ class Admin(commands.Cog):
         Disables automatic running of the noob function every day
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) or ctx.message.author.id != self.config["DEFAULT"]["superuser"]:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = "This command requires the sender to be an Administrator. " \

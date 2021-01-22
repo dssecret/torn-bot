@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Issue #6
  - Issue #8
  - Some functions using "DEFAULTS" as a key instead of "DEFAULT"
+ - Issue #10
 
 ## [1.1] - 2021-01-07
 ### Added
