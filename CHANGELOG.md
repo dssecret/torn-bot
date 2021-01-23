@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Message to runnoob command to indicate the end of function run
  - Log message for noob functions to log run time of functions
  - Requirement for version python 3.6 or greater
+ - Configuration command that returns the current configuration
 ### Changed
  - Readme's TODO updated
  - Balance command to bal

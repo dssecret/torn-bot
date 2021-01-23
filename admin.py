@@ -385,3 +385,34 @@ class Admin(commands.Cog):
 
         with open('config.ini', 'w') as config_file:
             self.config.write(config_file)
+
+    @commands.command()
+    async def config(self, ctx):
+        '''
+        Returns the current configuration of the bot
+        '''
+
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
+                                f'This interaction has been logged.'
+            await ctx.send(embed=embed)
+
+            log(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator', self.log_file)
+            return None
+
+        embed = discord.Embed()
+        embed.title = "Current Configuration"
+        embed.description = f'''Torn API Key: Classified
+        Bot Token: Classified
+        Prefix: {self.config["DEFAULT"]["Prefix"]}
+        Server ID: {self.config["DEFAULT"]["serverid"]}
+        Superuser: {self.config["DEFAULT"]["Superuser"]}
+        Noob Status: {self.config["DEFAULT"]["noob"]}
+        Vault Channel: {self.config["VAULT"]["channel"]}
+        Vault Role: {self.config["VAULT"]["role"]}
+        Users Over Level 15: {self.config["VAULT"]["over15"]}
+        Noob Role ID: {self.config["ROLES"]["noob"]}'''
+
+        await ctx.send(embed=embed)
