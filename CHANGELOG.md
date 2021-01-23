@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Over15 key to config.ini
  - Message to runnoob command to indicate the end of function run
  - Log message for noob functions to log run time of functions
+ - Requirement for version python 3.6 or greater
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
@@ -24,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Indentation on withdrawal command 
  - Automatic noob function to run every 12 hours from every hour
  - Automatic noob function and runnoob command to not check users in the list of users as value for over15 key in config.ini
+ - String concatenation to string interpolation/f-strings
 ### Fixed
  - Issue #6
  - Issue #8

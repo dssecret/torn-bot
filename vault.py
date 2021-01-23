@@ -31,12 +31,11 @@ class Vault(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         if reaction.emoji == "✅" and user.bot is not True:
-            log(user.name + " has fulfilled the request (" + reaction.message.embeds[0].description + ").",
-                self.log_file)
+            log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).', self.log_file)
 
             embed = discord.Embed()
             embed.title = "Money Request"
-            embed.description = "The request has been fulfilled by " + user.name + " at " + time.ctime() + "."
+            embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
             embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
 
             await reaction.message.edit(embed=embed)
@@ -61,18 +60,18 @@ class Vault(commands.Cog):
     
         log(sender + " has submitted a request for " + arg + ".", self.log_file)
     
-        response = requests.get('https://api.torn.com/faction/?selections=donations&key=' +
-                                str(self.config["DEFAULT"]["TornAPIKey"]))
+        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
+                                f'{self.config["DEFAULT"]["TornAPIKey"]}')
         response_status = response.status_code
-    
-        log("The Torn API has responded with HTTP status code " + str(response_status) + ".", self.log_file)
     
         if response_status != 200:
             embed = discord.Embed()
-            embed.title("Error")
-            embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                              str(response_status) + " has been given at " + str(datetime.datetime.now()))
+            embed.title = "Error"
+            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP' \
+                                f' status code {response_status} has been given at {datetime.datetime.now()}.'
             await ctx.send(embed=embed)
+
+            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
             return None
     
         json_response = response.json()['donations']
@@ -80,16 +79,16 @@ class Vault(commands.Cog):
         for user in json_response:
             if json_response[user]["name"] == sender:
                 if int(value) > json_response[user]["money_balance"]:
-                    log(sender + " has requested " + str(arg) + ", but only has " +
-                        str(json_response[user]["money_balance"]) + " in the vault.", self.log_file)
-                    await ctx.send("You do not have " + arg + " in the faction vault.")
+                    log(f'{sender} has requested {arg}, but only has {json_response[user]["money_balance"]} in '
+                        f'the vault.', self.log_file)
+                    await ctx.send(f'You do not have {arg} in the faction vault.')
                     return None
                 else:
                     channel = None
                     for guild in self.bot.guilds:
                         channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel"])
-    
-                    log(sender + " has successfully requested " + arg + " from the vault.", self.log_file)
+
+                    log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
                     embed = discord.Embed()
                     embed.title = "Money Request"
@@ -98,20 +97,19 @@ class Vault(commands.Cog):
 
                     embed = discord.Embed()
                     embed.title = "Money Request"
-                    embed.description = sender + " is requesting " + arg + " from the faction vault."
+                    embed.description = f'{sender} is requesting {arg} from the faction vault.'
                     message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
                     await message.add_reaction('✅')
 
                     return None
         else:
-            faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' +
-                                   str(self.config["DEFAULT"]["TornAPIKey"]))
-            log(sender + " who is not a member of " + faction.json()["name"] + " has requested " + arg + ".",
-                self.log_file)
+            faction = requests.get(f'https://api.torn.com/faction/?selections=basic&key='
+                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
+            log(f'{sender} who is not a member of {faction.json()["name"]} has requested {arg}.', self.log_file)
     
             embed = discord.Embed()
             embed.title = "Money Request"
-            embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+            embed.description = f'{sender} is not a member of {faction.json()["name"]}.'
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -127,20 +125,20 @@ class Vault(commands.Cog):
             sender = ctx.message.author.nick
     
         sender = remove_torn_id(sender)
+
+        log(f'{sender} is checking their balance in the faction vault.', self.log_file)
     
-        log(sender + " is checking their balance in the faction vault.", self.log_file)
-    
-        response = requests.get('https://api.torn.com/faction/?selections=donations&key=' +
-                                str(self.config["DEFAULT"]["TornAPIKey"]))
+        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
+                                f'{self.config["DEFAULT"]["TornAPIKey"]}')
         response_status = response.status_code
-    
-        log("The Torn API has responded with HTTP status code " + str(response_status) + ".", self.log_file)
-    
+
         if response_status != 200:
+            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
+
             embed = discord.Embed()
-            embed.title("Error")
-            embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                              str(response_status) + " has been given at " + str(datetime.datetime.now()))
+            embed.title = "Error"
+            embed.description = f'Something has posibly gone wrong with the request to the Torn API with HTTP status' \
+                                f' {response_status} has been given at {datetime.datetime.now()}.'
             await ctx.send(embed=embed)
             return None
     
@@ -148,24 +146,24 @@ class Vault(commands.Cog):
     
         for user in json_response:
             if json_response[user]["name"] == sender:
-                log(sender + " has " + num_to_text(json_response[user]["money_balance"]) + " in the vault.",
+                log(f'{sender} has {num_to_text(json_response[user]["money_balance"])} in the faction vault.',
                     self.log_file)
     
                 embed = discord.Embed()
                 embed.title = "Vault Balance for " + sender
-                embed.description = "You have " + num_to_text(json_response[user]["money_balance"]) + \
-                                    " in the faction vault."
+                embed.description = f'You have {num_to_text(json_response[user]["money_balance"])} in the ' \
+                                    f'faction vault.'
                 await ctx.send(embed=embed)
                 return None
         else:
-            faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' +
-                                   str(self.config["DEFAULT"]["TornAPIKey"]))
-            log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.",
+            faction = requests.get(f'https://api.torn.com/faction/?selections=basic&key='
+                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
+            log(f'{sender} who is not a member of {faction.json()["name"]} has requested their vault balance.',
                 self.log_file)
     
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
-            embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+            embed.description = f'{sender} is not a member of {faction.json()["name"]}.'
             await ctx.send(embed=embed)
 
     @commands.command(aliases=["balance"])
@@ -181,20 +179,20 @@ class Vault(commands.Cog):
             sender = ctx.message.author.nick
     
         sender = remove_torn_id(sender)
+
+        log(f'{sender} is checking their balance in the faction vault.', self.log_file)
     
-        log(sender + " is checking their balance in the faction vault.", self.log_file)
-    
-        response = requests.get('https://api.torn.com/faction/?selections=donations&key=' +
-                                str(self.config["DEFAULT"]["TornAPIKey"]))
+        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
+                                f'{self.config["DEFAULT"]["TornAPIKey"]}')
         response_status = response.status_code
-    
-        log("The Torn API has responded with HTTP status code " + str(response_status) + ".", self.log_file)
+
+        log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
     
         if response_status != 200:
             embed = discord.Embed()
-            embed.title("Error")
-            embed.description("Something has possibly gone wrong with the request to the Torn API. HTTP status code " +
-                              str(response_status) + " has been given at " + str(datetime.datetime.now()))
+            embed.title = "Error"
+            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP ' \
+                                f'status code {response_status} has been given at {datetime.datetime.now()}'
             await ctx.send(embed=embed)
             return None
     
@@ -202,21 +200,19 @@ class Vault(commands.Cog):
     
         for user in json_response:
             if json_response[user]["name"] == sender:
-                log(sender + " has " + str(json_response[user]["money_balance"]) + " in the vault.", self.log_file)
+                log(f'{sender} has {json_response[user]["money_balance"]} in the vault', self.log_file)
     
                 embed = discord.Embed()
                 embed.title = "Vault Balance for " + sender
-                embed.description = "You have " + commas(json_response[user]["money_balance"]) + \
-                                    " in the faction vault."
+                embed.description = f'You have {commas(json_response[user]["money_balance"])} in the faction vault.'
                 await ctx.send(embed=embed)
                 return None
         else:
-            faction = requests.get('https://api.torn.com/faction/?selections=basic&key=' +
-                                   str(self.config["DEFAULT"]["TornAPIKey"]))
-            log(sender + " who is not a member of " + faction.json()["name"] + " has requested their balance.",
-                self.log_file)
+            faction = requests.get(f'https://api.torn.com/faction/?selections=basic&key='
+                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
+            log(f'{sender} who is not a member of {faction.json()["name"]} has requested their balance', self.log_file)
     
             embed = discord.Embed()
-            embed.title = "Vault Balance for " + sender
-            embed.description = sender + " is not a member of " + faction.json()["name"] + "."
+            embed.title = f'Vault Balance for {self}'
+            embed.description = f'{sender} is not a member of {faction.json()["name"]}.'
             await ctx.send(embed=embed)

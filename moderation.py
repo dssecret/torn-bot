@@ -30,17 +30,18 @@ class Moderation(commands.Cog):
         Purges specified number of messages in the channel the command is invoked in
         '''
 
-        if not check_admin(ctx.message.author) and ctx.message.author.id == self.config["DEFAULT"]["superuser"]:
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
-            embed.description = "This command requires the sender to be an Administrator. " \
-                                "This interaction has been logged."
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
+                                f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(ctx.message.author.name + " has attempted to run purge, but is not an Administrator.", self.log_file)
+            log(f'{ctx.message.author.name} has attempted to run purge, but is not an Administrator.', self.log_file)
             return None
 
         await ctx.message.delete()
         await ctx.message.channel.purge(limit=nummessages, check=None, before=None)
-        log(str(nummessages) + " messages in " + ctx.message.channel.name + " have been purged by " + ctx.message.author.mention + ".", self.log_file)
+        log(f'{nummessages} messages in {ctx.message.channel.name} have been purged by {ctx.message.author.mention}.',
+            self.log_file)
         await ctx.send(f'{nummessages} messages have been purged by {ctx.message.author.mention}.')

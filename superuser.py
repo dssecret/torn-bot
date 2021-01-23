@@ -41,8 +41,8 @@ class Superuser(commands.Cog):
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
-            embed.description = ctx.message.author.mention + " is not the superuser. This incident will be reported."
-            log(ctx.message.author.mention + " attempted to shutdown the bot.", self.log_file)
+            embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
+            log(f'{ctx.message.author.name} attempted to shutdown the bot, but is not the superuser.', self.log_file)
             await ctx.send(embed=embed)
             return None
 
@@ -62,8 +62,8 @@ class Superuser(commands.Cog):
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
-            embed.description = ctx.message.author.mention + " is not the superuser. This incident will be reported."
-            log(ctx.message.author.mention + " attempted to restart the bot.", self.log_file)
+            embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
+            log(f'{ctx.message.author.name} is not the superuser. This incident will be reported.', self.log_file)
             await ctx.send(embed=embed)
             return None
 

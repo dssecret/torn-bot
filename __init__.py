@@ -17,12 +17,15 @@ from discord.ext import commands
 import discord
 
 from configparser import ConfigParser
+import sys
 
 import vault
 import admin
 import moderation
 import superuser
 from required import *
+
+assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
 
 config = ConfigParser()
 
@@ -75,7 +78,7 @@ async def on_ready():
         print(f"- {guild.id} (name: {guild.name})")
         guild_count = guild_count + 1
 
-    print("Bot is in " + str(guild_count) + " guilds.")
+    print(f'Bot is in {guild_count} guilds.')
 
     server = bot.get_guild(int(config["DEFAULT"]["serverid"]))
 
@@ -92,11 +95,11 @@ async def ping(ctx):
     '''
 
     latency = bot.latency
-    log("Latency: " + str(latency) + ".", file)
+    log(f'Latency: {latency}', file)
 
     embed = discord.Embed()
     embed.title = "Latency"
-    embed.description = str(latency) + " seconds"
+    embed.description = f'{latency} seconds'
     await ctx.send(embed=embed)
 
 
@@ -108,7 +111,7 @@ async def prefix(ctx):
 
     embed = discord.Embed()
     embed.title = "Bot Prefix"
-    embed.description = "The bot prefix is " + config["DEFAULT"]["Prefix"] + "."
+    embed.description = f'The bot prefix is {config["DEFAULT"]["Prefix"]}.'
     await ctx.send(embed=embed)
 
 
@@ -124,7 +127,7 @@ async def help(ctx, arg=None):
     command_list = [command.name for command in bot.commands]
 
     if not arg:
-        embed.description = "Server: " + ctx.guild.name + "\nPrefix: " + ctx.prefix
+        embed.description = f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
         embed.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
         embed.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
         embed.add_field(name="Documentation (Under Construction)", value="https://github.com/dssecret/torn-bot/wiki")
