@@ -19,6 +19,7 @@ import discord
 from required import *
 
 import subprocess
+import random
 
 
 class Superuser(commands.Cog):
@@ -37,7 +38,7 @@ class Superuser(commands.Cog):
         Shuts down the bot
         '''
 
-        embed = discord.Embed()
+        embed = discord.Embed(colour=random.randint(0, 16777215))
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
@@ -58,7 +59,7 @@ class Superuser(commands.Cog):
         Restarts the bot
         '''
 
-        embed = discord.Embed()
+        embed = discord.Embed(colour=random.randint(0, 16777215))
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"

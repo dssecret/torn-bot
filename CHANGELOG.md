@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Log message for noob functions to log run time of functions
  - Requirement for version python 3.6 or greater
  - Configuration command that returns the current configuration
+ - Random color to all embeds (issue #11)
 ### Changed
  - Readme's TODO updated
  - Balance command to bal
