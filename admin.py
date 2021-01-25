@@ -20,7 +20,6 @@ import requests
 from required import *
 
 import time
-import random
 
 
 class Admin(commands.Cog):
@@ -40,7 +39,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator.' \
                                 f' This interaction has been logged.'
@@ -53,7 +52,7 @@ class Admin(commands.Cog):
         self.config["VAULT"]["Channel"] = str(ctx.message.channel)
         log(f'Vault Channel has been set to {ctx.message.channel}.', self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Vault Channel"
         embed.description = f'Vault Channel has been set to {ctx.message.channel}.'
         await ctx.send(embed=embed)
@@ -68,7 +67,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -81,7 +80,7 @@ class Admin(commands.Cog):
         self.config["VAULT"]["Role"] = str(role.mention)
         log(f'Vault Role has been set to {role.mention}.', self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Vault Role"
         embed.description = f'Vault Role has been set to {role.mention}.'
         await ctx.send(embed=embed)
@@ -96,7 +95,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -109,7 +108,7 @@ class Admin(commands.Cog):
         self.config["DEFAULT"]["Prefix"] = str(arg)
         log(f'Bot Prefix has been set to {arg}.', self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Bot Prefix"
         embed.description = f'Bot Prefix has been set to {arg}. The bot requires a restart for the prefix change to ' \
                             f'go into effect.'
@@ -125,7 +124,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -138,7 +137,7 @@ class Admin(commands.Cog):
         self.config["ROLES"]["Noob"] = str(role.id)
         log(f'Noob Role has been set to {role.id}.', self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Noob Role"
         embed.description = f'Noob Role has been set to {role.name}.'
         await ctx.send(embed=embed)
@@ -156,7 +155,7 @@ class Admin(commands.Cog):
         start = time.time()
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -166,7 +165,7 @@ class Admin(commands.Cog):
             return None
 
         if self.config["ROLES"]["noob"] == "":
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Missing Role Configuration"
             embed.description = "There needs to be a noob role setup for this command to add that role."
             await ctx.send(embed=embed)
@@ -175,7 +174,7 @@ class Admin(commands.Cog):
                 self.log_file)
             return None
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Noob Function"
         embed.description = "The noob function is currently running."
         message = await ctx.send(embed=embed)
@@ -310,7 +309,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -322,7 +321,7 @@ class Admin(commands.Cog):
         self.config["DEFAULT"]["serverid"] = str(ctx.guild.id)
         log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Server ID"
         embed.description = f'The server ID has been set to {ctx.guild.id}.'
         await ctx.send(embed=embed)
@@ -337,7 +336,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -350,7 +349,7 @@ class Admin(commands.Cog):
         self.config["DEFAULT"]["noob"] = "True"
         log("The automatic noob status has been set to True.", self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Automatic Noob Status"
         embed.description = "The automatic noob status has been set to True, and the noob function will run everyday."
         await ctx.send(embed=embed)
@@ -365,7 +364,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -378,7 +377,7 @@ class Admin(commands.Cog):
         self.config["DEFAULT"]["noob"] = "False"
         log("The automatic noob status has been set to False.", self.log_file)
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Automatic Noob Status"
         embed.description = "The automatic noob status has been set to False, and the noob function will not" \
                             " run everyday."
@@ -394,7 +393,7 @@ class Admin(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
@@ -403,7 +402,7 @@ class Admin(commands.Cog):
             log(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator', self.log_file)
             return None
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
         embed.title = "Current Configuration"
         embed.description = f'''Torn API Key: Classified
         Bot Token: Classified

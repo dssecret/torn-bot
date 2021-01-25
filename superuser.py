@@ -20,8 +20,6 @@ import git
 from required import *
 
 import subprocess
-import random
-
 
 class Superuser(commands.Cog):
     def __init__(self, client, config, log_file, bot):
@@ -39,7 +37,7 @@ class Superuser(commands.Cog):
         Shuts down the bot
         '''
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
@@ -60,7 +58,7 @@ class Superuser(commands.Cog):
         Restarts the bot
         '''
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
@@ -82,7 +80,7 @@ class Superuser(commands.Cog):
         Pulls the latest commit from Git origin
         '''
 
-        embed = discord.Embed(colour=random.randint(0, 16777215))
+        embed = discord.Embed()
 
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"

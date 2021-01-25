@@ -18,8 +18,6 @@ import discord
 
 from required import *
 
-import random
-
 
 class Moderation(commands.Cog):
     def __init__(self, config, log_file):
@@ -33,7 +31,7 @@ class Moderation(commands.Cog):
         '''
 
         if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed(colour=random.randint(0, 16777215))
+            embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
                                 f'This interaction has been logged.'
