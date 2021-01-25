@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.2]
 ### Added
  - Access log to log unauthorized attemptes to run commands
+ - Code of Conduct
 
 ## [1.2]
 ### Added
