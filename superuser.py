@@ -21,12 +21,14 @@ from required import *
 
 import subprocess
 
+
 class Superuser(commands.Cog):
-    def __init__(self, client, config, log_file, bot):
+    def __init__(self, client, config, log_file, bot, access):
         self.client = client
         self.config = config
         self.log_file = log_file
         self.bot = bot
+        self.access = access
 
     def is_superuser(self, id):
         return True if self.config["DEFAULT"]["Superuser"] == str(id) else False
@@ -42,7 +44,7 @@ class Superuser(commands.Cog):
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
             embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to shutdown the bot, but is not the superuser.', self.log_file)
+            log(f'{ctx.message.author.name} attempted to shutdown the bot, but is not the superuser.', self.access)
             await ctx.send(embed=embed)
             return None
 
@@ -63,7 +65,7 @@ class Superuser(commands.Cog):
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
             embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to restart the bot, but is not the superuser.', self.log_file)
+            log(f'{ctx.message.author.name} attempted to restart the bot, but is not the superuser.', self.access)
             await ctx.send(embed=embed)
             return None
 
@@ -85,7 +87,7 @@ class Superuser(commands.Cog):
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
             embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to pull the latest commit, but is not the superuser.', self.log_file)
+            log(f'{ctx.message.author.name} attempted to pull the latest commit, but is not the superuser.', self.access)
             await ctx.send(embed=embed)
             return None
 

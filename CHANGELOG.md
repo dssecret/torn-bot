@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+ - Access log to log unauthorized attemptes to run commands
+
+## [1.2]
+### Added
  - Noob role for users under level 15
  - Purge command
  - Superuser shutdown and restart commands

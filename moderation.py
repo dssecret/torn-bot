@@ -20,9 +20,10 @@ from required import *
 
 
 class Moderation(commands.Cog):
-    def __init__(self, config, log_file):
+    def __init__(self, config, log_file, access):
         self.config = config
         self.log_file = log_file
+        self.access = access
 
     @commands.command(pass_context=True)
     async def purge(self, ctx, nummessages: int):
@@ -37,7 +38,7 @@ class Moderation(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run purge, but is not an Administrator.', self.log_file)
+            log(f'{ctx.message.author.name} has attempted to run purge, but is not an Administrator.', self.access)
             return None
 
         await ctx.message.delete()

@@ -23,12 +23,13 @@ import time
 
 
 class Admin(commands.Cog):
-    def __init__(self, config, log_file, bot, client, server):
+    def __init__(self, config, log_file, bot, client, server, access):
         self.config = config
         self.log_file = log_file
         self.bot = bot
         self.client = client
         self.server = server
+        self.access = access
 
         self.noob.start()
 
@@ -46,7 +47,7 @@ class Admin(commands.Cog):
 
             await ctx.send(embed=embed)
             log(f'{ctx.message.author.name} has attempted to run setvaultchannel, but is not an Administrator.',
-                self.log_file)
+                self.access)
             return None
 
         self.config["VAULT"]["Channel"] = str(ctx.message.channel)
@@ -74,7 +75,7 @@ class Admin(commands.Cog):
             await ctx.send(embed=embed)
 
             log(f'{ctx.message.author.name} has attempted to run setvaultrole, but is not an Administrator',
-                self.log_file)
+                self.access)
             return None
 
         self.config["VAULT"]["Role"] = str(role.mention)
@@ -102,7 +103,7 @@ class Admin(commands.Cog):
             await ctx.send(embed=embed)
 
             log(f'{ctx.message.author.name} has attempted to run setprefix, but is not an Administrator.',
-                self.log_file)
+                self.access)
             return None
 
         self.config["DEFAULT"]["Prefix"] = str(arg)
@@ -131,7 +132,7 @@ class Admin(commands.Cog):
             await ctx.send(embed=embed)
 
             log(f'{ctx.message.author.name} has attempted to run setnoobrole, but is not an Administrator.',
-                self.log_file)
+                self.access)
             return None
 
         self.config["ROLES"]["Noob"] = str(role.id)
@@ -161,7 +162,7 @@ class Admin(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run runnoob, but is not an Administrator.', self.log_file)
+            log(f'{ctx.message.author.name} has attempted to run runnoob, but is not an Administrator.', self.access)
             return None
 
         if self.config["ROLES"]["noob"] == "":
@@ -315,7 +316,7 @@ class Admin(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run setguild, but is not an Administrator.', self.log_file)
+            log(f'{ctx.message.author.name} has attempted to run setguild, but is not an Administrator.', self.access)
             return None
 
         self.config["DEFAULT"]["serverid"] = str(ctx.guild.id)
@@ -343,7 +344,7 @@ class Admin(commands.Cog):
             await ctx.send(embed=embed)
 
             log(f'{ctx.message.author.name} has attempted to run enablenoob, but is not an Administrator',
-                self.log_file)
+                self.access)
             return None
 
         self.config["DEFAULT"]["noob"] = "True"
@@ -371,7 +372,7 @@ class Admin(commands.Cog):
             await ctx.send(embed=embed)
 
             log(f'{ctx.message.author.name} has attempted to run disablenoob, but is not an Administrator',
-                self.log_file)
+                self.access)
             return None
 
         self.config["DEFAULT"]["noob"] = "False"
@@ -399,7 +400,7 @@ class Admin(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator', self.log_file)
+            log(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator', self.access)
             return None
 
         embed = discord.Embed()
