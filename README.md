@@ -23,8 +23,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - Noob role for users under level 15 (in Torn)
 
 ## TODO List
- - JSON based storage for vault withdrawals (In Progress)
- - Automatic updates for vault withdrawals
+ - JSON based storage (In Progress)
  - Secondary (and possibly children) factions
 
 ## License
