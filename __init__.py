@@ -18,6 +18,7 @@ import discord
 
 from configparser import ConfigParser
 import sys
+import os
 
 import vault
 import admin
@@ -30,7 +31,7 @@ assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
 config = ConfigParser()
 
 try:
-    config_file = open('config.ini')
+    config_file = open(f'{os.getcwd()}/config.ini')
     config_file.close()
 except FileNotFoundError:
     with open('config.ini', 'w') as config_file:
@@ -54,7 +55,7 @@ except FileNotFoundError:
         }
         config.write(config_file)
 
-config.read("config.ini")
+config.read(f'{os.getcwd()}/config.ini')
 
 prefix = "?"
 if config["DEFAULT"]["Prefix"] != "":
@@ -67,8 +68,8 @@ intents.members = True
 
 bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
 
-file = open("log.txt", "a")
-access = open("access.txt", "a")
+file = open(f'{os.getcwd()}/log.txt', "a")
+access = open(f'{os.getcwd()}/access.txt', "a")
 
 
 @bot.event

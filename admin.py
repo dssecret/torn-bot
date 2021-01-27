@@ -20,6 +20,7 @@ import requests
 from required import *
 
 import time
+import os
 
 
 class Admin(commands.Cog):
@@ -58,7 +59,7 @@ class Admin(commands.Cog):
         embed.description = f'Vault Channel has been set to {ctx.message.channel}.'
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command(aliases=["svr"])
@@ -86,7 +87,7 @@ class Admin(commands.Cog):
         embed.description = f'Vault Role has been set to {role.mention}.'
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command(aliases=["sp"])
@@ -115,7 +116,7 @@ class Admin(commands.Cog):
                             f'go into effect.'
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command(aliases=["snr"])
@@ -143,7 +144,7 @@ class Admin(commands.Cog):
         embed.description = f'Noob Role has been set to {role.name}.'
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command()
@@ -327,7 +328,7 @@ class Admin(commands.Cog):
         embed.description = f'The server ID has been set to {ctx.guild.id}.'
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command()
@@ -355,7 +356,7 @@ class Admin(commands.Cog):
         embed.description = "The automatic noob status has been set to True, and the noob function will run everyday."
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command()
@@ -384,7 +385,7 @@ class Admin(commands.Cog):
                             " run everyday."
         await ctx.send(embed=embed)
 
-        with open('config.ini', 'w') as config_file:
+        with open(f'{os.getcwd()}/config.ini', 'w') as config_file:
             self.config.write(config_file)
 
     @commands.command()
