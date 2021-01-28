@@ -38,6 +38,7 @@ except FileNotFoundError:
 
         config["DEFAULT"] = {
             "tornapikey": "",
+            "tornapikey2": "",
             "bottoken": bottoken,
             "prefix": "",
             "serverid": "",
@@ -47,6 +48,8 @@ except FileNotFoundError:
         config["VAULT"] = {
             "channel": "",
             "role": "",
+            "channel2": "",
+            "role2": "",
             "over15": ""
         }
         config['ROLES'] = {

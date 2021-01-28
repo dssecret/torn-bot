@@ -61,6 +61,34 @@ class Admin(commands.Cog):
         with open(f'config.ini', 'w') as config_file:
             self.config.write(config_file)
 
+    @commands.command(aliases=["svc2"])
+    async def setvaultchannel2(self, ctx):
+        '''
+        Sets the second channel that withdrawal messages are sent to in config.ini
+        '''
+
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator.' \
+                                f' This interaction has been logged.'
+
+            await ctx.send(embed=embed)
+            log(f'{ctx.message.author.name} has attempted to run setvaultchannel2, but is not an Administrator.',
+                self.access)
+            return None
+
+        self.config["VAULT"]["Channel2"] = str(ctx.message.channel)
+        log(f'Vault Channel 2 has been set to {ctx.message.channel}.', self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Vault Channel"
+        embed.description = f'Vault Channel 2 has been set to {ctx.message.channel}.'
+        await ctx.send(embed=embed)
+
+        with open(f'config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
     @commands.command(aliases=["svr"])
     async def setvaultrole(self, ctx, role: discord.Role):
         '''
@@ -84,6 +112,34 @@ class Admin(commands.Cog):
         embed = discord.Embed()
         embed.title = "Vault Role"
         embed.description = f'Vault Role has been set to {role.mention}.'
+        await ctx.send(embed=embed)
+
+        with open(f'config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
+    @commands.command(aliases=["svr2"])
+    async def setvaultrole2(self, ctx, role: discord.Role):
+        '''
+        Sets the second role is pinged with withdrawal messages in config.ini
+        '''
+
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
+                                f'This interaction has been logged.'
+            await ctx.send(embed=embed)
+
+            log(f'{ctx.message.author.name} has attempted to run setvaultrole2, but is not an Administrator',
+                self.access)
+            return None
+
+        self.config["VAULT"]["Role2"] = str(role.mention)
+        log(f'Vault Role 2 has been set to {role.mention}.', self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Vault Role"
+        embed.description = f'Vault Role 2 has been set to {role.mention}.'
         await ctx.send(embed=embed)
 
         with open(f'config.ini', 'w') as config_file:

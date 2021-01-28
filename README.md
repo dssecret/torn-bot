@@ -23,8 +23,8 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - Noob role for users under level 15 (in Torn)
 
 ## TODO List
- - JSON based storage (In Progress)
- - Secondary (and possibly children) factions
+ - JSON based storage
+ - Secondary faction (In Progress)
 
 ## License
 [GNU AGPL v3](https://github.com/dssecret/torn-bot/blob/main/LICENSE)
