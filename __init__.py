@@ -120,6 +120,17 @@ async def prefix(ctx):
 
 
 @bot.command()
+async def version(ctx):
+    '''
+    Returns the current version of the bot
+    '''
+
+    embed = discord.Embed()
+    embed.title = "Version"
+    embed.description = "v1.3 In-Dev"
+
+
+@bot.command()
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
