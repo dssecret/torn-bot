@@ -93,9 +93,8 @@ async def on_ready():
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))
 
 
-# @bot.event
-@bot.command()
-async def on_guild_join(ctx):
+@bot.event
+async def on_guild_join(guild):
     embed = discord.Embed()
     embed.title = f'Welcome to {bot.user.display_name}'
     embed.description = f'Thank you for inviting {bot.user.display_name} to your server'
@@ -104,7 +103,8 @@ async def on_guild_join(ctx):
     embed.add_field(name="How to Setup", value="Run admin commands that can be found in the [Wiki]"
                                                "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
                                                "(https://github.com/dssecret/torn-bot/wiki/Commands).")
-    await ctx.send(embed=embed)
+
+    guild.text_channels.send(embed=embed)
 
 
 @bot.command()
