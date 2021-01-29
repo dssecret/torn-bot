@@ -67,6 +67,7 @@ client = discord.client.Client()
 intents = discord.Intents.default()
 intents.reactions = True
 intents.members = True
+intents.guilds = True
 
 bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
 
@@ -90,6 +91,20 @@ async def on_ready():
     bot.add_cog(admin.Admin(config, file, bot, client, server, access))
     bot.add_cog(moderation.Moderation(config, file, access))
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))
+
+
+# @bot.event
+@bot.command()
+async def on_guild_join(ctx):
+    embed = discord.Embed()
+    embed.title = f'Welcome to {bot.user.display_name}'
+    embed.description = f'Thank you for inviting {bot.user.display_name} to your server'
+    embed.add_field(name="Help", value="`?help` or contact <@dssecret#0001> on Discord, on ds_secret [2383326] on Torn,"
+                                       " or dssecret on Github")
+    embed.add_field(name="How to Setup", value="Run admin commands that can be found in the [Wiki]"
+                                               "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
+                                               "(https://github.com/dssecret/torn-bot/wiki/Commands).")
+    await ctx.send(embed=embed)
 
 
 @bot.command()

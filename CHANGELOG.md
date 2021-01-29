@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Version command
  - Secondary/child faction
  - Setkey command to set secondary API key
+ - On join event
 
 ## [1.2]
 ### Added

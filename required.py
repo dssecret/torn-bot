@@ -50,6 +50,10 @@ def remove_torn_id(name):
     return re.sub("[[].*?[]]", "", name)[:-1]
 
 
+def get_torn_id(name):
+    return re.compile(r"\[(\d+)\]").findall(name)[0]
+
+
 def log(message, file):
     file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
     file.flush()
