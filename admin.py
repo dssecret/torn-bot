@@ -468,7 +468,9 @@ class Admin(commands.Cog):
         Superuser: {self.config["DEFAULT"]["Superuser"]}
         Noob Status: {self.config["DEFAULT"]["noob"]}
         Vault Channel: {self.config["VAULT"]["channel"]}
+        Vault Channel 2: {self.config["VAULT"]["channel2"]}
         Vault Role: {self.config["VAULT"]["role"]}
+        Vault Role 2: {self.config["VAULT"]["role2"]}
         Users Over Level 15: {self.config["VAULT"]["over15"]}
         Noob Role ID: {self.config["ROLES"]["noob"]}'''
 
