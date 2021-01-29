@@ -47,7 +47,7 @@ def check_admin(member):
 
 
 def remove_torn_id(name):
-    return re.sub("[\(\[].*?[\)\]]", "", name)[:-1]
+    return re.sub("[[].*?[]]", "", name)[:-1]
 
 
 def log(message, file):
