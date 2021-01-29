@@ -473,3 +473,32 @@ class Admin(commands.Cog):
         Noob Role ID: {self.config["ROLES"]["noob"]}'''
 
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def setkey(self, ctx, arg):
+        '''
+        Sets the secondary Torn API key
+        '''
+
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
+                                f'This interaction has been logged.'
+            await ctx.send(embed=embed)
+
+            log(f'{ctx.message.author.name} has attempted to run setkey, but is not an Administrator', self.access)
+            return None
+
+        self.config["DEFAULT"]["TornAPIKey2"] = str(arg)
+        log(f'{ctx.message.author.name} has set the secondary Torn API Key.', self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Torn API Key"
+        embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
+        await ctx.send(embed=embed)
+
+        await ctx.message.delete()
+
+        with open(f'config.ini', 'w') as config_file:
+            self.config.write(config_file)
