@@ -104,7 +104,7 @@ async def on_guild_join(guild):
                                                "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
                                                "(https://github.com/dssecret/torn-bot/wiki/Commands).")
 
-    guild.text_channels.send(embed=embed)
+    await guild.text_channels[0].send(embed=embed)
 
 
 @bot.command()
