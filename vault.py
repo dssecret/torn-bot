@@ -157,7 +157,7 @@ class Vault(commands.Cog):
                 embed = discord.Embed()
                 embed.title = "Money Request"
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
-                message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
+                message = await channel.send(self.config["VAULT"]["Role2"], embed=embed)
                 await message.add_reaction('✅')
 
                 return None
