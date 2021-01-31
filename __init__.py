@@ -87,7 +87,7 @@ async def on_ready():
 
     server = bot.get_guild(int(config["DEFAULT"]["serverid"]))
 
-    bot.add_cog(vault.Vault(bot, config, file))
+    bot.add_cog(vault.Vault(bot, config, file, server))
     bot.add_cog(admin.Admin(config, file, bot, client, server, access))
     bot.add_cog(moderation.Moderation(config, file, access))
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))

@@ -23,10 +23,11 @@ import time
 
 
 class Vault(commands.Cog):
-    def __init__(self, bot, config, log_file):
+    def __init__(self, bot, config, log_file, server):
         self.bot = bot
         self.config = config
         self.log_file = log_file
+        self.server = server
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -100,9 +101,7 @@ class Vault(commands.Cog):
                 return None
             else:
                 await ctx.send(f'There is enough money in the faction vault.')
-                channel = None
-                for guild in self.bot.guilds:
-                    channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel"])
+                channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel"])
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
@@ -143,9 +142,7 @@ class Vault(commands.Cog):
                 return None
             else:
                 await ctx.send(f'There is enough money in the faction vault.')
-                channel = None
-                for guild in self.bot.guilds:
-                    channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel2"])
+                channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel2"])
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
