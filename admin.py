@@ -32,6 +32,7 @@ class Admin(commands.Cog):
         self.access = access
 
         self.noob.start()
+        self.noob.change_interval(hours=12.0)
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
