@@ -145,7 +145,7 @@ class Vault(commands.Cog):
                 await ctx.send(f'There is enough money in the faction vault.')
                 channel = None
                 for guild in self.bot.guilds:
-                    channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel"])
+                    channel = discord.utils.get(guild.channels, name=self.config["VAULT"]["Channel2"])
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
