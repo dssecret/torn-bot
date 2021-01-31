@@ -290,7 +290,7 @@ class Admin(commands.Cog):
         await message.edit(embed=embed)
         log(f'The noob function ran for {time.time() - start} seconds.', self.log_file)
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=12)
     async def noob(self):
         start = time.time()
 

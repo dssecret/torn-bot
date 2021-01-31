@@ -142,7 +142,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 In-Dev"
+    embed.description = "v1.3 Pre-Release 1"
     await ctx.send(embed=embed)
 
 
