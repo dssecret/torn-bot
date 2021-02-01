@@ -238,11 +238,6 @@ class Admin(commands.Cog):
         message = await ctx.send(embed=embed)
 
         response = requests.get(f'https://api.torn.com/faction/?selections=&key={self.config["DEFAULT"]["TornAPIKey"]}')
-        response2 = None
-
-        if self.config["DEFAULT"]["TornAPIKey2"] != "":
-            response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                     f'{self.config["DEFAULT"]["TornAPIKey2"]}')
 
         if response.status_code != 200:
             embed = discord.Embed()
@@ -253,6 +248,12 @@ class Admin(commands.Cog):
 
             log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
             return None
+
+        response2 = None
+
+        if self.config["DEFAULT"]["TornAPIKey2"] != "":
+            response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
+                                     f'{self.config["DEFAULT"]["TornAPIKey2"]}')
 
         members = list(response.json()["members"].keys())
         members.extend(list(response2.json()["members"].keys()))
@@ -307,6 +308,9 @@ class Admin(commands.Cog):
 
             await discord_member.add_roles(noob)
             log(f'The Noob Role has been added to {discord_member}.', self.log_file)
+
+            if len(members) > 90:
+                time.sleep(2/3)
 
         outover15 = ",".join(over15)
         self.config["VAULT"]["over15"] = outover15
@@ -394,6 +398,9 @@ class Admin(commands.Cog):
             self.config.write(config_file)
 
         log(f'The noob function ran for {time.time() - start} seconds.', self.log_file)
+
+        if len(members) > 90:
+            time.sleep(2/3)
 
     @noob.before_loop
     async def before_noob(self):
