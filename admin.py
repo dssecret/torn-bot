@@ -238,10 +238,24 @@ class Admin(commands.Cog):
         message = await ctx.send(embed=embed)
 
         response = requests.get(f'https://api.torn.com/faction/?selections=&key={self.config["DEFAULT"]["TornAPIKey"]}')
+        response2 = None
+
+        if self.config["DEFAULT"]["TornAPIKey2"] != "":
+            response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
+                                     f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+
         if response.status_code != 200:
+            embed = discord.Embed()
+            embed.title = "Error"
+            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
+                                f' code {response.status_code} has been given at {datetime.datetime.now()}.'
+            await ctx.send(embed=embed)
+
             log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
+            return None
 
         members = list(response.json()["members"].keys())
+        members.extend(list(response2.json()["members"].keys()))
 
         over15 = self.config["VAULT"]["over15"].split(",")
 
@@ -259,7 +273,14 @@ class Admin(commands.Cog):
             request = requests.get(f'https://api.torn.com/user/{member}?selections=basic,discord&key='
                                    f'{self.config["DEFAULT"]["TornAPIKey"]}')
             if request.status_code != 200:
+                embed = discord.Embed()
+                embed.title = "Error"
+                embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP ' \
+                                    f'status code {request.status_code} has been given at {datetime.datetime.now()}.'
+                await ctx.send(embed=embed)
+
                 log(f'The Torn API has responded with HTTP status code {request.status_code}.', self.log_file)
+                return None
 
             discordid = request.json()["discord"]["discordID"]
             if discordid == "":
@@ -307,7 +328,12 @@ class Admin(commands.Cog):
         response = requests.get(f'https://api.torn.com/faction/?selections=&key={self.config["DEFAULT"]["TornAPIKey"]}')
         log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
 
+        response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
+                                 f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+        log(f'The Torn API has responded with HTTP status code {response2.status_code}.', self.log_file)
+
         members = list(response.json()["members"].keys())
+        members.extend(list(response2.json()["members"].keys()))
 
         over15 = self.config["VAULT"]["over15"].split(",")
 
