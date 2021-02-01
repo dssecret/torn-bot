@@ -21,10 +21,11 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - Faction vault withdrawals
  - Faction vault balance
  - Noob role for users under level 15 (in Torn)
+ - Support for secondary faction
 
 ## TODO List
  - JSON based storage
- - Secondary faction (In Progress)
+ - General Torn features
 
 ## License
 [GNU AGPL v3](https://github.com/dssecret/torn-bot/blob/main/LICENSE)
