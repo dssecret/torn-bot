@@ -265,6 +265,8 @@ class Admin(commands.Cog):
         for memberover15 in over15:
             if memberover15 == "":
                 break
+            if memberover15 not in members:
+                break
             members.remove(memberover15)
 
         noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
@@ -282,6 +284,12 @@ class Admin(commands.Cog):
                 log(f'The Torn API has responded with HTTP status code {request.status_code}.', self.log_file)
                 return None
 
+            try:
+                if request.json()["level"] > 15:
+                    over15.append(member)
+            except KeyError:
+                log(f'Error with user data.\n{request.json()}', self.log_file)
+
             discordid = request.json()["discord"]["discordID"]
             if discordid == "":
                 continue
@@ -292,8 +300,6 @@ class Admin(commands.Cog):
                 continue
 
             if request.json()["level"] > 15:
-                over15.append(member)
-
                 if noob in discord_member.roles:
                     await discord_member.remove_roles(noob)
                     log(f'The Noob Role has been removed from {discord_member}.', self.log_file)
@@ -343,6 +349,8 @@ class Admin(commands.Cog):
         for memberover15 in over15:
             if memberover15 == "":
                 break
+            if memberover15 not in members:
+                break
             members.remove(memberover15)
 
         noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
@@ -352,6 +360,12 @@ class Admin(commands.Cog):
                                    f'{self.config["DEFAULT"]["TornAPIKey"]}')
             if request.status_code != 200:
                 log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
+
+            try:
+                if request.json()["level"] > 15:
+                    over15.append(member)
+            except KeyError:
+                log(f'Error with user data.\n{request.json()}', self.log_file)
 
             discordid = request.json()["discord"]["discordID"]
 
