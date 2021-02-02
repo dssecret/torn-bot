@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Setkey command to set secondary API key
  - On join event
 
+## Removed
+ - Noob functions (and related variables and functions)
+
 ## [1.2]
 ### Added
  - Noob role for users under level 15

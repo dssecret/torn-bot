@@ -13,13 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands, tasks
+from discord.ext import commands
 import discord
-import requests
 
 from required import *
-
-import time
 
 
 class Admin(commands.Cog):
@@ -30,9 +27,6 @@ class Admin(commands.Cog):
         self.client = client
         self.server = server
         self.access = access
-
-        self.noob.start()
-        self.noob.change_interval(hours=12.0)
 
     @commands.command(aliases=["svc"])
     async def setvaultchannel(self, ctx):
@@ -175,238 +169,6 @@ class Admin(commands.Cog):
         with open(f'config.ini', 'w') as config_file:
             self.config.write(config_file)
 
-    @commands.command(aliases=["snr"])
-    async def setnoobrole(self, ctx, role: discord.Role):
-        '''
-        Sets the role given to users under level 15 in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setnoobrole, but is not an Administrator.',
-                self.access)
-            return None
-
-        self.config["ROLES"]["Noob"] = str(role.id)
-        log(f'Noob Role has been set to {role.id}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Noob Role"
-        embed.description = f'Noob Role has been set to {role.name}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command()
-    async def runnoob(self, ctx):
-        '''
-        Adds the noob role from all users under level 15. Removes the noob role from all users who have the noob role,
-        but are above level 15.
-        '''
-
-        start = time.time()
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run runnoob, but is not an Administrator.', self.access)
-            return None
-
-        if self.config["ROLES"]["noob"] == "":
-            embed = discord.Embed()
-            embed.title = "Missing Role Configuration"
-            embed.description = "There needs to be a noob role setup for this command to add that role."
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run runnoob, but there is no noob role set.',
-                self.log_file)
-            return None
-
-        embed = discord.Embed()
-        embed.title = "Noob Function"
-        embed.description = "The noob function is currently running."
-        message = await ctx.send(embed=embed)
-
-        response = requests.get(f'https://api.torn.com/faction/?selections=&key={self.config["DEFAULT"]["TornAPIKey"]}')
-
-        if response.status_code != 200:
-            embed = discord.Embed()
-            embed.title = "Error"
-            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
-                                f' code {response.status_code} has been given at {datetime.datetime.now()}.'
-            await ctx.send(embed=embed)
-
-            log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
-            return None
-
-        response2 = None
-
-        if self.config["DEFAULT"]["TornAPIKey2"] != "":
-            response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                     f'{self.config["DEFAULT"]["TornAPIKey2"]}')
-
-        members = list(response.json()["members"].keys())
-        members.extend(list(response2.json()["members"].keys()))
-
-        over15 = self.config["VAULT"]["over15"].split(",")
-
-        if "" in over15:
-            over15.remove("")
-
-        for memberover15 in over15:
-            if memberover15 == "":
-                break
-            if memberover15 not in members:
-                break
-            members.remove(memberover15)
-
-        noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
-
-        for member in members:
-            request = requests.get(f'https://api.torn.com/user/{member}?selections=basic,discord&key='
-                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
-            if request.status_code != 200:
-                embed = discord.Embed()
-                embed.title = "Error"
-                embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP ' \
-                                    f'status code {request.status_code} has been given at {datetime.datetime.now()}.'
-                await ctx.send(embed=embed)
-
-                log(f'The Torn API has responded with HTTP status code {request.status_code}.', self.log_file)
-                return None
-
-            try:
-                if request.json()["level"] > 15:
-                    over15.append(member)
-            except KeyError:
-                log(f'Error with user data.\n{request.json()}', self.log_file)
-
-            discordid = request.json()["discord"]["discordID"]
-            if discordid == "":
-                continue
-
-            discord_member = self.server.get_member(int(discordid))
-
-            if discord_member is None:
-                continue
-
-            if request.json()["level"] > 15:
-                if noob in discord_member.roles:
-                    await discord_member.remove_roles(noob)
-                    log(f'The Noob Role has been removed from {discord_member}.', self.log_file)
-                continue
-
-            await discord_member.add_roles(noob)
-            log(f'The Noob Role has been added to {discord_member}.', self.log_file)
-
-            if len(members) > 90:
-                time.sleep(2/3)
-
-        outover15 = ",".join(over15)
-        self.config["VAULT"]["over15"] = outover15
-
-        with open("config.ini", "w") as config_file:
-            self.config.write(config_file)
-
-        embed.description = f'The noob function has finished running and ran for {time.time() - start} seconds.'
-        await message.edit(embed=embed)
-        log(f'The noob function ran for {time.time() - start} seconds.', self.log_file)
-
-    @tasks.loop(hours=12)
-    async def noob(self):
-        start = time.time()
-
-        if self.config["DEFAULT"]["noob"] != "True":
-            log("The automatic noob function has been aborted due to the noob flag not being set or the noob flag"
-                "being set to False", self.log_file)
-            return None
-
-        if self.config["ROLES"]["noob"] == "":
-            log("There is no noob role set, so the noob setting process has been aborted.", self.log_file)
-            return None
-
-        response = requests.get(f'https://api.torn.com/faction/?selections=&key={self.config["DEFAULT"]["TornAPIKey"]}')
-        log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
-
-        response2 = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                 f'{self.config["DEFAULT"]["TornAPIKey2"]}')
-        log(f'The Torn API has responded with HTTP status code {response2.status_code}.', self.log_file)
-
-        members = list(response.json()["members"].keys())
-        members.extend(list(response2.json()["members"].keys()))
-
-        over15 = self.config["VAULT"]["over15"].split(",")
-
-        if "" in over15:
-            over15.remove("")
-
-        for memberover15 in over15:
-            if memberover15 == "":
-                break
-            if memberover15 not in members:
-                break
-            members.remove(memberover15)
-
-        noob = self.server.get_role(int(self.config["ROLES"]["noob"]))
-
-        for member in members:
-            request = requests.get(f'https://api.torn.com/user/{member}?selections=basic,discord&key='
-                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
-            if request.status_code != 200:
-                log(f'The Torn API has responded with HTTP status code {response.status_code}.', self.log_file)
-
-            try:
-                if request.json()["level"] > 15:
-                    over15.append(member)
-            except KeyError:
-                log(f'Error with user data.\n{request.json()}', self.log_file)
-
-            discordid = request.json()["discord"]["discordID"]
-
-            if discordid == "":
-                continue
-            discord_member = self.server.get_member(int(discordid))
-
-            if discord_member is None:
-                continue
-
-            if request.json()["level"] > 15:
-                over15.append(member)
-
-                if noob in discord_member.roles:
-                    await discord_member.remove_roles(noob)
-                    log(f'The Noob role has been removed from {discord_member}.', self.log_file)
-                continue
-
-            await discord_member.add_roles(noob)
-            log(f'The Noob role has been added to {discord_member}.', self.log_file)
-
-        outover15 = ",".join(over15)
-        self.config["VAULT"]["over15"] = outover15
-
-        with open("config.ini", "w") as config_file:
-            self.config.write(config_file)
-
-        log(f'The noob function ran for {time.time() - start} seconds.', self.log_file)
-
-        if len(members) > 90:
-            time.sleep(2/3)
-
-    @noob.before_loop
-    async def before_noob(self):
-        print("Waiting for bot to be ready before running automatic noob function...")
-        await self.bot.wait_until_ready()
-
     @commands.command(pass_context=True)
     async def setguild(self, ctx):
         '''
@@ -435,63 +197,6 @@ class Admin(commands.Cog):
             self.config.write(config_file)
 
     @commands.command()
-    async def enablenoob(self, ctx):
-        '''
-        Enables automatic running of the noob function every day
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run enablenoob, but is not an Administrator',
-                self.access)
-            return None
-
-        self.config["DEFAULT"]["noob"] = "True"
-        log("The automatic noob status has been set to True.", self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Automatic Noob Status"
-        embed.description = "The automatic noob status has been set to True, and the noob function will run everyday."
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command()
-    async def disablenoob(self, ctx):
-        '''
-        Disables automatic running of the noob function every day
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run disablenoob, but is not an Administrator',
-                self.access)
-            return None
-
-        self.config["DEFAULT"]["noob"] = "False"
-        log("The automatic noob status has been set to False.", self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Automatic Noob Status"
-        embed.description = "The automatic noob status has been set to False, and the noob function will not" \
-                            " run everyday."
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command()
     async def config(self, ctx):
         '''
         Returns the current configuration of the bot
@@ -514,13 +219,10 @@ class Admin(commands.Cog):
         Prefix: {self.config["DEFAULT"]["Prefix"]}
         Server ID: {self.config["DEFAULT"]["serverid"]}
         Superuser: {self.config["DEFAULT"]["Superuser"]}
-        Noob Status: {self.config["DEFAULT"]["noob"]}
         Vault Channel: {self.config["VAULT"]["channel"]}
         Vault Channel 2: {self.config["VAULT"]["channel2"]}
         Vault Role: {self.config["VAULT"]["role"]}
-        Vault Role 2: {self.config["VAULT"]["role2"]}
-        Users Over Level 15: {self.config["VAULT"]["over15"]}
-        Noob Role ID: {self.config["ROLES"]["noob"]}'''
+        Vault Role 2: {self.config["VAULT"]["role2"]}'''
 
         await ctx.send(embed=embed)
 
