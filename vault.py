@@ -77,7 +77,6 @@ class Vault(commands.Cog):
             return None
 
         if senderid in primary_faction.json()["members"]:
-            await ctx.send(f'Senderid in Primary Faction members list.')
             request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
                                    f'{self.config["DEFAULT"]["TornAPIKey"]}')
 
@@ -100,7 +99,6 @@ class Vault(commands.Cog):
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
-                await ctx.send(f'There is enough money in the faction vault.')
                 channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel"])
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
@@ -118,7 +116,6 @@ class Vault(commands.Cog):
 
                 return None
         elif senderid in secondary_faction.json()["members"]:
-            await ctx.send(f'Senderid is in secondary faction list.')
             request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
                                    f'{self.config["DEFAULT"]["TornAPIKey2"]}')
 
@@ -141,7 +138,6 @@ class Vault(commands.Cog):
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
-                await ctx.send(f'There is enough money in the faction vault.')
                 channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel2"])
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
