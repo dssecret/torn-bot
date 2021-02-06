@@ -42,13 +42,17 @@ except FileNotFoundError:
             "bottoken": bottoken,
             "prefix": "",
             "serverid": "",
-            "superuser": ""
+            "superuser": "",
+            "over15": ""
         }
         config["VAULT"] = {
             "channel": "",
             "role": "",
             "channel2": "",
             "role2": ""
+        }
+        config["ROLES"] = {
+            "noob": ""
         }
         config.write(config_file)
 

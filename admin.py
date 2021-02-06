@@ -196,6 +196,34 @@ class Admin(commands.Cog):
         with open(f'config.ini', 'w') as config_file:
             self.config.write(config_file)
 
+    @commands.command(aliases=["snr"])
+    async def setnoobrole(self, ctx, role: discord.Role):
+        '''
+        Sets the role given to users under level 15 in config.ini
+        '''
+
+        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Permission Denied"
+            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
+                                f'This interaction has been logged.'
+            await ctx.send(embed=embed)
+
+            log(f'{ctx.message.author.name} has attempted to run setnoobrole, but is not an Administrator.',
+                self.access)
+            return None
+
+        self.config["ROLES"]["Noob"] = str(role.id)
+        log(f'Noob Role has been set to {role.id}.', self.log_file)
+
+        embed = discord.Embed()
+        embed.title = "Noob Role"
+        embed.description = f'Noob Role has been set to {role.name}.'
+        await ctx.send(embed=embed)
+
+        with open(f'config.ini', 'w') as config_file:
+            self.config.write(config_file)
+
     @commands.command()
     async def config(self, ctx):
         '''
@@ -222,7 +250,8 @@ class Admin(commands.Cog):
         Vault Channel: {self.config["VAULT"]["channel"]}
         Vault Channel 2: {self.config["VAULT"]["channel2"]}
         Vault Role: {self.config["VAULT"]["role"]}
-        Vault Role 2: {self.config["VAULT"]["role2"]}'''
+        Vault Role 2: {self.config["VAULT"]["role2"]}
+        Noob Role: {self.config["ROLES"]["Noob"]}'''
 
         await ctx.send(embed=embed)
 
