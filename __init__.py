@@ -91,7 +91,6 @@ async def on_ready():
     bot.add_cog(moderation.Moderation(config, file, access))
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))
 
-
 @bot.event
 async def on_guild_join(guild):
     embed = discord.Embed()
@@ -141,7 +140,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 In-Dev"
+    embed.description = "v1.3 Pre-Release 2"
     await ctx.send(embed=embed)
 
 

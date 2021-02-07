@@ -21,216 +21,21 @@ from required import *
 
 class Admin(commands.Cog):
     def __init__(self, config, log_file, bot, client, server, access):
-        self.config = config
+        self.configuration = config
         self.log_file = log_file
         self.bot = bot
         self.client = client
         self.server = server
         self.access = access
 
-    @commands.command(aliases=["svc"])
-    async def setvaultchannel(self, ctx):
-        '''
-        Sets the channel that withdrawal messages are sent to in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator.' \
-                                f' This interaction has been logged.'
-
-            await ctx.send(embed=embed)
-            log(f'{ctx.message.author.name} has attempted to run setvaultchannel, but is not an Administrator.',
-                self.access)
-            return None
-
-        self.config["VAULT"]["Channel"] = str(ctx.message.channel)
-        log(f'Vault Channel has been set to {ctx.message.channel}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Vault Channel"
-        embed.description = f'Vault Channel has been set to {ctx.message.channel}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(aliases=["svc2"])
-    async def setvaultchannel2(self, ctx):
-        '''
-        Sets the second channel that withdrawal messages are sent to in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator.' \
-                                f' This interaction has been logged.'
-
-            await ctx.send(embed=embed)
-            log(f'{ctx.message.author.name} has attempted to run setvaultchannel2, but is not an Administrator.',
-                self.access)
-            return None
-
-        self.config["VAULT"]["Channel2"] = str(ctx.message.channel)
-        log(f'Vault Channel 2 has been set to {ctx.message.channel}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Vault Channel"
-        embed.description = f'Vault Channel 2 has been set to {ctx.message.channel}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(aliases=["svr"])
-    async def setvaultrole(self, ctx, role: discord.Role):
-        '''
-        Sets the role is pinged with withdrawal messages in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setvaultrole, but is not an Administrator',
-                self.access)
-            return None
-
-        self.config["VAULT"]["Role"] = str(role.mention)
-        log(f'Vault Role has been set to {role.mention}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Vault Role"
-        embed.description = f'Vault Role has been set to {role.mention}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(aliases=["svr2"])
-    async def setvaultrole2(self, ctx, role: discord.Role):
-        '''
-        Sets the second role is pinged with withdrawal messages in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setvaultrole2, but is not an Administrator',
-                self.access)
-            return None
-
-        self.config["VAULT"]["Role2"] = str(role.mention)
-        log(f'Vault Role 2 has been set to {role.mention}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Vault Role"
-        embed.description = f'Vault Role 2 has been set to {role.mention}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(aliases=["sp"])
-    async def setprefix(self, ctx, arg="?"):
-        '''
-        Sets the prefix for the bot in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setprefix, but is not an Administrator.',
-                self.access)
-            return None
-
-        self.config["DEFAULT"]["Prefix"] = str(arg)
-        log(f'Bot Prefix has been set to {arg}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Bot Prefix"
-        embed.description = f'Bot Prefix has been set to {arg}. The bot requires a restart for the prefix change to ' \
-                            f'go into effect.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(pass_context=True)
-    async def setguild(self, ctx):
-        '''
-        Sets the guild ID in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setguild, but is not an Administrator.', self.access)
-            return None
-
-        self.config["DEFAULT"]["serverid"] = str(ctx.guild.id)
-        log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Server ID"
-        embed.description = f'The server ID has been set to {ctx.guild.id}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
-    @commands.command(aliases=["snr"])
-    async def setnoobrole(self, ctx, role: discord.Role):
-        '''
-        Sets the role given to users under level 15 in config.ini
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setnoobrole, but is not an Administrator.',
-                self.access)
-            return None
-
-        self.config["ROLES"]["Noob"] = str(role.id)
-        log(f'Noob Role has been set to {role.id}.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Noob Role"
-        embed.description = f'Noob Role has been set to {role.name}.'
-        await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
-
     @commands.command()
-    async def config(self, ctx):
+    async def config(self, ctx, arg=None, value=None):
         '''
         Returns the current configuration of the bot
         '''
 
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+        if not check_admin(ctx.message.author) and self.configuration["DEFAULT"]["Superuser"] != \
+                str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
@@ -241,45 +46,86 @@ class Admin(commands.Cog):
             return None
 
         embed = discord.Embed()
-        embed.title = "Current Configuration"
-        embed.description = f'''Torn API Key: Classified
-        Bot Token: Classified
-        Prefix: {self.config["DEFAULT"]["Prefix"]}
-        Server ID: {self.config["DEFAULT"]["serverid"]}
-        Superuser: {self.config["DEFAULT"]["Superuser"]}
-        Vault Channel: {self.config["VAULT"]["channel"]}
-        Vault Channel 2: {self.config["VAULT"]["channel2"]}
-        Vault Role: {self.config["VAULT"]["role"]}
-        Vault Role 2: {self.config["VAULT"]["role2"]}
-        Noob Role: {self.config["ROLES"]["Noob"]}'''
+
+        if not arg:
+            embed.title = "Current Configuration"
+            embed.description = f'''Torn API Key: Classified
+            Bot Token: Classified
+            Prefix: {self.configuration["DEFAULT"]["Prefix"]}
+            Server ID: {self.configuration["DEFAULT"]["serverid"]}
+            Superuser: {self.configuration["DEFAULT"]["Superuser"]}
+            Vault Channel: {self.configuration["VAULT"]["channel"]}
+            Vault Channel 2: {self.configuration["VAULT"]["channel2"]}
+            Vault Role: {self.configuration["VAULT"]["role"]}
+            Vault Role 2: {self.configuration["VAULT"]["role2"]}
+            Noob Role: {self.configuration["ROLES"]["Noob"]}
+            Users Over Level 15: {self.configuration["DEFAULT"]["over15"]}'''
+        elif arg == "guild":
+            self.configuration["DEFAULT"]["serverid"] = str(ctx.guild.id)
+            log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
+            embed.title = "Server ID"
+            embed.description = f'The server ID has been set to {ctx.guild.id}.'
+        # Configurations that require a value below here
+        elif not value:
+            embed.title = "Value Error"
+            embed.description = "A value must be passed"
+        elif arg == "vc":
+            for channel in self.server.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                self.configuration["VAULT"]["Channel"] = channel.name
+                log(f'Vault Channel has been set to {self.configuration["VAULT"]["Channel"]}.', self.log_file)
+                embed.title = "Vault Channel"
+                embed.description = f'Vault Channel has been set to {self.configuration["VAULT"]["Channel"]}.'
+        elif arg == "vc2":
+            for channel in self.server.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                self.configuration["VAULT"]["Channel2"] = channel.name
+                log(f'Vault Channel 2 has been set to {self.configuration["VAULT"]["Channel2"]}.', self.log_file)
+                embed.title = "Vault Channel 2"
+                embed.description = f'Vault Channel 2 has been set to {self.configuration["VAULT"]["Channel2"]}.'
+        elif arg == "vr":
+            for role in self.server.roles:
+                if role.mention != value:
+                    continue
+                self.configuration["VAULT"]["Role"] = str(role.mention)
+                log(f'Vault Role has been set to {role.mention}.', self.log_file)
+                embed.title = "Vault Role"
+                embed.description = f'Vault Role has been set to {role.mention}.'
+        elif arg == "vr2":
+            for role in self.server.roles:
+                if role.mention != value:
+                    continue
+                self.configuration["VAULT"]["Role2"] = str(role.mention)
+                log(f'Vault Role 2 has been set to {role.mention}.', self.log_file)
+                embed.title = "Vault Role 2"
+                embed.description = f'Vault Role 2 has been set to {role.mention}.'
+        elif arg == "prefix":
+            self.configuration["DEFAULT"]["Prefix"] = str(value)
+            log(f'Bot Prefix has been set to {value}.', self.log_file)
+            embed.title = "Bot Prefix"
+            embed.description = f'Bot Prefix has been set to {value}. The bot requires a restart for the prefix ' \
+                                f'change to go into effect.'
+        elif arg == "nr":
+            for role in self.server.roles:
+                if role.mention != value:
+                    continue
+                self.configuration["ROLES"]["Noob"] = str(role.id)
+                log(f'Noob Role has been set to {role.id}.', self.log_file)
+                embed.title = "Noob Role"
+                embed.description = f'Noob Role has been set to {role.name}.'
+        elif arg == "key":
+            self.configuration["DEFAULT"]["TornAPIKey2"] = str(value)
+            log(f'{ctx.message.author.name} has set the secondary Torn API Key.', self.log_file)
+            embed.title = "Torn API Key"
+            embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
+            await ctx.message.delete()
+        else:
+            embed.title = "Configuration"
+            embed.description = "This key is not a valid configuration key."
 
         await ctx.send(embed=embed)
-
-    @commands.command()
-    async def setkey(self, ctx, arg):
-        '''
-        Sets the secondary Torn API key
-        '''
-
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
-            embed = discord.Embed()
-            embed.title = "Permission Denied"
-            embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
-                                f'This interaction has been logged.'
-            await ctx.send(embed=embed)
-
-            log(f'{ctx.message.author.name} has attempted to run setkey, but is not an Administrator', self.access)
-            return None
-
-        self.config["DEFAULT"]["TornAPIKey2"] = str(arg)
-        log(f'{ctx.message.author.name} has set the secondary Torn API Key.', self.log_file)
-
-        embed = discord.Embed()
-        embed.title = "Torn API Key"
-        embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
-        await ctx.send(embed=embed)
-
-        await ctx.message.delete()
 
         with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)
+            self.configuration.write(config_file)
