@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleaed]
 ### Added
  - One unified configuration command
- - Editable original message from the withdrawal command 
+ - Editable original message from the withdrawal command
+ - ID storage with addid command
 
 ## Changed
  - Withdrawal command to have a specific on reaction loop instead of a general loop

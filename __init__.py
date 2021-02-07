@@ -23,6 +23,7 @@ import vault
 import admin
 import moderation
 import superuser
+import torn
 from required import *
 
 assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
@@ -54,6 +55,7 @@ except FileNotFoundError:
         config["ROLES"] = {
             "noob": ""
         }
+        config["ID"] = {}
         config.write(config_file)
 
 config.read(f'config.ini')
@@ -90,6 +92,7 @@ async def on_ready():
     bot.add_cog(admin.Admin(config, file, bot, client, server, access))
     bot.add_cog(moderation.Moderation(config, file, access))
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))
+    bot.add_cog(torn.Torn(config, file, bot, client, server, access))
 
 @bot.event
 async def on_guild_join(guild):
@@ -140,7 +143,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 Pre-Release 2"
+    embed.description = "v1.3 Pre-Release 3 In-Dev"
     await ctx.send(embed=embed)
 
 
