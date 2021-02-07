@@ -5,13 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleaed]
 ### Added
  - One unified configuration command
+ - Editable original message from the withdrawal command 
 
 ## Changed
  - Withdrawal command to have a specific on reaction loop instead of a general loop
 
 ## [1.2]
 ### Added
- - Access log to log unauthorized attemptes to run commands
+ - Access log to log unauthorized attempts to run commands
  - Code of Conduct
  - Version command
  - Secondary/child faction support

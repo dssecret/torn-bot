@@ -36,6 +36,9 @@ class Vault(commands.Cog):
         specific faction)
         '''
 
+        def check(reaction, user):
+            return not user.bot
+
         sender = None
         if ctx.message.author.nick is None:
             sender = ctx.message.author.name
@@ -101,6 +104,7 @@ class Vault(commands.Cog):
                 embed.set_footer(text=str(message.id))
                 message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
                 await message.add_reaction('✅')
+
                 reaction = None
                 user = None
 
@@ -108,6 +112,13 @@ class Vault(commands.Cog):
                     if str(reaction) == '✅':
                         log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
                             self.log_file)
+
+                        original = await ctx.fetch_message(int(message.embeds[0].footer.text))
+
+                        embed = discord.Embed()
+                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                        embed.add_field(name="Original Message", value=original.embeds[0].description)
+                        await original.edit(embed=embed)
 
                         embed = discord.Embed()
                         embed.title = "Money Request"
@@ -118,7 +129,7 @@ class Vault(commands.Cog):
                         await reaction.message.clear_reactions()
 
                     try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600)
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check)
                         await message.clear_reactions()
                     except:
                         break
@@ -153,11 +164,12 @@ class Vault(commands.Cog):
                 embed = discord.Embed()
                 embed.title = "Money Request"
                 embed.description = "Your request has been forwarded to the faction leadership."
-                await ctx.send(embed=embed)
+                message = await ctx.send(embed=embed)
 
                 embed = discord.Embed()
                 embed.title = "Money Request"
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
+                embed.set_footer(text=str(message.id))
                 message = await channel.send(self.config["VAULT"]["Role2"], embed=embed)
                 await message.add_reaction('✅')
 
@@ -168,6 +180,13 @@ class Vault(commands.Cog):
                     if str(reaction) == '✅':
                         log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
                             self.log_file)
+
+                        original = await ctx.fetch_message(int(message.embeds[0].footer.text))
+
+                        embed = discord.Embed()
+                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                        embed.add_field(name="Original Message", value=original.embeds[0].description)
+                        await original.edit(embed=embed)
 
                         embed = discord.Embed()
                         embed.title = "Money Request"
