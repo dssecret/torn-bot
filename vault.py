@@ -101,7 +101,27 @@ class Vault(commands.Cog):
                 embed.set_footer(text=str(message.id))
                 message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
                 await message.add_reaction('✅')
+                reaction = None
+                user = None
 
+                while True:
+                    if str(reaction) == '✅':
+                        log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
+                            self.log_file)
+
+                        embed = discord.Embed()
+                        embed.title = "Money Request"
+                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+
+                        await reaction.message.edit(embed=embed)
+                        await reaction.message.clear_reactions()
+
+                    try:
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600)
+                        await message.clear_reactions()
+                    except:
+                        break
                 return None
         elif senderid in secondary_faction.json()["members"]:
             request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
@@ -156,7 +176,7 @@ class Vault(commands.Cog):
 
                         await reaction.message.edit(embed=embed)
                         await reaction.message.clear_reactions()
-
+                        return None
                     try:
                         reaction, user = await self.bot.wait_for('reaction_add', timeout=3600)
                         await message.clear_reactions()
