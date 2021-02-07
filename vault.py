@@ -29,19 +29,6 @@ class Vault(commands.Cog):
         self.log_file = log_file
         self.server = server
 
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        if reaction.emoji == "✅" and user.bot is not True:
-            log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).', self.log_file)
-
-            embed = discord.Embed()
-            embed.title = "Money Request"
-            embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-            embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
-
-            await reaction.message.edit(embed=embed)
-            await reaction.message.clear_reactions()
-
     @commands.command(aliases=["req", "with"])
     async def withdraw(self, ctx, arg):
         '''
@@ -106,11 +93,12 @@ class Vault(commands.Cog):
                 embed = discord.Embed()
                 embed.title = "Money Request"
                 embed.description = "Your request has been forwarded to the faction leadership."
-                await ctx.send(embed=embed)
+                message = await ctx.send(embed=embed)
 
                 embed = discord.Embed()
                 embed.title = "Money Request"
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
+                embed.set_footer(text=str(message.id))
                 message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
                 await message.add_reaction('✅')
 
@@ -153,7 +141,27 @@ class Vault(commands.Cog):
                 message = await channel.send(self.config["VAULT"]["Role2"], embed=embed)
                 await message.add_reaction('✅')
 
-                return None
+                reaction = None
+                user = None
+
+                while True:
+                    if str(reaction) == '✅':
+                        log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
+                            self.log_file)
+
+                        embed = discord.Embed()
+                        embed.title = "Money Request"
+                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+
+                        await reaction.message.edit(embed=embed)
+                        await reaction.message.clear_reactions()
+
+                    try:
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600)
+                        await message.clear_reactions()
+                    except:
+                        break
         else:
             log(f'{sender} who is not a member of stored factions has requested {arg}.', self.log_file)
 
@@ -161,6 +169,9 @@ class Vault(commands.Cog):
             embed.title = "Money Request"
             embed.description = f'{sender} is not a member of stored factions has requested {arg}.'
             await ctx.send(embed=embed)
+            return None
+
+
 
     @commands.command()
     async def b(self, ctx):
