@@ -125,7 +125,7 @@ class Admin(commands.Cog):
             for channel in self.server.channels:
                 if str(channel.id) != value[2:-1]:
                     continue
-                self.configuration["VAULT"]["Banking"] = channel.id
+                self.configuration["VAULT"]["Banking"] = str(channel.id)
                 log(f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.', self.log_file)
                 embed.title = "Banking Channel"
                 embed.description = f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.'
