@@ -59,6 +59,7 @@ class Admin(commands.Cog):
             Vault Channel 2: {self.configuration["VAULT"]["channel2"]}
             Vault Role: {self.configuration["VAULT"]["role"]}
             Vault Role 2: {self.configuration["VAULT"]["role2"]}
+            Banking Channel: {self.configuration["VAULT"]["banking"]}
             Noob Role: {self.configuration["ROLES"]["Noob"]}
             Users Over Level 15: {self.configuration["DEFAULT"]["over15"]}'''
         elif arg == "guild":
