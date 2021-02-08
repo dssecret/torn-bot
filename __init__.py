@@ -18,6 +18,7 @@ import discord
 
 from configparser import ConfigParser
 import sys
+import asyncio
 
 import vault
 import admin
@@ -50,7 +51,8 @@ except FileNotFoundError:
             "channel": "",
             "role": "",
             "channel2": "",
-            "role2": ""
+            "role2": "",
+            "banking": ""
         }
         config["ROLES"] = {
             "noob": ""
@@ -69,6 +71,7 @@ intents = discord.Intents.default()
 intents.reactions = True
 intents.members = True
 intents.guilds = True
+intents.messages = True
 
 bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
 
@@ -94,6 +97,7 @@ async def on_ready():
     bot.add_cog(superuser.Superuser(client, config, file, bot, access))
     bot.add_cog(torn.Torn(config, file, bot, client, server, access))
 
+
 @bot.event
 async def on_guild_join(guild):
     embed = discord.Embed()
@@ -106,6 +110,23 @@ async def on_guild_join(guild):
                                                "(https://github.com/dssecret/torn-bot/wiki/Commands).")
 
     await guild.text_channels[0].send(embed=embed)
+
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return None
+    if str(message.channel.id) == config["VAULT"]["Banking"] and message.clean_content[0] != "?":
+        await message.delete()
+        embed = discord.Embed()
+        embed.title = "Bot Channel"
+        embed.description = "This channel is only for vault withdrawals. Please do not post any other messages in" \
+                            " this channel."
+        message = await message.channel.send(embed=embed)
+        await asyncio.sleep(30)
+        await message.delete()
+
+    await bot.process_commands(message)
 
 
 @bot.command()

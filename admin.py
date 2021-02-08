@@ -121,6 +121,14 @@ class Admin(commands.Cog):
             embed.title = "Torn API Key"
             embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
             await ctx.message.delete()
+        elif arg == "bc":
+            for channel in self.server.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                self.configuration["VAULT"]["Banking"] = channel.id
+                log(f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.', self.log_file)
+                embed.title = "Banking Channel"
+                embed.description = f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.'
         else:
             embed.title = "Configuration"
             embed.description = "This key is not a valid configuration key."
