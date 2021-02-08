@@ -29,6 +29,7 @@ class Admin(commands.Cog):
         self.access = access
 
     @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def config(self, ctx, arg=None, value=None):
         '''
         Returns the current configuration of the bot

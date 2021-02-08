@@ -30,6 +30,7 @@ class Vault(commands.Cog):
         self.server = server
 
     @commands.command(aliases=["req", "with"])
+    @commands.cooldown(1, 30 ,commands.BucketType.user)
     async def withdraw(self, ctx, arg):
         '''
         Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the
@@ -210,9 +211,8 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-
-
     @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def b(self, ctx):
         '''
         Returns a simplified version of the balance of your funds in the vault (assuming you are a member of the
@@ -303,6 +303,7 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(aliases=["balance"])
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def bal(self, ctx):
         '''
         Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)

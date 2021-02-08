@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - ID storage with addid command
  - Auto-deletion of non-command messages in banking channel
  - Banking channel to config
+ - Cooldown to most commands
 
 ## Changed
  - Withdrawal command to have a specific on reaction loop instead of a general loop

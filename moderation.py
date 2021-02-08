@@ -26,6 +26,7 @@ class Moderation(commands.Cog):
         self.access = access
 
     @commands.command(pass_context=True)
+    @commands.cooldown(1, 15, commands.BucketType.guild)
     async def purge(self, ctx, nummessages: int):
         '''
         Purges specified number of messages in the channel the command is invoked in

@@ -30,6 +30,7 @@ class Torn(commands.Cog):
         self.access = access
 
     @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def addid(self, ctx, id:int):
         if self.config.has_option("ID", str(ctx.message.author.id)):
             embed = discord.Embed()

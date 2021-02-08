@@ -129,7 +129,17 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        embed = discord.Embed()
+        embed.title = "Cooldown"
+        embed.description = f'You are on cooldown. Please try again in {round(error.retry_after, 2)} seconds.'
+        await ctx.send(embed=embed)
+
+
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def ping(ctx):
     '''
     Shows the ping to the server
@@ -145,6 +155,7 @@ async def ping(ctx):
 
 
 @bot.command()
+@commands.cooldown(1, 30, commands.BucketType.guild)
 async def prefix(ctx):
     '''
     Returns the prefix for the bot
@@ -157,6 +168,7 @@ async def prefix(ctx):
 
 
 @bot.command()
+@commands.cooldown(1, 30, commands.BucketType.guild)
 async def version(ctx):
     '''
     Returns the current version of the bot
@@ -169,6 +181,7 @@ async def version(ctx):
 
 
 @bot.command()
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
