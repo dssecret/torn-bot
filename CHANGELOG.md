@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Auto-deletion of non-command messages in banking channel
  - Banking channel to config
  - Cooldown to most commands
+ - Autodelete of balance commands
 
 ## Changed
  - Withdrawal command to have a specific on reaction loop instead of a general loop

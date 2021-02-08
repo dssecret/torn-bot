@@ -20,6 +20,7 @@ import requests
 from required import *
 
 import time
+import asyncio
 
 
 class Vault(commands.Cog):
@@ -56,6 +57,8 @@ class Vault(commands.Cog):
                                        f'{self.config["DEFAULT"]["TornAPIKey"]}')
         secondary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
                                        f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+
+        await ctx.message.delete()
 
         if primary_faction.status_code != 200:
             embed = discord.Embed()
@@ -211,14 +214,18 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-    @commands.command()
+    @commands.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def b(self, ctx):
         '''
         Returns a simplified version of the balance of your funds in the vault (assuming you are a member of the
         specific faction)
         '''
+
+        await ctx.message.delete()
+
         sender = None
+        message = None
         if ctx.message.author.nick is None:
             sender = ctx.message.author.name
         else:
@@ -239,7 +246,9 @@ class Vault(commands.Cog):
             embed.title = "Error"
             embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
                                 f' {response_status} has been given at {datetime.datetime.now()}.'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         primary_balance = 0
@@ -261,7 +270,9 @@ class Vault(commands.Cog):
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Faction vault balance: {num_to_text(primary_balance)}'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
@@ -275,7 +286,9 @@ class Vault(commands.Cog):
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Primary faction vault balance: {num_to_text(primary_balance)}\nSecondary ' \
                                 f'faction vault balance: Failed'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         json_response = response.json()['donations']
@@ -294,22 +307,30 @@ class Vault(commands.Cog):
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
             embed.description = f'{sender} is not a member of any of the stored factions.'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
+            
         else:
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Primary faction vault balance: {num_to_text(primary_balance)}\nSecondary ' \
                                 f'faction vault balance: {num_to_text(secondary_balance)}'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
 
-    @commands.command(aliases=["balance"])
+    @commands.command(aliases=["balance"], pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def bal(self, ctx):
         '''
         Returns the exact balance of your funds in the vault (assuming you are a member of the specific faction)
         '''
 
+        await ctx.message.delete()
+
         sender = None
+        message = None
         if ctx.message.author.nick is None:
             sender = ctx.message.author.name
         else:
@@ -330,7 +351,9 @@ class Vault(commands.Cog):
             embed.title = "Error"
             embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
                                 f' {response_status} has been given at {datetime.datetime.now()}.'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         primary_balance = 0
@@ -352,7 +375,9 @@ class Vault(commands.Cog):
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Faction vault balance: {commas(primary_balance)}'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
@@ -366,7 +391,9 @@ class Vault(commands.Cog):
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Primary faction vault balance: {commas(primary_balance)}\nSecondary ' \
                                 f'faction vault balance: Failed'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
             return None
 
         json_response = response.json()['donations']
@@ -385,10 +412,14 @@ class Vault(commands.Cog):
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
             embed.description = f'{sender} is not a member of any of the stored factions.'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
         else:
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Primary faction vault balance: {commas(primary_balance)}\nSecondary ' \
                                 f'faction vault balance: {commas(secondary_balance)}'
-            await ctx.send(embed=embed)
+            message = await ctx.send(embed=embed)
+            await asyncio.sleep(30)
+            await message.delete()
