@@ -60,8 +60,7 @@ class Admin(commands.Cog):
             Vault Role: {self.configuration["VAULT"]["role"]}
             Vault Role 2: {self.configuration["VAULT"]["role2"]}
             Banking Channel: {self.configuration["VAULT"]["banking"]}
-            Noob Role: {self.configuration["ROLES"]["Noob"]}
-            Users Over Level 15: {self.configuration["DEFAULT"]["over15"]}'''
+            Noob Role: {self.configuration["ROLES"]["Noob"]}'''
         elif arg == "guild":
             self.configuration["DEFAULT"]["serverid"] = str(ctx.guild.id)
             log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
