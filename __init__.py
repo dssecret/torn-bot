@@ -30,7 +30,11 @@ from required import *
 
 assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
 
-logging.basicConfig(level="INFO")
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 config = ConfigParser()
 
