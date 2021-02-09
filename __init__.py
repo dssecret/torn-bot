@@ -19,6 +19,7 @@ import discord
 from configparser import ConfigParser
 import sys
 import asyncio
+import logging
 
 import vault
 import admin
@@ -28,6 +29,8 @@ import torn
 from required import *
 
 assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
+
+logging.basicConfig(level="INFO")
 
 config = ConfigParser()
 

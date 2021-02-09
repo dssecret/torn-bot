@@ -57,7 +57,7 @@ class Admin(commands.Cog):
                 Prefix: {self.configuration["DEFAULT"]["Prefix"]}
                 Server ID: {self.configuration["DEFAULT"]["serverid"]}
                 Superuser: {self.configuration["DEFAULT"]["Superuser"]}''',
-                ).set_footer(text="Page 1/3")
+                ).set_footer(text="Page 1/2")
             page2 = discord.Embed(
                 title="Configuration: Vault",
                 description=f'''Vault Channel: {self.configuration["VAULT"]["channel"]}
@@ -65,13 +65,9 @@ class Admin(commands.Cog):
                 Vault Role: {self.configuration["VAULT"]["role"]}
                 Vault Role 2: {self.configuration["VAULT"]["role2"]}
                 Banking Channel: {self.configuration["VAULT"]["banking"]}'''
-            ).set_footer(text="Page 2/3")
-            page3 = discord.Embed (
-                title='Configuration: Users Over Level 15',
-                description=", ".join(self.configuration["VAULT"]["over15"].split(','))
-            ).set_footer(text="Page 3/3")
+            ).set_footer(text="Page 2/2")
 
-            pages = [page1, page2, page3]
+            pages = [page1, page2]
 
             message = await ctx.send(embed = page1)
             await message.add_reaction('⏮')
