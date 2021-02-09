@@ -49,18 +49,65 @@ class Admin(commands.Cog):
         embed = discord.Embed()
 
         if not arg:
-            embed.title = "Current Configuration"
-            embed.description = f'''Torn API Key: Classified
-            Bot Token: Classified
-            Prefix: {self.configuration["DEFAULT"]["Prefix"]}
-            Server ID: {self.configuration["DEFAULT"]["serverid"]}
-            Superuser: {self.configuration["DEFAULT"]["Superuser"]}
-            Vault Channel: {self.configuration["VAULT"]["channel"]}
-            Vault Channel 2: {self.configuration["VAULT"]["channel2"]}
-            Vault Role: {self.configuration["VAULT"]["role"]}
-            Vault Role 2: {self.configuration["VAULT"]["role2"]}
-            Banking Channel: {self.configuration["VAULT"]["banking"]}
-            Noob Role: {self.configuration["ROLES"]["Noob"]}'''
+            embed = None
+            page1 = discord.Embed(
+                title="Configuration",
+                description=f'''Torn API Key: Classified
+                Bot Token: Classified
+                Prefix: {self.configuration["DEFAULT"]["Prefix"]}
+                Server ID: {self.configuration["DEFAULT"]["serverid"]}
+                Superuser: {self.configuration["DEFAULT"]["Superuser"]}''',
+                ).set_footer(text="Page 1/3")
+            page2 = discord.Embed(
+                title="Configuration: Vault",
+                description=f'''Vault Channel: {self.configuration["VAULT"]["channel"]}
+                Vault Channel 2: {self.configuration["VAULT"]["channel2"]}
+                Vault Role: {self.configuration["VAULT"]["role"]}
+                Vault Role 2: {self.configuration["VAULT"]["role2"]}
+                Banking Channel: {self.configuration["VAULT"]["banking"]}'''
+            ).set_footer(text="Page 2/3")
+            page3 = discord.Embed (
+                title='Configuration: Users Over Level 15',
+                description=", ".join(self.configuration["VAULT"]["over15"].split(','))
+            ).set_footer(text="Page 3/3")
+
+            pages = [page1, page2, page3]
+
+            message = await ctx.send(embed = page1)
+            await message.add_reaction('⏮')
+            await message.add_reaction('◀')
+            await message.add_reaction('▶')
+            await message.add_reaction('⏭')
+
+            def check(reaction, user):
+                return user == ctx.author
+
+            i = 0
+            reaction = None
+
+            while True:
+                if str(reaction) == '⏮':
+                    i = 0
+                    await message.edit(embed = pages[i])
+                elif str(reaction) == '◀':
+                    if i > 0:
+                        i -= 1
+                        await message.edit(embed = pages[i])
+                elif str(reaction) == '▶':
+                    if i < 2:
+                        i += 1
+                        await message.edit(embed = pages[i])
+                elif str(reaction) == '⏭':
+                    i = 2
+                    await message.edit(embed = pages[i])
+
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout = 30.0, check = check)
+                    await message.remove_reaction(reaction, user)
+                except:
+                    break
+
+            await message.clear_reactions()
         elif arg == "guild":
             self.configuration["DEFAULT"]["serverid"] = str(ctx.guild.id)
             log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
@@ -134,7 +181,8 @@ class Admin(commands.Cog):
             embed.title = "Configuration"
             embed.description = "This key is not a valid configuration key."
 
-        await ctx.send(embed=embed)
+        if embed is not None:
+            await ctx.send(embed=embed)
 
         with open(f'config.ini', 'w') as config_file:
             self.configuration.write(config_file)

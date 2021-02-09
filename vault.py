@@ -131,8 +131,9 @@ class Vault(commands.Cog):
 
                         await reaction.message.edit(embed=embed)
                         await reaction.message.clear_reactions()
+                        await asyncio.sleep(30)
+                        await original.delete()
                         return None
-
                     try:
                         reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check)
                         await message.clear_reactions()
@@ -200,9 +201,11 @@ class Vault(commands.Cog):
 
                         await reaction.message.edit(embed=embed)
                         await reaction.message.clear_reactions()
+                        await asyncio.sleep(30)
+                        await original.delete()
                         return None
                     try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check())
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check)
                         await message.clear_reactions()
                     except:
                         break
