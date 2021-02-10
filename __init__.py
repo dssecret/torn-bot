@@ -188,7 +188,7 @@ async def version(ctx):
 
 
 @bot.command()
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@commands.cooldown(1, 30, commands.BucketType.guild)
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
@@ -200,19 +200,84 @@ async def help(ctx, arg=None):
     command_list = [command.name for command in bot.commands]
 
     if not arg:
-        embed.description = f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
-        embed.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
-        embed.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
-        embed.add_field(name="Documentation (Under Construction)", value="https://github.com/dssecret/torn-bot/wiki")
-        embed.add_field(name="Torn City User", value="https://www.torn.com/profiles.php?XID=2383326")
-        embed.add_field(name="Discord User", value="dssecret#8137")
-        embed.add_field(name="For More Information", value="Please contact me (preferably on Discord or Github).")
+        embed = None
+        page1 = discord.Embed(
+            title='Useful Resources',
+            description=f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
+        ).set_footer(text="Page 1/4")
+        page2 = discord.Embed(
+            title='Vault Commands',
+        ).set_footer(text="Page 2/4")
+        page3 = discord.Embed (
+            title='Admin Commands',
+            description='Ha! You think I\'d share the admin commands with you. If you\' really an admin on the server,'
+                        ' check out the commands in my docs.'
+        ).set_footer(text="Page 3/4")
+        page4 = discord.Embed(
+            title="Miscellaneous Commands"
+        ).set_footer(text="Page 4/4")
+
+        page1.description = f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
+        page1.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
+        page1.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
+        page1.add_field(name="Documentation (Under Construction)", value="https://github.com/dssecret/torn-bot/wiki")
+        page1.add_field(name="Torn City User", value="https://www.torn.com/profiles.php?XID=2383326")
+        page1.add_field(name="Discord User", value="dssecret#8137")
+        page1.add_field(name="For More Information", value="Please contact me (preferably on Discord or Github).")
+
+        page2.add_field(name="`?withdraw [value]`", value="Sends a request to withdraw the passed amount of money to "
+                                                          "the banker")
+        page2.add_field(name="`?bal`", value="Returns your full balance in the faction vault.")
+        page2.add_field(name="`?b`", value="Returns a simplified version of your balance in the faction vault.")
+
+        page4.add_field(name="`?prefix`", value="Returns the bot's current prefix.")
+        page4.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
+                                                "it before I release it).")
+
+        pages = [page1, page2, page3, page4]
+
+        message = await ctx.send(embed = page1)
+        await message.add_reaction('⏮')
+        await message.add_reaction('◀')
+        await message.add_reaction('▶')
+        await message.add_reaction('⏭')
+
+        def check(reaction, user):
+            return user == ctx.author
+
+        i = 0
+        reaction = None
+
+        while True:
+            if str(reaction) == '⏮':
+                i = 0
+                await message.edit(embed=pages[i])
+            elif str(reaction) == '◀':
+                if i > 0:
+                    i -= 1
+                    await message.edit(embed=pages[i])
+            elif str(reaction) == '▶':
+                if i < 3:
+                    i += 1
+                    await message.edit(embed=pages[i])
+            elif str(reaction) == '⏭':
+                i = 3
+                await message.edit(embed=pages[i])
+
+            try:
+                reaction, user = await bot.wait_for('reaction_add', timeout=30.0, check=check)
+                await message.remove_reaction(reaction, user)
+            except:
+                break
+
+        await message.clear_reactions()
     elif arg in command_list:
         embed.add_field(name=arg, value=bot.get_command(arg).help)
     else:
         embed.description = "This command does not exist."
 
-    await ctx.send(embed=embed)
+    if embed is not None:
+        await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":

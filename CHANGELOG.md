@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Changed
  - Withdrawal command to have a specific on reaction loop instead of a general loop
+ - Help command to be paginated and to include bot commands
 
 ## [1.2]
 ### Added
