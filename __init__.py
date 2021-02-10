@@ -183,7 +183,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 Pre-Release 4 In-Dev"
+    embed.description = "v1.3 Pre-Release 5 In-Dev"
     await ctx.send(embed=embed)
 
 
@@ -239,7 +239,7 @@ async def help(ctx, arg=None):
         ).set_footer(text="Page 2/4")
         page3 = discord.Embed (
             title='Admin Commands',
-            description='Ha! You think I\'d share the admin commands with you. If you\' really an admin on the server,'
+            description='Ha! You think I\'d share the admin commands with you. If you\'re really an admin on the server,'
                         ' check out the commands in my docs.'
         ).set_footer(text="Page 3/4")
         page4 = discord.Embed(
