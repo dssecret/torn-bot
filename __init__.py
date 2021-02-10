@@ -262,6 +262,7 @@ async def help(ctx, arg=None):
         page4.add_field(name="`?prefix`", value="Returns the bot's current prefix.")
         page4.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
                                                 "it before I release it).")
+        page4.add_field(name="`?license`", value="Returns the license of the bot's software.")
 
         pages = [page1, page2, page3, page4]
 
