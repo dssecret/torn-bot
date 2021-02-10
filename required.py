@@ -35,6 +35,7 @@ def text_to_num(text):
     }
 
     text = text.upper()
+    text = text.replace(",", "")
     if text[-1] in decimal:
         num, magnitude = text[:-1], text[-1]
         return Decimal(num) * 10 ** decimal[magnitude]

@@ -31,7 +31,7 @@ class Vault(commands.Cog):
         self.server = server
 
     @commands.command(aliases=["req", "with"])
-    @commands.cooldown(1, 30 ,commands.BucketType.user)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def withdraw(self, ctx, arg):
         '''
         Sends a message to faction leadership (assuming you have enough funds in the vault and you are a member of the

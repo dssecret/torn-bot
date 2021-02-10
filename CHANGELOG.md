@@ -25,6 +25,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Withdrawal command to have a specific on reaction loop instead of a general loop
 - Help command to be paginated and to include bot commands
 
+## Fixed
+ - Lack of support of commas in text_to_num function
+
 ## Removed
  - Noob functions (and related variables and functions)
 
