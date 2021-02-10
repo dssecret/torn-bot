@@ -80,7 +80,7 @@ intents.members = True
 intents.guilds = True
 intents.messages = True
 
-bot = commands.Bot(command_prefix=prefix, help_command=None, intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), help_command=None, intents=intents)
 
 file = open(f'log.txt', "a")
 access = open(f'access.txt', "a")

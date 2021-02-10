@@ -2,8 +2,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleaed]
+## [Unreleased]
 ### Added
+ - Access log to log unauthorized attempts to run commands
+ - Code of Conduct
+ - Version command
+ - Secondary/child faction support
+ - Setkey command to set secondary API key
+ - On join event
  - One unified configuration command
  - Editable original message from the withdrawal command
  - ID storage with addid command
@@ -15,17 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Discord logging (via logging module)
 
 ## Changed
- - Withdrawal command to have a specific on reaction loop instead of a general loop
- - Help command to be paginated and to include bot commands
-
-## [1.2]
-### Added
- - Access log to log unauthorized attempts to run commands
- - Code of Conduct
- - Version command
- - Secondary/child faction support
- - Setkey command to set secondary API key
- - On join event
+- Withdrawal command to have a specific on reaction loop instead of a general loop
+- Help command to be paginated and to include bot commands
 
 ## Removed
  - Noob functions (and related variables and functions)
