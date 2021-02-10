@@ -189,6 +189,35 @@ async def version(ctx):
 
 @bot.command()
 @commands.cooldown(1, 30, commands.BucketType.guild)
+async def license(ctx):
+    '''
+    Returns the copyright of the bot's software.
+    '''
+
+    embed = discord.Embed()
+    embed.title = "License: Affero General Public License v3"
+    embed.description = "torn-bot is free software: you can redistribute it and/or modify it under the terms of " \
+                        "the GNU Affero General Public License as published by the Free Software Foundation, either" \
+                        " version 3 of the License, or (at your option) any later version. torn-bot is distributed in" \
+                        " the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied " \
+                        "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero " \
+                        "General Public License for more details. You should have received a copy of the GNU" \
+                        " General Public License along with torn-bot.  If not, see <https://www.gnu.org/licenses/>."
+    embed.add_field(name="Full License", value="A full version of the license can also be found in the [GitHub"
+                                               " repository](https://github.com/dssecret/torn-bot/blob/main/LICENSE).")
+    embed.add_field(name="License Repercussions", value="Due to the license used for this project, all forks,"
+                                                        " clones, and hosted versions of this project must include "
+                                                        "this same license (the Affero General Public License v3)."
+                                                        " Additionally, hosted versions must have a method for the"
+                                                        " user to retrieve the source code from the hosted "
+                                                        "versions' server(s). For more information on the AGPL"
+                                                        " v3 license, check out GNU's [license page]"
+                                                        "(https://www.gnu.org/licenses/).")
+    await ctx.send(embed=embed)
+
+
+@bot.command()
+@commands.cooldown(1, 30, commands.BucketType.guild)
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed

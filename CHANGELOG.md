@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Autodelete of balance commands
  - Autodelete of withdrawal commands
  - Discord logging (via logging module)
+ - Added license command
 
 ## Changed
 - Withdrawal command to have a specific on reaction loop instead of a general loop
