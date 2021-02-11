@@ -257,6 +257,7 @@ async def info(ctx):
     embed.add_field(name="Total Bytes Received", value=get_size(psutil.net_io_counters().bytes_recv))
     await ctx.send(embed=embed)
 
+
 @bot.command()
 @commands.cooldown(1, 30, commands.BucketType.guild)
 async def help(ctx, arg=None):
@@ -304,6 +305,7 @@ async def help(ctx, arg=None):
         page4.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
                                                 "it before I release it).")
         page4.add_field(name="`?license`", value="Returns the license of the bot's software.")
+        page4.add_field(name="`?info`", value="Returns the bot's system information.")
 
         pages = [page1, page2, page3, page4]
 
