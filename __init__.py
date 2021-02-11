@@ -14,6 +14,7 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
+from discord.ext import commands
 import psutil
 
 import sys
