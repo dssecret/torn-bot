@@ -16,7 +16,6 @@
 from discord.ext import commands
 import discord
 
-from configparser import ConfigParser
 import sys
 import asyncio
 import logging
@@ -39,42 +38,9 @@ logger.addHandler(handler)
 
 dbutils.initialize()
 
-config = ConfigParser()
-
-try:
-    config_file = open(f'config.ini')
-    config_file.close()
-except FileNotFoundError:
-    with open('config.ini', 'w') as config_file:
-        bottoken = input("Please input the bot token: ")
-
-        config["DEFAULT"] = {
-            "tornapikey": "",
-            "tornapikey2": "",
-            "bottoken": bottoken,
-            "prefix": "",
-            "serverid": "",
-            "superuser": "",
-            "over15": ""
-        }
-        config["VAULT"] = {
-            "channel": "",
-            "role": "",
-            "channel2": "",
-            "role2": "",
-            "banking": ""
-        }
-        config["ROLES"] = {
-            "noob": ""
-        }
-        config["ID"] = {}
-        config.write(config_file)
-
-config.read(f'config.ini')
-
-prefix = "?"
-if config["DEFAULT"]["Prefix"] != "":
-    prefix = config["DEFAULT"]["Prefix"]
+guilds = dbutils.read("guilds")
+vaults = dbutils.read("vault")
+# users = dbutils.read("users")
 
 client = discord.client.Client()
 intents = discord.Intents.default()
@@ -83,8 +49,7 @@ intents.members = True
 intents.guilds = True
 intents.messages = True
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), help_command=None, intents=intents)
-
+bot = commands.Bot(command_prefix=get_prefix, help_command=None, intents=intents)
 file = open(f'log.txt', "a")
 access = open(f'access.txt', "a")
 
@@ -117,6 +82,18 @@ async def on_ready():
                 "banking": ""
             }
             dbutils.write("vault", vaults)
+        #
+        # for member in guild.members:
+        #     if member.id in users:
+        #         continue
+        #     if member.bot:
+        #         continue
+        #     users[member.id] = {
+        #         "tornid": "",
+        #         "tornapikey": "",
+        #         "generaluse": False
+        #     }
+        #     dbutils.write("users", users)
 
     print(f'Bot is in {guild_count} guilds.')
 
@@ -335,5 +312,5 @@ async def help(ctx, arg=None):
 
 
 if __name__ == "__main__":
-    bot.run(config["DEFAULT"]["BotToken"])
+    bot.run(dbutils.read("guilds")["bottoken"])
     file.close()
