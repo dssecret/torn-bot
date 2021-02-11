@@ -14,10 +14,12 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
+import psutil
 
 import sys
 import asyncio
 import logging
+import time
 
 import vault
 import admin
@@ -108,7 +110,7 @@ async def on_guild_join(guild):
     embed = discord.Embed()
     embed.title = f'Welcome to {bot.user.display_name}'
     embed.description = f'Thank you for inviting {bot.user.display_name} to your server'
-    embed.add_field(name="Help", value="`?help` or contact <@dssecret#0001> on Discord, on ds_secret [2383326] on Torn,"
+    embed.add_field(name="Help", value="`?help` or contact <@tiksan#0001> on Discord, on tiksan [2383326] on Torn,"
                                        " or dssecret on Github")
     embed.add_field(name="How to Setup", value="Run admin commands that can be found in the [Wiki]"
                                                "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
@@ -237,6 +239,23 @@ async def license(ctx):
                                                         "(https://www.gnu.org/licenses/).")
     await ctx.send(embed=embed)
 
+
+@bot.command()
+@commands.cooldown(1, 30, commands.BucketType.guild)
+async def info(ctx):
+    '''
+    Returns the bot's info
+    '''
+
+    embed = discord.Embed()
+    embed.title = "Bot Info"
+    embed.add_field(name="Uptime", value=f'{round((time.time() - psutil.boot_time())/3600, 2)} hours')
+    embed.add_field(name="% CPU", value=f'{psutil.cpu_percent()}%')
+    embed.add_field(name="% Memory", value=f'{psutil.virtual_memory().percent}%')
+    embed.add_field(name="% Swap", value=f'{psutil.swap_memory().percent}%')
+    embed.add_field(name="Total Bytes Sent", value=get_size(psutil.net_io_counters().bytes_sent))
+    embed.add_field(name="Total Bytes Received", value=get_size(psutil.net_io_counters().bytes_recv))
+    await ctx.send(embed=embed)
 
 @bot.command()
 @commands.cooldown(1, 30, commands.BucketType.guild)

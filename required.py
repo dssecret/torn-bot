@@ -22,6 +22,14 @@ import re
 import dbutils
 
 
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
 def num_to_text(num):
     num = float('{:.3g}'.format(num))
     magnitude = 0
@@ -72,3 +80,7 @@ def get_prefix(bot, message):
     for guild in dbutils.read("guilds")["guilds"]:
         if guild["id"] == str(message.guild.id):
             return guild["prefix"]
+
+
+def random_key():
+    pass
