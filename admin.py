@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
 import discord
 
 from required import *

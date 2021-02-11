@@ -15,7 +15,7 @@
 
 import json
 
-jsons = ["guilds", "vault"]
+jsons = ["guilds", "vault", "users"]
 
 
 def _read(file):
@@ -49,6 +49,12 @@ def initialize():
     except FileNotFoundError:
         _write("vault", {})
 
+    try:
+        file = open("users.json")
+        file.close()
+    except FileNotFoundError:
+        _write("users", {})
+
 
 def read(file):
     if file in jsons:
@@ -79,3 +85,7 @@ def get_vault(guildid, key=None):
 
 def get_superuser():
     return read("guilds")["superuser"]
+
+
+def get_user(id, key=None):
+    return read("users")[str(id)] if key is None else read("users")[str(id)][key]

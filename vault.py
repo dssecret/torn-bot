@@ -62,6 +62,7 @@ class Vault(commands.Cog):
 
         primary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
                                        f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
+        secondary_faction = None
         if dbutils.get_guild(ctx.guild.id, "tornapikey2") != "":
             secondary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
                                            f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')

@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
 import discord
 import requests
 
@@ -28,9 +27,9 @@ class Torn(commands.Cog):
         self.access = access
 
     @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.cooldown(1, 1, commands.BucketType.user)
     async def addid(self, ctx, id:int):
-        if self.config.has_option("ID", str(ctx.message.author.id)):
+        if dbutils.get_user(ctx.message.author.id)["tornid"] != "":
             embed = discord.Embed()
             embed.title = "ID Already Set"
             embed.description = "Your ID is already set in the database."
@@ -38,7 +37,7 @@ class Torn(commands.Cog):
             return None
 
         request = requests.get(f'https://api.torn.com/user/{id}?selections=discord&key='
-                               f'{self.config["DEFAULT"]["TornAPIKey"]}')
+                               f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
         if request.status_code != 200:
             embed = discord.Embed()
             embed.title = "Error"
@@ -60,13 +59,22 @@ class Torn(commands.Cog):
                 f'server.', self.log_file)
             return None
 
-        self.config["ID"][str(ctx.message.author.id)] = request.json()["discord"]["discordID"]
+        if request.json()["discord"]["discordID"] != str(ctx.message.author.id):
+            embed = discord.Embed()
+            embed.title = "Invalid ID"
+            embed.description = f'Your Discord ID is not the same as the Discord ID stored in Torn\'s' \
+                                f' database for your given Torn ID.'
+            await ctx.send(embed=embed)
+            log(f'{ctx.message.author.name} has attempted to set their Torn ID to be {id}, but their Discord ID '
+                f'({ctx.message.author.id} does not match the value in Torn\'s DB.', self.log_file)
+            return None
+
+        data = dbutils.read("users")
+        data[str(ctx.message.author.id)]["tornid"] = request.json()["discord"]["discordID"]
+        dbutils.write("users", data)
+
         embed = discord.Embed()
         embed.title = "ID Set"
         embed.description = "Your ID has been set in the database."
         await ctx.send(embed=embed)
-
         log(f'{ctx.message.author.name} has set their id which is {id}.', self.log_file)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.config.write(config_file)

@@ -41,7 +41,7 @@ dbutils.initialize()
 
 guilds = dbutils.read("guilds")
 vaults = dbutils.read("vault")
-# users = dbutils.read("users")
+users = dbutils.read("users")
 
 client = discord.client.Client()
 intents = discord.Intents.default()
@@ -74,6 +74,7 @@ async def on_ready():
                 "tornapikey2": ""
             })
             dbutils.write("guilds", guilds)
+
         if str(guild.id) not in vaults:
             vaults[guild.id] = {
                 "channel": "",
@@ -83,18 +84,18 @@ async def on_ready():
                 "banking": ""
             }
             dbutils.write("vault", vaults)
-        #
-        # for member in guild.members:
-        #     if member.id in users:
-        #         continue
-        #     if member.bot:
-        #         continue
-        #     users[member.id] = {
-        #         "tornid": "",
-        #         "tornapikey": "",
-        #         "generaluse": False
-        #     }
-        #     dbutils.write("users", users)
+
+        for member in guild.members:
+            if str(member.id) in users:
+                continue
+            if member.bot:
+                continue
+            users[member.id] = {
+                "tornid": "",
+                "tornapikey": "",
+                "generaluse": False
+            }
+            dbutils.write("users", users)
 
     print(f'Bot is in {guild_count} guilds.')
 
