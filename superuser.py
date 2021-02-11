@@ -16,20 +16,20 @@
 import discord
 
 from required import *
+import dbutils
 
 import subprocess
 
 
 class Superuser(commands.Cog):
-    def __init__(self, client, config, log_file, bot, access):
+    def __init__(self, client, log_file, bot, access):
         self.client = client
-        self.config = config
         self.log_file = log_file
         self.bot = bot
         self.access = access
 
     def is_superuser(self, id):
-        return True if self.config["DEFAULT"]["Superuser"] == str(id) else False
+        return True if dbutils.get_superuser() == id else False
 
     @commands.command()
     async def shutdown(self, ctx):

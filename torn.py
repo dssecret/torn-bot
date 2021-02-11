@@ -21,12 +21,10 @@ from required import *
 
 
 class Torn(commands.Cog):
-    def __init__(self, config, log_file, bot, client, server, access):
-        self.config = config
+    def __init__(self, log_file, bot, client, access):
         self.log_file = log_file
         self.bot = bot
         self.client = client
-        self.server = server
         self.access = access
 
     @commands.command()

@@ -13,9 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
+from discord.ext import commands
+
 import datetime
 from decimal import Decimal
 import re
+
+import dbutils
 
 
 def num_to_text(num):
@@ -62,3 +66,9 @@ def log(message, file):
 
 def commas(number):
     return "{:,}".format(number)
+
+
+def get_prefix(bot, message):
+    for guild in dbutils.read("guilds")["guilds"]:
+        if guild["id"] == str(message.guild.id):
+            return guild["prefix"]

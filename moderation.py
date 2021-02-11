@@ -17,11 +17,11 @@ from discord.ext import commands
 import discord
 
 from required import *
+import dbutils
 
 
 class Moderation(commands.Cog):
-    def __init__(self, config, log_file, access):
-        self.config = config
+    def __init__(self, log_file, access):
         self.log_file = log_file
         self.access = access
 
@@ -32,7 +32,7 @@ class Moderation(commands.Cog):
         Purges specified number of messages in the channel the command is invoked in
         '''
 
-        if not check_admin(ctx.message.author) and self.config["DEFAULT"]["Superuser"] != str(ctx.message.author.id):
+        if not check_admin(ctx.message.author) and dbutils.get_superuser() != ctx.message.author.id:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \

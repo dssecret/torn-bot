@@ -17,15 +17,14 @@ from discord.ext import commands
 import discord
 
 from required import *
+import dbutils
 
 
 class Admin(commands.Cog):
-    def __init__(self, config, log_file, bot, client, server, access):
-        self.configuration = config
+    def __init__(self, log_file, bot, client, access):
         self.log_file = log_file
         self.bot = bot
         self.client = client
-        self.server = server
         self.access = access
 
     @commands.command()
@@ -35,8 +34,7 @@ class Admin(commands.Cog):
         Returns the current configuration of the bot
         '''
 
-        if not check_admin(ctx.message.author) and self.configuration["DEFAULT"]["Superuser"] != \
-                str(ctx.message.author.id):
+        if not check_admin(ctx.message.author) and dbutils.get_superuser() != ctx.message.author.id:
             embed = discord.Embed()
             embed.title = "Permission Denied"
             embed.description = f'This command requires {ctx.message.author.name} to be an Administrator. ' \
@@ -54,22 +52,21 @@ class Admin(commands.Cog):
                 title="Configuration",
                 description=f'''Torn API Key: Classified
                 Bot Token: Classified
-                Prefix: {self.configuration["DEFAULT"]["Prefix"]}
-                Server ID: {self.configuration["DEFAULT"]["serverid"]}
-                Superuser: {self.configuration["DEFAULT"]["Superuser"]}''',
+                Prefix: {get_prefix(self.bot, ctx.message)}
+                Superuser: {dbutils.get_superuser()}''',
                 ).set_footer(text="Page 1/2")
             page2 = discord.Embed(
                 title="Configuration: Vault",
-                description=f'''Vault Channel: {self.configuration["VAULT"]["channel"]}
-                Vault Channel 2: {self.configuration["VAULT"]["channel2"]}
-                Vault Role: {self.configuration["VAULT"]["role"]}
-                Vault Role 2: {self.configuration["VAULT"]["role2"]}
-                Banking Channel: {self.configuration["VAULT"]["banking"]}'''
+                description=f'''Vault Channel: {dbutils.read("vault")[str(ctx.guild.id)]["channel"]}
+                Vault Channel 2: {dbutils.read("vault")[str(ctx.guild.id)]["channel2"]}
+                Vault Role: {dbutils.read("vault")[str(ctx.guild.id)]["role"]}
+                Vault Role 2: {dbutils.read("vault")[str(ctx.guild.id)]["role2"]}
+                Banking Channel: {dbutils.read("vault")[str(ctx.guild.id)]["banking"]}'''
             ).set_footer(text="Page 2/2")
 
             pages = [page1, page2]
 
-            message = await ctx.send(embed = page1)
+            message = await ctx.send(embed=page1)
             await message.add_reaction('⏮')
             await message.add_reaction('◀')
             await message.add_reaction('▶')
@@ -84,101 +81,118 @@ class Admin(commands.Cog):
             while True:
                 if str(reaction) == '⏮':
                     i = 0
-                    await message.edit(embed = pages[i])
+                    await message.edit(embed=pages[i])
                 elif str(reaction) == '◀':
                     if i > 0:
                         i -= 1
-                        await message.edit(embed = pages[i])
+                        await message.edit(embed=pages[i])
                 elif str(reaction) == '▶':
                     if i < 2:
                         i += 1
-                        await message.edit(embed = pages[i])
+                        await message.edit(embed=pages[i])
                 elif str(reaction) == '⏭':
                     i = 2
-                    await message.edit(embed = pages[i])
+                    await message.edit(embed=pages[i])
 
                 try:
-                    reaction, user = await self.bot.wait_for('reaction_add', timeout = 30.0, check = check)
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
                     await message.remove_reaction(reaction, user)
                 except:
                     break
 
             await message.clear_reactions()
-        elif arg == "guild":
-            self.configuration["DEFAULT"]["serverid"] = str(ctx.guild.id)
-            log(f'The server ID has been set to {ctx.guild.id}.', self.log_file)
-            embed.title = "Server ID"
-            embed.description = f'The server ID has been set to {ctx.guild.id}.'
         # Configurations that require a value below here
         elif not value:
             embed.title = "Value Error"
             embed.description = "A value must be passed"
         elif arg == "vc":
-            for channel in self.server.channels:
+            for channel in ctx.guild.channels:
                 if str(channel.id) != value[2:-1]:
                     continue
-                self.configuration["VAULT"]["Channel"] = channel.name
-                log(f'Vault Channel has been set to {self.configuration["VAULT"]["Channel"]}.', self.log_file)
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["channel"] = channel.name
+                dbutils.write("vault", data)
+                log(f'Vault Channel has been set to {data[str(ctx.guild.id)]["channel"]}.', self.log_file)
                 embed.title = "Vault Channel"
-                embed.description = f'Vault Channel has been set to {self.configuration["VAULT"]["Channel"]}.'
+                embed.description = f'Vault Channel has been set to {data[str(ctx.guild.id)]["channel"]}.'
         elif arg == "vc2":
-            for channel in self.server.channels:
+            for channel in ctx.guild.channels:
                 if str(channel.id) != value[2:-1]:
                     continue
-                self.configuration["VAULT"]["Channel2"] = channel.name
-                log(f'Vault Channel 2 has been set to {self.configuration["VAULT"]["Channel2"]}.', self.log_file)
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["channel2"] = channel.name
+                dbutils.write("vault", data)
+                log(f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.', self.log_file)
                 embed.title = "Vault Channel 2"
-                embed.description = f'Vault Channel 2 has been set to {self.configuration["VAULT"]["Channel2"]}.'
+                embed.description = f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.'
         elif arg == "vr":
-            for role in self.server.roles:
+            for role in ctx.guild.roles:
                 if role.mention != value:
                     continue
-                self.configuration["VAULT"]["Role"] = str(role.mention)
-                log(f'Vault Role has been set to {role.mention}.', self.log_file)
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["role"] = str(role.mention)
+                dbutils.write("vault", data)
+                log(f'Vault Role has been set to {data[str(ctx.guild.id)]["role"]}.', self.log_file)
                 embed.title = "Vault Role"
-                embed.description = f'Vault Role has been set to {role.mention}.'
+                embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role"]}.'
         elif arg == "vr2":
-            for role in self.server.roles:
+            for role in ctx.guild.roles:
                 if role.mention != value:
                     continue
-                self.configuration["VAULT"]["Role2"] = str(role.mention)
-                log(f'Vault Role 2 has been set to {role.mention}.', self.log_file)
-                embed.title = "Vault Role 2"
-                embed.description = f'Vault Role 2 has been set to {role.mention}.'
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["role2"] = str(role.mention)
+                dbutils.write("vault", data)
+                log(f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.', self.log_file)
+                embed.title = "Vault Role"
+                embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.'
         elif arg == "prefix":
-            self.configuration["DEFAULT"]["Prefix"] = str(value)
+            data = dbutils.read("guilds")
+
+            for guild in data["guilds"]:
+                if guild["id"] == str(ctx.guild.id):
+                    guild["prefix"] = str(value)
+
+            dbutils.write("guilds", data)
             log(f'Bot Prefix has been set to {value}.', self.log_file)
             embed.title = "Bot Prefix"
-            embed.description = f'Bot Prefix has been set to {value}. The bot requires a restart for the prefix ' \
-                                f'change to go into effect.'
-        elif arg == "nr":
-            for role in self.server.roles:
-                if role.mention != value:
-                    continue
-                self.configuration["ROLES"]["Noob"] = str(role.id)
-                log(f'Noob Role has been set to {role.id}.', self.log_file)
-                embed.title = "Noob Role"
-                embed.description = f'Noob Role has been set to {role.name}.'
+            embed.description = f'Bot Prefix has been set to {value}.'
         elif arg == "key":
-            self.configuration["DEFAULT"]["TornAPIKey2"] = str(value)
+            data = dbutils.read("guilds")
+
+            for guild in data["guilds"]:
+                if guild["id"] == str(ctx.guild.id):
+                    guild["tornapikey"] = str(value)
+
+            dbutils.write("guilds", data)
+            log(f'{ctx.message.author.name} has set the primary Torn API Key.', self.log_file)
+            embed.title = "Torn API Key"
+            embed.description = f'The Torn API key for the primary faction has been set by {ctx.message.author.name}.'
+            await ctx.message.delete()
+        elif arg == "key2":
+            data = dbutils.read("guilds")
+
+            for guild in data["guilds"]:
+                if guild["id"] == str(ctx.guild.id):
+                    guild["tornapikey2"] = str(value)
+
+            dbutils.write("guilds", data)
             log(f'{ctx.message.author.name} has set the secondary Torn API Key.', self.log_file)
             embed.title = "Torn API Key"
             embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
             await ctx.message.delete()
         elif arg == "bc":
-            for channel in self.server.channels:
+            for channel in ctx.guild.channels:
                 if str(channel.id) != value[2:-1]:
                     continue
-                self.configuration["VAULT"]["Banking"] = str(channel.id)
-                log(f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.', self.log_file)
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["banking"] = str(channel.id)
+                dbutils.write("vault", data)
+                log(f'Banking Channel has been set to {data[str(ctx.guild.id)]["banking"]}.', self.log_file)
                 embed.title = "Banking Channel"
-                embed.description = f'Banking Channel has been set to {self.configuration["VAULT"]["Banking"]}.'
+                embed.description = f'Banking Channel has been set to {channel.name}.'
         else:
             embed.title = "Configuration"
             embed.description = "This key is not a valid configuration key."
 
         if embed is not None:
             await ctx.send(embed=embed)
-
-        with open(f'config.ini', 'w') as config_file:
-            self.configuration.write(config_file)

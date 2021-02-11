@@ -13,22 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
 import discord
 import requests
 
 from required import *
+import dbutils
 
 import time
 import asyncio
 
 
 class Vault(commands.Cog):
-    def __init__(self, bot, config, log_file, server):
+    def __init__(self, bot, log_file):
         self.bot = bot
-        self.config = config
         self.log_file = log_file
-        self.server = server
 
     @commands.command(aliases=["req", "with"])
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -53,10 +51,20 @@ class Vault(commands.Cog):
         value = text_to_num(arg)
         log(sender + " has submitted a request for " + arg + ".", self.log_file)
 
+        if dbutils.get_guild(ctx.guild.id, "tornapikey") == "":
+            embed = discord.Embed()
+            embed.title = "API Key Required"
+            embed.description = "A Torn API key is required for this command's use. Please ask your server's" \
+                                " administrator(s) to add their API key(s)."
+            await ctx.send(embed=embed)
+            log(f'Missing API key.', self.log_file)
+            return None
+
         primary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                       f'{self.config["DEFAULT"]["TornAPIKey"]}')
-        secondary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                       f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+                                       f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
+        if dbutils.get_guild(ctx.guild.id, "tornapikey2") != "":
+            secondary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
+                                           f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
 
         await ctx.message.delete()
 
@@ -72,7 +80,7 @@ class Vault(commands.Cog):
 
         if senderid in primary_faction.json()["members"]:
             request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
-                                   f'{self.config["DEFAULT"]["TornAPIKey"]}')
+                                   f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
 
             if request.status_code != 200:
                 embed = discord.Embed()
@@ -93,7 +101,7 @@ class Vault(commands.Cog):
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
-                channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel"])
+                channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
@@ -106,7 +114,7 @@ class Vault(commands.Cog):
                 embed.title = "Money Request"
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
                 embed.set_footer(text=str(message.id))
-                message = await channel.send(self.config["VAULT"]["Role"], embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
                 await message.add_reaction('✅')
 
                 reaction = None
@@ -142,7 +150,7 @@ class Vault(commands.Cog):
                 return None
         elif senderid in secondary_faction.json()["members"]:
             request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
-                                   f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+                                   f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
 
             if request.status_code != 200:
                 embed = discord.Embed()
@@ -163,7 +171,7 @@ class Vault(commands.Cog):
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
-                channel = discord.utils.get(self.server.channels, name=self.config["VAULT"]["Channel2"])
+                channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel2"))
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
@@ -176,7 +184,7 @@ class Vault(commands.Cog):
                 embed.title = "Money Request"
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
                 embed.set_footer(text=str(message.id))
-                message = await channel.send(self.config["VAULT"]["Role2"], embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role2"), embed=embed)
                 await message.add_reaction('✅')
 
                 reaction = None
@@ -240,7 +248,7 @@ class Vault(commands.Cog):
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{self.config["DEFAULT"]["TornAPIKey"]}')
+                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
         response_status = response.status_code
 
         if response_status != 200:
@@ -270,7 +278,7 @@ class Vault(commands.Cog):
                 member = True
                 break
 
-        if self.config["DEFAULT"]["TornAPIKey2"] == "":
+        if dbutils.get_guild(ctx.guild.id, "tornapikey2") == "":
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Faction vault balance: {num_to_text(primary_balance)}'
@@ -280,7 +288,7 @@ class Vault(commands.Cog):
             return None
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
         response_status = response.status_code
 
         if response_status != 200:
@@ -345,7 +353,7 @@ class Vault(commands.Cog):
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{self.config["DEFAULT"]["TornAPIKey"]}')
+                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
         response_status = response.status_code
 
         if response_status != 200:
@@ -375,7 +383,7 @@ class Vault(commands.Cog):
                 member = True
                 break
 
-        if self.config["DEFAULT"]["TornAPIKey2"] == "":
+        if dbutils.get_guild(ctx.guild.id, "tornapikey2") == "":
             embed = discord.Embed()
             embed.title = f'Vault Balance for {sender}'
             embed.description = f'Faction vault balance: {commas(primary_balance)}'
@@ -385,7 +393,7 @@ class Vault(commands.Cog):
             return None
 
         response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{self.config["DEFAULT"]["TornAPIKey2"]}')
+                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
         response_status = response.status_code
 
         if response_status != 200:

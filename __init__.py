@@ -27,6 +27,7 @@ import moderation
 import superuser
 import torn
 from required import *
+import dbutils
 
 assert sys.version_info >= (3, 6), "requires Python %s.%s or newer" % (3, 6)
 
@@ -35,6 +36,8 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
+
+dbutils.initialize()
 
 config = ConfigParser()
 
@@ -94,15 +97,34 @@ async def on_ready():
         print(f"- {guild.id} (name: {guild.name})")
         guild_count = guild_count + 1
 
+        for jsonguild in guilds["guilds"]:
+            if jsonguild["id"] == str(guild.id):
+                break
+        else:
+            guilds["guilds"].append({
+                "id": str(guild.id),
+                "prefix": "?",
+                "tornapikey": "",
+                "tornapikey2": ""
+            })
+            dbutils.write("guilds", guilds)
+        if str(guild.id) not in vaults:
+            vaults[guild.id] = {
+                "channel": "",
+                "role": "",
+                "channel2": "",
+                "role2": "",
+                "banking": ""
+            }
+            dbutils.write("vault", vaults)
+
     print(f'Bot is in {guild_count} guilds.')
 
-    server = bot.get_guild(int(config["DEFAULT"]["serverid"]))
-
-    bot.add_cog(vault.Vault(bot, config, file, server))
-    bot.add_cog(admin.Admin(config, file, bot, client, server, access))
-    bot.add_cog(moderation.Moderation(config, file, access))
-    bot.add_cog(superuser.Superuser(client, config, file, bot, access))
-    bot.add_cog(torn.Torn(config, file, bot, client, server, access))
+    bot.add_cog(vault.Vault(bot, file))
+    bot.add_cog(admin.Admin(file, bot, client, access))
+    bot.add_cog(moderation.Moderation(file, access))
+    bot.add_cog(superuser.Superuser(client, file, bot, access))
+    bot.add_cog(torn.Torn(file, bot, client, access))
 
 
 @bot.event
@@ -123,7 +145,9 @@ async def on_guild_join(guild):
 async def on_message(message):
     if message.author.bot:
         return None
-    if str(message.channel.id) == config["VAULT"]["Banking"] and message.clean_content[0] != "?":
+    # if str(message.channel.id) == config["VAULT"]["Banking"] and message.clean_content[0] != "?":
+    if str(message.channel.id) == dbutils.read("vault")[str(message.guild.id)]["banking"] \
+            and message.clean_contents[0] != get_prefix(client, message):
         await message.delete()
         embed = discord.Embed()
         embed.title = "Bot Channel"
@@ -170,7 +194,7 @@ async def prefix(ctx):
 
     embed = discord.Embed()
     embed.title = "Bot Prefix"
-    embed.description = f'The bot prefix is {config["DEFAULT"]["Prefix"]}.'
+    embed.description = f'The bot prefix is {get_prefix(bot, ctx.message)}.'
     await ctx.send(embed=embed)
 
 
@@ -237,10 +261,10 @@ async def help(ctx, arg=None):
         page2 = discord.Embed(
             title='Vault Commands',
         ).set_footer(text="Page 2/4")
-        page3 = discord.Embed (
+        page3 = discord.Embed(
             title='Admin Commands',
-            description='Ha! You think I\'d share the admin commands with you. If you\'re really an admin on the server,'
-                        ' check out the commands in my docs.'
+            description='Ha! You think I\'d share the admin commands with you. If you\'re really an admin on the server'
+                        ', check out the commands in my docs.'
         ).set_footer(text="Page 3/4")
         page4 = discord.Embed(
             title="Miscellaneous Commands"
