@@ -141,10 +141,10 @@ async def on_command_error(ctx, error):
         embed = discord.Embed()
         embed.title = "Cooldown"
         embed.description = f'You are on cooldown. Please try again in {round(error.retry_after, 2)} seconds.'
-        await ctx.send(embed=embed)
-        if ctx.message.channel.id == dbutils.get_vault(ctx.guild.id, "banking"):
+        message = await ctx.send(embed=embed)
+        if str(ctx.message.channel.id) == dbutils.get_vault(ctx.guild.id, "banking"):
             await asyncio.sleep(30)
-            await ctx.message.delete()
+            await message.delete()
 
 
 @bot.command()
