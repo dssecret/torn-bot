@@ -113,8 +113,28 @@ async def on_guild_join(guild):
     embed.add_field(name="How to Setup", value="Run admin commands that can be found in the [Wiki]"
                                                "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
                                                "(https://github.com/dssecret/torn-bot/wiki/Commands).")
-
     await guild.text_channels[0].send(embed=embed)
+
+    for jsonguild in guilds["guilds"]:
+        if jsonguild["id"] == str(guild.id):
+            break
+    else:
+        guilds["guilds"].append({
+            "id": str(guild.id),
+            "prefix": "?",
+            "tornapikey": "",
+            "tornapikey2": ""
+        })
+        dbutils.write("guilds", guilds)
+    if str(guild.id) not in vaults:
+        vaults[guild.id] = {
+            "channel": "",
+            "role": "",
+            "channel2": "",
+            "role2": "",
+            "banking": ""
+        }
+        dbutils.write("vault", vaults)
 
 
 @bot.event
