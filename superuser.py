@@ -13,9 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
 import discord
-import git
 
 from required import *
 
@@ -76,32 +74,3 @@ class Superuser(commands.Cog):
         subprocess.Popen(['python3', '__init__.py', '&'])
         await exit(0)
 
-    @commands.command()
-    async def pull(self, ctx):
-        '''
-        Pulls the latest commit from Git origin
-        '''
-
-        embed = discord.Embed()
-
-        if not self.is_superuser(ctx.message.author.id):
-            embed.title = "Permission Denied"
-            embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to pull the latest commit, but is not the superuser.', self.access)
-            await ctx.send(embed=embed)
-            return None
-
-        try:
-            g = git.cmd.Git("./")
-            g.pull()
-        except Exception as exception:
-            embed.title = "Git Pull Error"
-            embed.description = f'{exception}'
-            await ctx.send(embed=embed)
-            log(f'Git pull has failed with the following error: {exception}', self.log_file)
-
-        embed.title = "Successful Pull"
-        embed.description = "The latest commit was successfully pulled from origin."
-        await ctx.send(embed=embed)
-
-        log(f'The local copy of Torn-Bot has been updated by {ctx.message.author.name}.', self.log_file)
