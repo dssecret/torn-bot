@@ -122,9 +122,8 @@ async def on_guild_join(guild):
 async def on_message(message):
     if message.author.bot:
         return None
-    # if str(message.channel.id) == config["VAULT"]["Banking"] and message.clean_content[0] != "?":
     if str(message.channel.id) == dbutils.read("vault")[str(message.guild.id)]["banking"] \
-            and message.clean_contents[0] != get_prefix(client, message):
+            and message.clean_content[0] != get_prefix(client, message):
         await message.delete()
         embed = discord.Embed()
         embed.title = "Bot Channel"
