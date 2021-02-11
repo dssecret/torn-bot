@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
 import discord
 
 import sys
@@ -143,6 +142,9 @@ async def on_command_error(ctx, error):
         embed.title = "Cooldown"
         embed.description = f'You are on cooldown. Please try again in {round(error.retry_after, 2)} seconds.'
         await ctx.send(embed=embed)
+        if ctx.message.channel.id == dbutils.get_vault(ctx.guild.id, "banking"):
+            await asyncio.sleep(30)
+            await ctx.message.delete()
 
 
 @bot.command()
