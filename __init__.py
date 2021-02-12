@@ -100,7 +100,7 @@ async def on_ready():
 
     print(f'Bot is in {guild_count} guilds.')
 
-    bot.add_cog(vault.Vault(bot, file))
+    bot.add_cog(vault.Vault(bot, file, access))
     bot.add_cog(admin.Admin(file, bot, client, access))
     bot.add_cog(moderation.Moderation(file, access))
     bot.add_cog(superuser.Superuser(client, file, bot, access))

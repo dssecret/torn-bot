@@ -25,9 +25,10 @@ import asyncio
 
 
 class Vault(commands.Cog):
-    def __init__(self, bot, log_file):
+    def __init__(self, bot, log_file, access):
         self.bot = bot
         self.log_file = log_file
+        self.access_file = access
 
     @commands.command(aliases=["req", "with"])
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -49,6 +50,20 @@ class Vault(commands.Cog):
         senderid = get_torn_id(sender)
         sender = remove_torn_id(sender)
 
+        if dbutils.get_user(ctx.message.author.id, "tornid") == "":
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+                embed = discord.Embed()
+                embed.title = "Permission Denied"
+                embed.description = f'The nickname of {ctx.message.author.nick} in {ctx.guild.name} does not reflect ' \
+                                    f'the Torn ID and username. Please update the nickname (i.e. through YATA) or add' \
+                                    f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
+                                    f'`?addkey` command requires your Torn API key). This interaction has been logged.'
+                await ctx.send(embed=embed)
+                log(f'{ctx.message.author.id} (known as {ctx.message.author.name} does not have an accurate nickname, '
+                    f'and attempted to withdraw some money from the faction vault.', self.access_file)
+                return None
+
         value = text_to_num(arg)
         log(sender + " has submitted a request for " + arg + ".", self.log_file)
 
@@ -61,7 +76,7 @@ class Vault(commands.Cog):
         await ctx.message.delete()
 
         if senderid in primary_faction["members"]:
-            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=")
+            request = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
             request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
@@ -199,7 +214,22 @@ class Vault(commands.Cog):
         else:
             sender = ctx.message.author.nick
 
+        senderid = get_torn_id(sender)
         sender = remove_torn_id(sender)
+
+        if dbutils.get_user(ctx.message.author.id, "tornid") == "":
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+                embed = discord.Embed()
+                embed.title = "Permission Denied"
+                embed.description = f'The nickname of {ctx.message.author.name} in {ctx.guild.name} does not reflect ' \
+                                    f'the Torn ID and username. Please update the nickname (i.e. through YATA) or add' \
+                                    f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
+                                    f'`?addkey` command requires your Torn API key). This interaction has been logged.'
+                await ctx.send(embed=embed)
+                log(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to withdraw'
+                    f' some money from the faction vault.', self.access_file)
+                return None
 
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
@@ -274,7 +304,22 @@ class Vault(commands.Cog):
         else:
             sender = ctx.message.author.nick
 
+        senderid = get_torn_id(sender)
         sender = remove_torn_id(sender)
+
+        if dbutils.get_user(ctx.message.author.id, "tornid") == "":
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+                embed = discord.Embed()
+                embed.title = "Permission Denied"
+                embed.description = f'The nickname of {ctx.message.author.name} in {ctx.guild.name} does not reflect ' \
+                                    f'the Torn ID and username. Please update the nickname (i.e. through YATA) or add' \
+                                    f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
+                                    f'`?addkey` command requires your Torn API key). This interaction has been logged.'
+                await ctx.send(embed=embed)
+                log(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to withdraw'
+                    f' some money from the faction vault.', self.access_file)
+                return None
 
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
