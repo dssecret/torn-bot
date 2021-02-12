@@ -14,7 +14,7 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
-import requests
+from discord.ext import commands
 
 from required import *
 
@@ -36,19 +36,9 @@ class Torn(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-        request = requests.get(f'https://api.torn.com/user/{id}?selections=discord&key='
-                               f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
-        if request.status_code != 200:
-            embed = discord.Embed()
-            embed.title = "Error"
-            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
-                                f' code {request.status_code} has been given at {datetime.datetime.now()}.'
-            await ctx.send(embed=embed)
+        request = await tornget(ctx, f'https://api.torn.com/user/{id}?selections=discord&key=')
 
-            log(f'The Torn API has responded with HTTP status code {request.status_code}.', self.log_file)
-            return None
-
-        if request.json()["discord"]["discordID"] == "":
+        if request["discord"]["discordID"] == "":
             embed = discord.Embed()
             embed.title = "ID Not Set"
             embed.description = "Your Discord ID is not set in the Torn database. To set your Discord ID in the Torn" \
@@ -59,7 +49,7 @@ class Torn(commands.Cog):
                 f'server.', self.log_file)
             return None
 
-        if request.json()["discord"]["discordID"] != str(ctx.message.author.id):
+        if request["discord"]["discordID"] != str(ctx.message.author.id):
             embed = discord.Embed()
             embed.title = "Invalid ID"
             embed.description = f'Your Discord ID is not the same as the Discord ID stored in Torn\'s' \
@@ -70,7 +60,7 @@ class Torn(commands.Cog):
             return None
 
         data = dbutils.read("users")
-        data[str(ctx.message.author.id)]["tornid"] = request.json()["discord"]["discordID"]
+        data[str(ctx.message.author.id)]["tornid"] = str(id)
         dbutils.write("users", data)
 
         embed = discord.Embed()

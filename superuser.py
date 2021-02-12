@@ -14,7 +14,7 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
-
+from discord.ext import commands
 from required import *
 import dbutils
 

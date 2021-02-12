@@ -169,6 +169,8 @@ async def on_command_error(ctx, error):
         if str(ctx.message.channel.id) == dbutils.get_vault(ctx.guild.id, "banking"):
             await asyncio.sleep(30)
             await message.delete()
+    else:
+        print(error)
 
 
 @bot.command()

@@ -14,6 +14,7 @@
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
 import discord
+from discord.ext import commands
 import requests
 
 from required import *
@@ -51,50 +52,17 @@ class Vault(commands.Cog):
         value = text_to_num(arg)
         log(sender + " has submitted a request for " + arg + ".", self.log_file)
 
-        if dbutils.get_guild(ctx.guild.id, "tornapikey") == "":
-            embed = discord.Embed()
-            embed.title = "API Key Required"
-            embed.description = "A Torn API key is required for this command's use. Please ask your server's" \
-                                " administrator(s) to add their API key(s)."
-            await ctx.send(embed=embed)
-            log(f'Missing API key.', self.log_file)
-            return None
+        primary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=")
 
-        primary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                       f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
         secondary_faction = None
         if dbutils.get_guild(ctx.guild.id, "tornapikey2") != "":
-            secondary_faction = requests.get(f'https://api.torn.com/faction/?selections=&key='
-                                           f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
+            secondary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", key=2)
 
         await ctx.message.delete()
 
-        if primary_faction.status_code != 200:
-            embed = discord.Embed()
-            embed.title = "Error"
-            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
-                                f' code {primary_faction.status_code} has been given at {datetime.datetime.now()}.'
-            await ctx.send(embed=embed)
-
-            log(f'The Torn API has responded with HTTP status code {primary_faction.status_code}.', self.log_file)
-            return None
-
-        if senderid in primary_faction.json()["members"]:
-            request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
-                                   f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
-
-            if request.status_code != 200:
-                embed = discord.Embed()
-                embed.title = "Error"
-                embed.description = f'Something has possibly gone wrong with the request to the Torn API with ' \
-                                    f'HTTP status code {request.status_code} has been given at ' \
-                                    f'{datetime.datetime.now()}.'
-                await ctx.send(embed=embed)
-
-                log(f'The Torn API (2nd Key) has responded with HTTP status code {request.status_code}.', self.log_file)
-                return None
-
-            request = request.json()["donations"]
+        if senderid in primary_faction["members"]:
+            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=")
+            request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
                 log(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
@@ -149,22 +117,9 @@ class Vault(commands.Cog):
                     except:
                         break
                 return None
-        elif senderid in secondary_faction.json()["members"]:
-            request = requests.get(f'https://api.torn.com/faction?selections=donations&key='
-                                   f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
-
-            if request.status_code != 200:
-                embed = discord.Embed()
-                embed.title = "Error"
-                embed.description = f'Something has possibly gone wrong with the request to the Torn API with ' \
-                                    f'HTTP status code {request.status_code} has been given at ' \
-                                    f'{datetime.datetime.now()}.'
-                await ctx.send(embed=embed)
-
-                log(f'The Torn API (2nd Key) has responded with HTTP status code {request.status_code}.', self.log_file)
-                return None
-
-            request = request.json()["donations"]
+        elif senderid in secondary_faction["members"]:
+            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", key=2)
+            request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
                 log(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
@@ -248,34 +203,19 @@ class Vault(commands.Cog):
 
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
-        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
-        response_status = response.status_code
-
-        if response_status != 200:
-            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
-
-            embed = discord.Embed()
-            embed.title = "Error"
-            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
-                                f' {response_status} has been given at {datetime.datetime.now()}.'
-            message = await ctx.send(embed=embed)
-            await asyncio.sleep(30)
-            await message.delete()
-            return None
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
+        response = response["donations"]
 
         primary_balance = 0
         secondary_balance = 0
         member = False
 
-        json_response = response.json()['donations']
-
-        for user in json_response:
-            if json_response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(json_response[user]["money_balance"])} in the faction vault.',
+        for user in response:
+            if response[user]["name"] == sender:
+                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
                     self.log_file)
 
-                primary_balance = json_response[user]["money_balance"]
+                primary_balance = response[user]["money_balance"]
                 member = True
                 break
 
@@ -288,29 +228,14 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
-        response_status = response.status_code
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", key=2)
+        response = response['donations']
 
-        if response_status != 200:
-            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
-
-            embed = discord.Embed()
-            embed.title = f'Vault Balance for {sender}'
-            embed.description = f'Primary faction vault balance: {num_to_text(primary_balance)}\nSecondary ' \
-                                f'faction vault balance: Failed'
-            message = await ctx.send(embed=embed)
-            await asyncio.sleep(30)
-            await message.delete()
-            return None
-
-        json_response = response.json()['donations']
-
-        for user in json_response:
-            if json_response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(json_response[user]["money_balance"])} in the faction vault.',
+        for user in response:
+            if response[user]["name"] == sender:
+                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
                     self.log_file)
-                secondary_balance = json_response[user]["money_balance"]
+                secondary_balance = response[user]["money_balance"]
                 member = True
 
         if member is not True:
@@ -353,34 +278,19 @@ class Vault(commands.Cog):
 
         log(f'{sender} is checking their balance in the faction vault.', self.log_file)
 
-        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey")}')
-        response_status = response.status_code
-
-        if response_status != 200:
-            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
-
-            embed = discord.Embed()
-            embed.title = "Error"
-            embed.description = f'Something has possibly gone wrong with the request to the Torn API with HTTP status' \
-                                f' {response_status} has been given at {datetime.datetime.now()}.'
-            message = await ctx.send(embed=embed)
-            await asyncio.sleep(30)
-            await message.delete()
-            return None
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
+        response = response["donations"]
 
         primary_balance = 0
         secondary_balance = 0
         member = False
 
-        json_response = response.json()['donations']
-
-        for user in json_response:
-            if json_response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(json_response[user]["money_balance"])} in the faction vault.',
+        for user in response:
+            if response[user]["name"] == sender:
+                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
                     self.log_file)
 
-                primary_balance = json_response[user]["money_balance"]
+                primary_balance = response[user]["money_balance"]
                 member = True
                 break
 
@@ -393,29 +303,14 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = requests.get(f'https://api.torn.com/faction/?selections=donations&key='
-                                f'{dbutils.get_guild(ctx.guild.id, "tornapikey2")}')
-        response_status = response.status_code
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", key=2)
+        response = response['donations']
 
-        if response_status != 200:
-            log(f'The Torn API has responded with HTTP status code {response_status}.', self.log_file)
-
-            embed = discord.Embed()
-            embed.title = f'Vault Balance for {sender}'
-            embed.description = f'Primary faction vault balance: {commas(primary_balance)}\nSecondary ' \
-                                f'faction vault balance: Failed'
-            message = await ctx.send(embed=embed)
-            await asyncio.sleep(30)
-            await message.delete()
-            return None
-
-        json_response = response.json()['donations']
-
-        for user in json_response:
-            if json_response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(json_response[user]["money_balance"])} in the faction vault.',
+        for user in response:
+            if response[user]["name"] == sender:
+                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
                     self.log_file)
-                secondary_balance = json_response[user]["money_balance"]
+                secondary_balance = response[user]["money_balance"]
                 member = True
 
         if member is not True:

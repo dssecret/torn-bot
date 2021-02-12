@@ -13,7 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with torn-bot.  If not, see <https://www.gnu.org/licenses/>.
 
-from discord.ext import commands
+import requests
+import discord
 
 import datetime
 from decimal import Decimal
@@ -82,5 +83,39 @@ def get_prefix(bot, message):
             return guild["prefix"]
 
 
-def random_key():
-    pass
+async def tornget(ctx, url, key=1, random=False):
+    if random:
+        raise NotImplementedError()
+
+    if key == 1:
+        apikey = dbutils.get_guild(ctx.guild.id, "tornapikey")
+    elif key == 2:
+        apikey = dbutils.get_guild(ctx.guild.id, "tornapikey2")
+    else:
+        raise ValueError()
+
+    request = requests.get(f'{url}{apikey}')
+
+    if request.status_code != 200:
+        embed = discord.Embed()
+        embed.title = "Error"
+        embed.description = f'Something has possibly gone wrong with the request to the Torn API with ' \
+                            f'HTTP status code {request.status_code} has been given at ' \
+                            f'{datetime.datetime.now()}.'
+        await ctx.send(embed=embed)
+        log(f'The Torn API (Key {key}) has responded with HTTP status code {request.status_code}.',
+            open("log.txt", "a"))
+        return Exception
+
+    if 'error' in request.json():
+        error = request.json()['error']
+        embed = discord.Embed()
+        embed.title = "Error"
+        embed.description = f'Something has gone wrong with the request to the Torn API with error code ' \
+                            f'{error["code"]} ({error["error"]}). Visit the [Torn API documentation]' \
+                            f'(https://api.torn.com/) to see why the error was raised.'
+        await ctx.send(embed=embed)
+        log(f'The Torn API (Key {key}) has responded with error code {error["code"]}.', open("log.txt", "a"))
+        raise Exception
+
+    return request.json()
