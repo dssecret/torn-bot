@@ -52,25 +52,3 @@ class Superuser(commands.Cog):
         await ctx.send(embed=embed)
         await exit(0)
 
-    @commands.command()
-    async def restart(self, ctx):
-        '''
-        Restarts the bot
-        '''
-
-        embed = discord.Embed()
-
-        if not self.is_superuser(ctx.message.author.id):
-            embed.title = "Permission Denied"
-            embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to restart the bot, but is not the superuser.', self.access)
-            await ctx.send(embed=embed)
-            return None
-
-        embed.title = "Bot Restart"
-        embed.description = "The bot is being restarted."
-        await ctx.send(embed=embed)
-
-        subprocess.Popen(['python3', '__init__.py', '&'])
-        await exit(0)
-
