@@ -112,7 +112,7 @@ async def on_guild_join(guild):
     embed = discord.Embed()
     embed.title = f'Welcome to {bot.user.display_name}'
     embed.description = f'Thank you for inviting {bot.user.display_name} to your server'
-    embed.add_field(name="Help", value="`?help` or contact <@tiksan#0001> on Discord, on tiksan [2383326] on Torn,"
+    embed.add_field(name="Help", value="`?help` or contact <@tiksan#9110> on Discord, on tiksan [2383326] on Torn,"
                                        " or dssecret on Github")
     embed.add_field(name="How to Setup", value="Run admin commands that can be found in the [Wiki]"
                                                "(https://github.com/dssecret/torn-bot/wiki) under [Commands]"
@@ -300,7 +300,7 @@ async def help(ctx, arg=None):
         page1.add_field(name="GitHub Issues", value="https://github.com/dssecret/torn-bot/issues")
         page1.add_field(name="Documentation (Under Construction)", value="https://github.com/dssecret/torn-bot/wiki")
         page1.add_field(name="Torn City User", value="https://www.torn.com/profiles.php?XID=2383326")
-        page1.add_field(name="Discord User", value="dssecret#8137")
+        page1.add_field(name="Discord User", value="tiksan#9110")
         page1.add_field(name="For More Information", value="Please contact me (preferably on Discord or Github).")
 
         page2.add_field(name="`?withdraw [value]`", value="Sends a request to withdraw the passed amount of money to "
