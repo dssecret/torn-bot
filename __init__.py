@@ -279,18 +279,21 @@ async def help(ctx, arg=None):
         page1 = discord.Embed(
             title='Useful Resources',
             description=f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
-        ).set_footer(text="Page 1/4")
+        ).set_footer(text="Page 1/5")
         page2 = discord.Embed(
             title='Vault Commands',
-        ).set_footer(text="Page 2/4")
+        ).set_footer(text="Page 2/5")
         page3 = discord.Embed(
             title='Admin Commands',
             description='Ha! You think I\'d share the admin commands with you. If you\'re really an admin on the server'
                         ', check out the commands in my docs.'
-        ).set_footer(text="Page 3/4")
+        ).set_footer(text="Page 3/5")
         page4 = discord.Embed(
+            title="Torn Commands"
+        ).set_footer(text="Page 4/5")
+        page5 = discord.Embed(
             title="Miscellaneous Commands"
-        ).set_footer(text="Page 4/4")
+        ).set_footer(text="Page 5/5")
 
         page1.description = f'Server: {ctx.guild.name}\nPrefix: {ctx.prefix}'
         page1.add_field(name="GitHub Repository", value="https://github.com/dssecret/torn-bot")
@@ -305,13 +308,24 @@ async def help(ctx, arg=None):
         page2.add_field(name="`?bal`", value="Returns your full balance in the faction vault.")
         page2.add_field(name="`?b`", value="Returns a simplified version of your balance in the faction vault.")
 
-        page4.add_field(name="`?prefix`", value="Returns the bot's current prefix.")
-        page4.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
-                                                "it before I release it).")
-        page4.add_field(name="`?license`", value="Returns the license of the bot's software.")
-        page4.add_field(name="`?info`", value="Returns the bot's system information.")
+        page4.add_field(name="`?addid`", value="Adds and verifies the user's Torn ID to the database to "
+                                               "decrease number of API calls.")
+        page4.add_field(name="`?addkey` and `?rmkey`", value="Respectively adds and removes the user's Torn API to the "
+                                                             "database. The Torn API key can be enabled and disabled "
+                                                             "for random, global use by running the `?enkey` and "
+                                                             "`?diskey` commands respectively. Adding the API key to "
+                                                             "the bot will allow for more customized information to be"
+                                                             " displayed.")
+        page4.add_field(name="`?enkey` and `?diskey", value="Respectively enables and disables the user's API key "
+                                                            "from random, global use.")
 
-        pages = [page1, page2, page3, page4]
+        page5.add_field(name="`?prefix`", value="Returns the bot's current prefix.")
+        page5.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
+                                                "it before I release it).")
+        page5.add_field(name="`?license`", value="Returns the license of the bot's software.")
+        page5.add_field(name="`?info`", value="Returns the bot's system information.")
+
+        pages = [page1, page2, page3, page4, page5]
 
         message = await ctx.send(embed = page1)
         await message.add_reaction('⏮')
@@ -334,11 +348,11 @@ async def help(ctx, arg=None):
                     i -= 1
                     await message.edit(embed=pages[i])
             elif str(reaction) == '▶':
-                if i < 3:
+                if i < 4:
                     i += 1
                     await message.edit(embed=pages[i])
             elif str(reaction) == '⏭':
-                i = 3
+                i = 4
                 await message.edit(embed=pages[i])
 
             try:

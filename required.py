@@ -83,13 +83,15 @@ def get_prefix(bot, message):
             return guild["prefix"]
 
 
-async def tornget(ctx, url, key=1, random=False):
+async def tornget(ctx, url, guildkey=1, key=None, random=False):
     if random:
         raise NotImplementedError()
 
-    if key == 1:
+    if key is not None:
+        apikey = key
+    elif guildkey == 1:
         apikey = dbutils.get_guild(ctx.guild.id, "tornapikey")
-    elif key == 2:
+    elif guildkey == 2:
         apikey = dbutils.get_guild(ctx.guild.id, "tornapikey2")
     else:
         raise ValueError()
@@ -103,7 +105,7 @@ async def tornget(ctx, url, key=1, random=False):
                             f'HTTP status code {request.status_code} has been given at ' \
                             f'{datetime.datetime.now()}.'
         await ctx.send(embed=embed)
-        log(f'The Torn API (Key {key}) has responded with HTTP status code {request.status_code}.',
+        log(f'The Torn API (Key {guildkey}) has responded with HTTP status code {request.status_code}.',
             open("log.txt", "a"))
         return Exception
 
@@ -115,7 +117,7 @@ async def tornget(ctx, url, key=1, random=False):
                             f'{error["code"]} ({error["error"]}). Visit the [Torn API documentation]' \
                             f'(https://api.torn.com/) to see why the error was raised.'
         await ctx.send(embed=embed)
-        log(f'The Torn API (Key {key}) has responded with error code {error["code"]}.', open("log.txt", "a"))
+        log(f'The Torn API (Key {guildkey}) has responded with error code {error["code"]}.', open("log.txt", "a"))
         raise Exception
 
     return request.json()

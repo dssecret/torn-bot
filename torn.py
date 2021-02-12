@@ -27,8 +27,12 @@ class Torn(commands.Cog):
         self.access = access
 
     @commands.command()
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def addid(self, ctx, id:int):
+        '''
+        Adds the user's Torn ID to the database (across servers).
+        '''
+
         if dbutils.get_user(ctx.message.author.id)["tornid"] != "":
             embed = discord.Embed()
             embed.title = "ID Already Set"
@@ -68,3 +72,118 @@ class Torn(commands.Cog):
         embed.description = "Your ID has been set in the database."
         await ctx.send(embed=embed)
         log(f'{ctx.message.author.name} has set their id which is {id}.', self.log_file)
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def addkey(self, ctx, key):
+        '''
+        Adds the user's Torn API key to the database (across servers). The Torn API key can be enabled and disabled for
+         random, global use by the bot by running the `?enkey` and `?diskey` respectively.
+        '''
+
+        if type(ctx.message.channel) != discord.DMChannel:
+            await ctx.message.delete()
+
+        request = await tornget(ctx, f'https://api.torn.com/user/?selections=&key=', key=key)
+
+        if dbutils.get_user(ctx.message.author.id, "tornid") == "":
+            data = dbutils.read("users")
+            data[str(ctx.message.author.id)]["tornid"] = request["player_id"]
+            dbutils.write("users", data)
+
+        data = dbutils.read("users")
+        data[str(ctx.message.author.id)]["tornapikey"] = key
+        dbutils.write("users", data)
+
+        embed = discord.Embed()
+        embed.title = "API Key Set"
+        embed.description = f'{ctx.message.author.name} has set their API key.'
+        await ctx.send(embed=embed)
+        log(f'{ctx.message.author.name} has set their Torn API key.', self.log_file)
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def rmkey(self, ctx):
+        '''
+        Removes the user's Torn API key from the database.
+        '''
+
+        if dbutils.get_user(ctx.message.author.id, "tornapikey") == "":
+            embed = discord.Embed()
+            embed.title = "API Key"
+            embed.description = f'The API key of {ctx.message.author.name} has not been set yet, and therefore can ' \
+                                f'not be removed,'
+            await ctx.send(embed=embed)
+
+        data = dbutils.read("users")
+        data[str(ctx.message.author.id)]["tornapikey"] = ""
+        data[str(ctx.message.author.id)]["generaluse"] = False
+        dbutils.write("users", data)
+
+        embed = discord.Embed()
+        embed.title = "API Key"
+        embed.description = f'The API key of {ctx.message.author.name} has been removed from the database.'
+        await ctx.send(embed=embed)
+        log(f'{ctx.message.author.name} has removed their Torn API key.', self.log_file)
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def enkey(self, ctx):
+        '''
+        Enables the user's Torn API key for random, global use by the bot. Can be disabled by running `?diskey`.
+        '''
+
+        if dbutils.get_user(ctx.message.author.id, "generaluse"):
+            embed = discord.Embed()
+            embed.title = "API Key"
+            embed.description = f'The API key of {ctx.message.author.name} is already authorized for general use.'
+            await ctx.send(embed=embed)
+            return None
+
+        if dbutils.get_user(ctx.message.author.id, "tornapikey") == "":
+            embed = discord.Embed()
+            embed.title = "API Key"
+            embed.description = f'No API key is currently set for {ctx.message.author.name}.'
+            await ctx.send(embed=embed)
+            return None
+
+        data = dbutils.read("users")
+        data[str(ctx.message.author.id)]["generaluse"] = True
+        dbutils.write("users", data)
+
+        embed = discord.Embed()
+        embed.title = "API Key"
+        embed.description = f'The API key of {ctx.message.author.name} has been enabled for random, global use by ' \
+                            f'the bot. The API key can be removed from random, global use by running `?diskey`.'
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 15, commands.BucketType.user)
+    async def diskey(self, ctx):
+        '''
+        Disables the user's Torn API key for random, global use by the bot. Can be enabled by running `?enkey`.
+        '''
+
+        if not dbutils.get_user(ctx.message.author.id, "generaluse"):
+            embed = discord.Embed()
+            embed.title = "API Key"
+            embed.description = f'The API key of {ctx.message.author.name} is already not authorized for general use.'
+            await ctx.send(embed=embed)
+            return None
+
+        if dbutils.get_user(ctx.message.author.id, "tornapikey") == "":
+            embed = discord.Embed()
+            embed.title = "API Key"
+            embed.description = f'No API key is currently set for {ctx.message.author.name}.'
+            await ctx.send(embed=embed)
+            return None
+
+        data = dbutils.read("users")
+        data[str(ctx.message.author.id)]["generaluse"] = False
+        dbutils.write("users", data)
+
+        embed = discord.Embed()
+        embed.title = "API Key"
+        embed.description = f'The API key of {ctx.message.author.name} has been disabled for random, global use by ' \
+                            f'the bot. The API key can be added to random, global use by running `?enkey`.'
+        await ctx.send(embed=embed)

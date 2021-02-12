@@ -18,8 +18,6 @@ from discord.ext import commands
 from required import *
 import dbutils
 
-import subprocess
-
 
 class Superuser(commands.Cog):
     def __init__(self, client, log_file, bot, access):

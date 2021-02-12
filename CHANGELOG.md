@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Added license command
  - Info command
  - Function to make API calls to Torn
+ - Additional commands in the Torn cog (e.g. add key)
 
 ## Changed
 - Withdrawal command to have a specific on reaction loop instead of a general loop
