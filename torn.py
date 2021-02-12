@@ -78,7 +78,8 @@ class Torn(commands.Cog):
     async def addkey(self, ctx, key):
         '''
         Adds the user's Torn API key to the database (across servers). The Torn API key can be enabled and disabled for
-         random, global use by the bot by running the `?enkey` and `?diskey` respectively.
+        random, global use by the bot by running the `?enkey` and `?diskey` respectively. By default, user's Torn API
+        key will not be used randomly and globally.
         '''
 
         if type(ctx.message.channel) != discord.DMChannel:

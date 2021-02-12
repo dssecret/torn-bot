@@ -56,7 +56,7 @@ class Vault(commands.Cog):
 
         secondary_faction = None
         if dbutils.get_guild(ctx.guild.id, "tornapikey2") != "":
-            secondary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", key=2)
+            secondary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", guildkey=2)
 
         await ctx.message.delete()
 
@@ -118,7 +118,7 @@ class Vault(commands.Cog):
                         break
                 return None
         elif senderid in secondary_faction["members"]:
-            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", key=2)
+            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", guildkey=2)
             request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
@@ -228,7 +228,7 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", key=2)
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", guildkey=2)
         response = response['donations']
 
         for user in response:
@@ -303,7 +303,7 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", key=2)
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", guildkey=2)
         response = response['donations']
 
         for user in response:
