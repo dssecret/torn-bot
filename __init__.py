@@ -211,7 +211,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 Pre-Release 5"
+    embed.description = "v1.3 Pre-Release 6 In-Dev"
     await ctx.send(embed=embed)
 
 
@@ -313,7 +313,7 @@ async def help(ctx, arg=None):
         page4.add_field(name="`?addkey` and `?rmkey`", value="Respectively adds and removes the user's Torn API to the "
                                                              "database. The Torn API key can be enabled and disabled "
                                                              "for random, global use by running the `?enkey` and "
-                                                             "`?diskey` commands respectively. Adding the API key to "
+                                                             "`?diskey`` commands respectively. Adding the API key to "
                                                              "the bot will allow for more customized information to be"
                                                              " displayed.")
         page4.add_field(name="`?enkey` and `?diskey", value="Respectively enables and disables the user's API key "
