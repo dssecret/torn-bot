@@ -15,7 +15,6 @@
 
 import discord
 from discord.ext import commands
-import requests
 
 from required import *
 import dbutils
@@ -52,7 +51,9 @@ class Vault(commands.Cog):
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
             verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
-            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+
+            if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
+                    verification["discord"]["discordID"] != "":
                 embed = discord.Embed()
                 embed.title = "Permission Denied"
                 embed.description = f'The nickname of {ctx.message.author.nick} in {ctx.guild.name} does not reflect ' \
@@ -219,7 +220,8 @@ class Vault(commands.Cog):
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
             verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
-            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+            if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
+                    verification["discord"]["discordID"] != "":
                 embed = discord.Embed()
                 embed.title = "Permission Denied"
                 embed.description = f'The nickname of {ctx.message.author.name} in {ctx.guild.name} does not reflect ' \
@@ -309,7 +311,8 @@ class Vault(commands.Cog):
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
             verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
-            if verification["discord"]["discordID"] != str(ctx.message.author.id):
+            if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
+                    verification["discord"]["discordID"] != "":
                 embed = discord.Embed()
                 embed.title = "Permission Denied"
                 embed.description = f'The nickname of {ctx.message.author.name} in {ctx.guild.name} does not reflect ' \
