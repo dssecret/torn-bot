@@ -47,13 +47,17 @@ def text_to_num(text):
         "B": 9
     }
 
-    text = text.upper()
-    text = text.replace(",", "")
-    if text[-1] in decimal:
-        num, magnitude = text[:-1], text[-1]
-        return Decimal(num) * 10 ** decimal[magnitude]
+    text = text.upper().replace(",", "")
+    numbers = re.sub(f'[a-z]', '', text.lower())
+
+    if "K" in text:
+        return Decimal(numbers) * 1000
+    elif "M" in text:
+        return Decimal(numbers) * 1000000
+    elif "B" in text:
+        return Decimal(numbers) * 1000000000
     else:
-        return Decimal(text)
+        return Decimal(numbers)
 
 
 def check_admin(member):
