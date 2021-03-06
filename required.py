@@ -41,12 +41,6 @@ def num_to_text(num):
 
 
 def text_to_num(text):
-    decimal = {
-        'K': 3,
-        "M": 6,
-        "B": 9
-    }
-
     text = text.upper().replace(",", "")
     numbers = re.sub(f'[a-z]', '', text.lower())
 

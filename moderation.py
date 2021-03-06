@@ -19,6 +19,8 @@ import discord
 from required import *
 import dbutils
 
+import asyncio
+
 
 class Moderation(commands.Cog):
     def __init__(self, log_file, access):
@@ -46,4 +48,6 @@ class Moderation(commands.Cog):
         await ctx.message.channel.purge(limit=nummessages, check=None, before=None)
         log(f'{nummessages} messages in {ctx.message.channel.name} have been purged by {ctx.message.author.mention}.',
             self.log_file)
-        await ctx.send(f'{nummessages} messages have been purged by {ctx.message.author.mention}.')
+        message = await ctx.send(f'{nummessages} messages have been purged by {ctx.message.author.mention}.')
+        await asyncio.sleep(30)
+        await message.delete()

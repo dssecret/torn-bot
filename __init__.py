@@ -62,7 +62,7 @@ async def on_ready():
 
     for guild in bot.guilds:
         print(f"- {guild.id} (name: {guild.name})")
-        guild_count = guild_count + 1
+        guild_count += 1
 
         for jsonguild in guilds["guilds"]:
             if jsonguild["id"] == str(guild.id):
@@ -170,7 +170,7 @@ async def on_command_error(ctx, error):
             await asyncio.sleep(30)
             await message.delete()
     else:
-        print(error)
+        raise error
 
 
 @bot.command()
