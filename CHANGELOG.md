@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Changed
 - Withdrawal command to have a specific on reaction loop instead of a general loop
 - Help command to be paginated and to include bot commands
+- Withdrawal command to not use a loop (to prevent Discord disconnects from breaking reaction)
 
 ## Fixed
  - Lack of support of commas in text_to_num function

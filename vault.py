@@ -38,7 +38,7 @@ class Vault(commands.Cog):
         '''
 
         def check(reaction, user):
-            return not user.bot
+            return False if user.bot or reaction != '✅' else True
 
         sender = None
         if ctx.message.author.nick is None:
@@ -105,34 +105,33 @@ class Vault(commands.Cog):
                 reaction = None
                 user = None
 
-                while True:
-                    if str(reaction) == '✅':
-                        log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
-                            self.log_file)
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=21600, check=check)
+                    await message.clear_reactions()
+                except asyncio.TimeoutError:
+                    return None
+                else:
+                    log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
+                        self.log_file)
 
-                        original = await ctx.fetch_message(int(message.embeds[0].footer.text))
+                    original = await ctx.fetch_message(int(message.embeds[0].footer.text))
 
-                        embed = discord.Embed()
-                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                        embed.add_field(name="Original Message", value=original.embeds[0].description)
-                        await original.edit(embed=embed)
+                    embed = discord.Embed()
+                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                    embed.add_field(name="Original Message", value=original.embeds[0].description)
+                    await original.edit(embed=embed)
 
-                        embed = discord.Embed()
-                        embed.title = "Money Request"
-                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                    embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
 
-                        await reaction.message.edit(embed=embed)
-                        await reaction.message.clear_reactions()
-                        await asyncio.sleep(30)
-                        await original.delete()
-                        return None
-                    try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check)
-                        await message.clear_reactions()
-                    except:
-                        break
-                return None
+                    await reaction.message.edit(embed=embed)
+                    await reaction.message.clear_reactions()
+                    await asyncio.sleep(30)
+                    await original.delete()
+                    return None
+
         elif senderid in secondary_faction["members"]:
             request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", guildkey=2)
             request = request["donations"]
@@ -162,33 +161,32 @@ class Vault(commands.Cog):
                 reaction = None
                 user = None
 
-                while True:
-                    if str(reaction) == '✅':
-                        log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
-                            self.log_file)
+                try:
+                    reaction, user = await self.bot.wait_for('reaction_add', timeout=21600, check=check)
+                    await message.clear_reactions()
+                except asyncio.TimeoutError:
+                    return None
+                else:
+                    log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
+                        self.log_file)
 
-                        original = await ctx.fetch_message(int(message.embeds[0].footer.text))
+                    original = await ctx.fetch_message(int(message.embeds[0].footer.text))
 
-                        embed = discord.Embed()
-                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                        embed.add_field(name="Original Message", value=original.embeds[0].description)
-                        await original.edit(embed=embed)
+                    embed = discord.Embed()
+                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                    embed.add_field(name="Original Message", value=original.embeds[0].description)
+                    await original.edit(embed=embed)
 
-                        embed = discord.Embed()
-                        embed.title = "Money Request"
-                        embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                        embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
+                    embed = discord.Embed()
+                    embed.title = "Money Request"
+                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
+                    embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
 
-                        await reaction.message.edit(embed=embed)
-                        await reaction.message.clear_reactions()
-                        await asyncio.sleep(30)
-                        await original.delete()
-                        return None
-                    try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=3600, check=check)
-                        await message.clear_reactions()
-                    except:
-                        break
+                    await reaction.message.edit(embed=embed)
+                    await reaction.message.clear_reactions()
+                    await asyncio.sleep(30)
+                    await original.delete()
+                    return None
         else:
             log(f'{sender} who is not a member of stored factions has requested {arg}.', self.log_file)
 
