@@ -159,7 +159,7 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-    @commands.command()
+    @commands.command(aliases=['f'])
     @commands.cooldown(1, 1, commands.BucketType.user)
     async def fulfill(self, ctx, request):
         '''
