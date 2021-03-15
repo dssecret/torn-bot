@@ -212,7 +212,7 @@ async def version(ctx):
 
     embed = discord.Embed()
     embed.title = "Version"
-    embed.description = "v1.3 Pre-Release 6 In-Dev (Test)"
+    embed.description = "v1.3"
     await ctx.send(embed=embed)
 
 
@@ -254,7 +254,7 @@ async def info(ctx):
 
     embed = discord.Embed()
     embed.title = "Bot Info"
-    embed.add_field(name="Uptime", value=f'{round((time.time() - psutil.boot_time())/3600, 2)} hours')
+    embed.add_field(name="Uptime", value=f'{round((time.time() - psutil.boot_time()) / 3600, 2)} hours')
     embed.add_field(name="% CPU", value=f'{psutil.cpu_percent()}%')
     embed.add_field(name="% Memory", value=f'{psutil.virtual_memory().percent}%')
     embed.add_field(name="% Swap", value=f'{psutil.swap_memory().percent}%')
@@ -306,6 +306,7 @@ async def help(ctx, arg=None):
 
         page2.add_field(name="`?withdraw [value]`", value="Sends a request to withdraw the passed amount of money to "
                                                           "the banker")
+        page2.add_field(name="`?fulfill [request]`", value="Fulfills the specified withdrawal request")
         page2.add_field(name="`?bal`", value="Returns your full balance in the faction vault.")
         page2.add_field(name="`?b`", value="Returns a simplified version of your balance in the faction vault.")
 
@@ -322,13 +323,13 @@ async def help(ctx, arg=None):
 
         page5.add_field(name="`?prefix`", value="Returns the bot's current prefix.")
         page5.add_field(name="`?version`", value="Returns the bot's current version (assuming I remember to change "
-                                                "it before I release it).")
+                                                 "it before I release it).")
         page5.add_field(name="`?license`", value="Returns the license of the bot's software.")
         page5.add_field(name="`?info`", value="Returns the bot's system information.")
 
         pages = [page1, page2, page3, page4, page5]
 
-        message = await ctx.send(embed = page1)
+        message = await ctx.send(embed=page1)
         await message.add_reaction('⏮')
         await message.add_reaction('◀')
         await message.add_reaction('▶')

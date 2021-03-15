@@ -96,7 +96,8 @@ class Vault(commands.Cog):
 
                 embed = discord.Embed()
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
-                embed.description = f'{sender} is requesting {arg} from the faction vault.'
+                embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
+                                    f'enter `?f {requestid}` in this channel.'
                 message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
                 await message.add_reaction('✅')
 
@@ -135,7 +136,8 @@ class Vault(commands.Cog):
 
                 embed = discord.Embed()
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
-                embed.description = f'{sender} is requesting {arg} from the faction vault.'
+                embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
+                                    f'enter `?f {requestid}` in this channel.'
                 message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
                 await message.add_reaction('✅')
 

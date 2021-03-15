@@ -25,11 +25,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Additional commands in the Torn cog (e.g. add key)
  - Discord User ID check in vault commands
  - Support for mil and bil in the text_to_num function
+ - Fulfill command to indicate the fulfillment of a withdrawal request
 
 ## Changed
-- Withdrawal command to have a specific on reaction loop instead of a general loop
-- Help command to be paginated and to include bot commands
-- Withdrawal command to not use a loop (to prevent Discord disconnects from breaking reaction)
+ - Withdrawal command to have a specific on reaction loop instead of a general loop
+ - Help command to be paginated and to include bot commands
+ - Withdrawal command to not use a loop (to prevent Discord disconnects from breaking reaction)
 
 ## Fixed
  - Lack of support of commas in text_to_num function
@@ -38,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Noob functions (and related variables and functions)
  - Superuser pull command
  - Superuser restart command
+ - Reaction to fulfill withdrawal request
 
 ## [1.2]
 ### Added
