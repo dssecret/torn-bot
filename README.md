@@ -24,7 +24,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
  - Support for secondary faction
 
 ## TODO List
- - JSON based storage
  - General Torn features
 
 ## License

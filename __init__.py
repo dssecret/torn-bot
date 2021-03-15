@@ -264,7 +264,7 @@ async def info(ctx):
 
 
 @bot.command()
-@commands.cooldown(1, 30, commands.BucketType.guild)
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
