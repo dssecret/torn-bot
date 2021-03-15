@@ -37,10 +37,7 @@ class Vault(commands.Cog):
         specific faction)
         '''
 
-        def check(reaction, user):
-            return False if user.bot or reaction != '✅' else True
-
-        sender = None
+        # sender = None
         if ctx.message.author.nick is None:
             sender = ctx.message.author.name
         else:
@@ -90,47 +87,30 @@ class Vault(commands.Cog):
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
-                embed = discord.Embed()
-                embed.title = "Money Request"
-                embed.description = "Your request has been forwarded to the faction leadership."
-                message = await ctx.send(embed=embed)
+                requestid = dbutils.read("requests")["nextrequest"]
 
                 embed = discord.Embed()
-                embed.title = "Money Request"
+                embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
+                embed.description = "Your request has been forwarded to the faction leadership."
+                original = await ctx.send(embed=embed)
+
+                embed = discord.Embed()
+                embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
-                embed.set_footer(text=str(message.id))
                 message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
                 await message.add_reaction('✅')
 
-                reaction = None
-                user = None
-
-                try:
-                    reaction, user = await self.bot.wait_for('reaction_add', timeout=21600, check=check)
-                    await message.clear_reactions()
-                except asyncio.TimeoutError:
-                    return None
-                else:
-                    log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
-                        self.log_file)
-
-                    original = await ctx.fetch_message(int(message.embeds[0].footer.text))
-
-                    embed = discord.Embed()
-                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                    embed.add_field(name="Original Message", value=original.embeds[0].description)
-                    await original.edit(embed=embed)
-
-                    embed = discord.Embed()
-                    embed.title = "Money Request"
-                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                    embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
-
-                    await reaction.message.edit(embed=embed)
-                    await reaction.message.clear_reactions()
-                    await asyncio.sleep(30)
-                    await original.delete()
-                    return None
+                data = dbutils.read("requests")
+                data["nextrequest"] += 1
+                data[requestid] = {
+                    "requester": ctx.message.author.id,
+                    "timerequested": time.ctime(),
+                    "fulfiller": None,
+                    "timefulfilled": "",
+                    "requestmessage": original.id,
+                    "fulfilled": False
+                }
+                dbutils.write("requests", data)
 
         elif senderid in secondary_faction["members"]:
             request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", guildkey=2)
@@ -146,47 +126,30 @@ class Vault(commands.Cog):
 
                 log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
 
-                embed = discord.Embed()
-                embed.title = "Money Request"
-                embed.description = "Your request has been forwarded to the faction leadership."
-                message = await ctx.send(embed=embed)
+                requestid = dbutils.read("requests")["nextrequest"]
 
                 embed = discord.Embed()
-                embed.title = "Money Request"
+                embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
+                embed.description = "Your request has been forwarded to the faction leadership."
+                original = await ctx.send(embed=embed)
+
+                embed = discord.Embed()
+                embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault.'
-                embed.set_footer(text=str(message.id))
-                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role2"), embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
                 await message.add_reaction('✅')
 
-                reaction = None
-                user = None
-
-                try:
-                    reaction, user = await self.bot.wait_for('reaction_add', timeout=21600, check=check)
-                    await message.clear_reactions()
-                except asyncio.TimeoutError:
-                    return None
-                else:
-                    log(f'{user.name} has fulfilled the request ({reaction.message.embeds[0].description}).',
-                        self.log_file)
-
-                    original = await ctx.fetch_message(int(message.embeds[0].footer.text))
-
-                    embed = discord.Embed()
-                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                    embed.add_field(name="Original Message", value=original.embeds[0].description)
-                    await original.edit(embed=embed)
-
-                    embed = discord.Embed()
-                    embed.title = "Money Request"
-                    embed.description = f'The request has been fulfilled by {user.name} at {time.ctime()}.'
-                    embed.add_field(name="Original Message", value=reaction.message.embeds[0].description)
-
-                    await reaction.message.edit(embed=embed)
-                    await reaction.message.clear_reactions()
-                    await asyncio.sleep(30)
-                    await original.delete()
-                    return None
+                data = dbutils.read("requests")
+                data["nextrequest"] += 1
+                data[requestid] = {
+                    "requester": ctx.message.author.id,
+                    "timerequested": time.ctime(),
+                    "fulfiller": None,
+                    "timefulfilled": "",
+                    "requestmessage": original.id,
+                    "fulfilled": False
+                }
+                dbutils.write("requests", data)
         else:
             log(f'{sender} who is not a member of stored factions has requested {arg}.', self.log_file)
 
@@ -195,6 +158,42 @@ class Vault(commands.Cog):
             embed.description = f'{sender} is not a member of stored factions has requested {arg}.'
             await ctx.send(embed=embed)
             return None
+
+    @commands.command()
+    @commands.cooldown(1, 1, commands.BucketType.user)
+    async def fulfill(self, ctx, request):
+        '''
+        Indicates the fulfillment of the specified request
+        '''
+
+        if dbutils.read("requests")[request]["fulfilled"]:
+            embed = discord.Embed()
+            embed.title = "Request Already Fulfilled"
+            embed.description = f'Request #{request} has already been fulfilled by ' \
+                                f'{ctx.guild.get_member(dbutils.read("requests")[request]["fulfiller"]).name} ' \
+                                f'at {dbutils.read("requests")[request]["timefulfilled"]}.'
+            await ctx.send(embed=embed)
+            return None
+
+        channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking")))
+        message = await channel.fetch_message(int(dbutils.read("requests")[request]["requestmessage"]))
+
+        embed = discord.Embed()
+        embed.title = message.embeds[0].title
+        embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
+        await message.edit(embed=embed)
+
+        embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
+        await ctx.send(embed=embed)
+
+        data = dbutils.read("requests")
+        data[request]["fulfiller"] = ctx.message.author.id
+        data[request]["fulfilled"] = True
+        data[request]["timefulfilled"] = time.ctime(),
+        dbutils.write("requests", data)
+
+        await asyncio.sleep(60)
+        await message.delete()
 
     @commands.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.user)

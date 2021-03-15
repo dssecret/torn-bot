@@ -170,7 +170,7 @@ async def on_command_error(ctx, error):
             await asyncio.sleep(30)
             await message.delete()
     else:
-        await ctx.send(error)
+        # await ctx.send(error)
         raise error
 
 

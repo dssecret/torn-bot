@@ -15,7 +15,7 @@
 
 import json
 
-jsons = ["guilds", "vault", "users"]
+jsons = ["guilds", "vault", "users", "requests"]
 
 
 def _read(file):
@@ -54,6 +54,15 @@ def initialize():
         file.close()
     except FileNotFoundError:
         _write("users", {})
+
+    try:
+        file = open("requests.json")
+        file.close()
+    except FileNotFoundError:
+        data = {
+            "nextrequest": 0
+        }
+        _write("requests", data)
 
 
 def read(file):
