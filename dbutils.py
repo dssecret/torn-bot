@@ -15,7 +15,7 @@
 
 import json
 
-jsons = ["guilds", "vault", "users", "requests"]
+jsons = ["guilds", "vault", "users", "requests", "armory"]
 
 
 def _read(file):
@@ -63,6 +63,12 @@ def initialize():
             "nextrequest": 0
         }
         _write("requests", data)
+
+    try:
+        file = open("armory.json")
+        file.close()
+    except FileNotFoundError:
+        _write("armory", {})
 
 
 def read(file):

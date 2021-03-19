@@ -27,6 +27,7 @@ import admin
 import moderation
 import superuser
 import torn
+import armory
 from required import *
 import dbutils
 
@@ -43,6 +44,7 @@ dbutils.initialize()
 guilds = dbutils.read("guilds")
 vaults = dbutils.read("vault")
 users = dbutils.read("users")
+aractions = dbutils.read("armory")
 
 client = discord.client.Client()
 intents = discord.Intents.default()
@@ -86,6 +88,13 @@ async def on_ready():
             }
             dbutils.write("vault", vaults)
 
+        if str(guild.id) not in aractions:
+            aractions[guild.id] = {
+                "lastscan": 0,
+                "requests": []
+            }
+            dbutils.write("armory", aractions)
+
         for member in guild.members:
             if str(member.id) in users:
                 continue
@@ -105,6 +114,7 @@ async def on_ready():
     bot.add_cog(moderation.Moderation(file, access))
     bot.add_cog(superuser.Superuser(client, file, bot, access))
     bot.add_cog(torn.Torn(file, bot, client, access))
+    bot.add_cog(armory.Armory(bot, file, access))
 
 
 @bot.event
@@ -268,7 +278,7 @@ async def info(ctx):
 async def help(ctx, arg=None):
     '''
     Returns links to the documentation, issues, developer contact information, and other pages if no command is passed
-    as a paramter. If a command is passed as a paramter, the help command returns the help message of the passed
+    as a parameter. If a command is passed as a parameter, the help command returns the help message of the passed
     command.
     '''
 
