@@ -84,7 +84,8 @@ async def on_ready():
                 "role": "",
                 "channel2": "",
                 "role2": "",
-                "banking": ""
+                "banking": "",
+                "banking2": ""
             }
             dbutils.write("vault", vaults)
 
@@ -146,7 +147,8 @@ async def on_guild_join(guild):
             "role": "",
             "channel2": "",
             "role2": "",
-            "banking": ""
+            "banking": "",
+            "banking2": ""
         }
         dbutils.write("vault", vaults)
 

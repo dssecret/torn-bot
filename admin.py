@@ -61,7 +61,8 @@ class Admin(commands.Cog):
                 Vault Channel 2: {dbutils.read("vault")[str(ctx.guild.id)]["channel2"]}
                 Vault Role: {dbutils.read("vault")[str(ctx.guild.id)]["role"]}
                 Vault Role 2: {dbutils.read("vault")[str(ctx.guild.id)]["role2"]}
-                Banking Channel: {dbutils.read("vault")[str(ctx.guild.id)]["banking"]}'''
+                Banking Channel: {dbutils.read("vault")[str(ctx.guild.id)]["banking"]}
+                Banking Channel 2: {dbutils.read("vault")[str(ctx.guild.id)]["banking2"]}'''
             ).set_footer(text="Page 2/2")
 
             pages = [page1, page2]
@@ -190,6 +191,16 @@ class Admin(commands.Cog):
                 log(f'Banking Channel has been set to {data[str(ctx.guild.id)]["banking"]}.', self.log_file)
                 embed.title = "Banking Channel"
                 embed.description = f'Banking Channel has been set to {channel.name}.'
+        elif arg == "bc2":
+            for channel in ctx.guild.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["banking2"] = str(channel.id)
+                dbutils.write("vault", data)
+                log(f'Banking Channel 2 has been set to {data[str(ctx.guild.id)]["banking2"]}.', self.log_file)
+                embed.title = "Banking Channel 2"
+                embed.description = f'Banking Channel 2 has been set to {channel.name}.'
         else:
             embed.title = "Configuration"
             embed.description = "This key is not a valid configuration key."

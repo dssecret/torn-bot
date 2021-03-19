@@ -109,7 +109,8 @@ class Vault(commands.Cog):
                     "fulfiller": None,
                     "timefulfilled": "",
                     "requestmessage": original.id,
-                    "fulfilled": False
+                    "fulfilled": False,
+                    "faction": 1
                 }
                 dbutils.write("requests", data)
 
@@ -149,7 +150,8 @@ class Vault(commands.Cog):
                     "fulfiller": None,
                     "timefulfilled": "",
                     "requestmessage": original.id,
-                    "fulfilled": False
+                    "fulfilled": False,
+                    "faction": 2
                 }
                 dbutils.write("requests", data)
         else:
@@ -177,7 +179,10 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-        channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking")))
+        if dbutils.read("requests")[request]["faction"] == 1:
+            channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking")))
+        else:
+            channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking2")))
         message = await channel.fetch_message(int(dbutils.read("requests")[request]["requestmessage"]))
 
         embed = discord.Embed()
