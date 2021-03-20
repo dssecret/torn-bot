@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
  - Lack of banking channel 2
 
+### Removed
+ - Reaction in withdrawal message
+
 ## [1.3]
 ### Added
  - Access log to log unauthorized attempts to run commands
