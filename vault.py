@@ -185,17 +185,21 @@ class Vault(commands.Cog):
             channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking")))
         else:
             channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking2")))
-        message = await channel.fetch_message(int(dbutils.read("requests")[request]["requestmessage"]))
+        original = await channel.fetch_message(int(dbutils.read("requests")[request]["requestmessage"]))
 
         embed = discord.Embed()
-        embed.title = message.embeds[0].title
+        embed.title = original.embeds[0].title
+
+        channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
+        message = await channel.fetch_message(int(dbutils.read("requests")[request]["withdrawmessage"]))
+
+        embed.add_field(name='Original Message', value=message.embeds[0].description)
         embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
         await message.edit(embed=embed)
 
         embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
-        channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
-        message = await channel.fetch_message(int(dbutils.read("requests")[request]["withdrawmessage"]))
-        await message.edit(embed=embed)
+        embed.clear_fields()
+        await original.edit(embed=embed)
 
         data = dbutils.read("requests")
         data[request]["fulfiller"] = ctx.message.author.id
@@ -203,8 +207,8 @@ class Vault(commands.Cog):
         data[request]["timefulfilled"] = time.ctime(),
         dbutils.write("requests", data)
 
-        # await asyncio.sleep(60)
-        # await message.delete()
+        await asyncio.sleep(60)
+        await original.delete()
 
     @commands.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.user)
