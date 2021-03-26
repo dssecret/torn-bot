@@ -98,7 +98,7 @@ class Vault(commands.Cog):
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
                                     f'enter `?f {requestid}` in this channel.'
-                await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
 
                 data = dbutils.read("requests")
                 data["nextrequest"] += 1
@@ -108,6 +108,7 @@ class Vault(commands.Cog):
                     "fulfiller": None,
                     "timefulfilled": "",
                     "requestmessage": original.id,
+                    "withdrawmessage": message.id,
                     "fulfilled": False,
                     "faction": 1
                 }
@@ -138,7 +139,7 @@ class Vault(commands.Cog):
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
                                     f'enter `?f {requestid}` in this channel.'
-                await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
 
                 data = dbutils.read("requests")
                 data["nextrequest"] += 1
@@ -148,6 +149,7 @@ class Vault(commands.Cog):
                     "fulfiller": None,
                     "timefulfilled": "",
                     "requestmessage": original.id,
+                    "withdrawmessage": message.id,
                     "fulfilled": False,
                     "faction": 2
                 }
@@ -177,6 +179,8 @@ class Vault(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
+        await ctx.message.delete()
+
         if dbutils.read("requests")[request]["faction"] == 1:
             channel = discord.utils.get(ctx.guild.channels, id=int(dbutils.get_vault(ctx.guild.id, "banking")))
         else:
@@ -189,7 +193,9 @@ class Vault(commands.Cog):
         await message.edit(embed=embed)
 
         embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
-        await ctx.send(embed=embed)
+        channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
+        message = await channel.fetch_message(int(dbutils.read("requests")[request]["withdrawmessage"]))
+        await message.edit(embed=embed)
 
         data = dbutils.read("requests")
         data[request]["fulfiller"] = ctx.message.author.id
