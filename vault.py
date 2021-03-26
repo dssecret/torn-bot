@@ -193,7 +193,7 @@ class Vault(commands.Cog):
         channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
         message = await channel.fetch_message(int(dbutils.read("requests")[request]["withdrawmessage"]))
 
-        embed.add_field(name='Original Message', value=message.embeds[0].description)
+        embed.add_field(name='Original Message', value=message.embeds[0].description.split(".")[0])
         embed.description = f'The request has been fulfilled by {ctx.message.author.name} at {time.ctime()}.'
         await message.edit(embed=embed)
 

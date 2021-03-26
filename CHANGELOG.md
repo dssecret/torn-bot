@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
  - Reaction in withdrawal message
+ - Fulfillation request from fulfilled withdraw message
 
 ## [1.3]
 ### Added
