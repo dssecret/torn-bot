@@ -203,8 +203,8 @@ class Vault(commands.Cog):
         data[request]["timefulfilled"] = time.ctime(),
         dbutils.write("requests", data)
 
-        await asyncio.sleep(60)
-        await message.delete()
+        # await asyncio.sleep(60)
+        # await message.delete()
 
     @commands.command(pass_context=True)
     @commands.cooldown(1, 30, commands.BucketType.user)
