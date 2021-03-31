@@ -24,6 +24,12 @@ import re
 from datetime import datetime
 
 
+shorts = {
+    "Beer": "Bottle of Beer",
+    "Xan": "Xanax"
+}
+
+
 class Armory(commands.Cog):
     def __init__(self, bot, log_file, access):
         self.bot = bot
@@ -61,7 +67,7 @@ class Armory(commands.Cog):
             dbutils.write("armory", data)
 
     @commands.command()
-    # @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def search(self, ctx, start, stop="now", item="Xanax"):
         if not check_admin(ctx.message.author) and dbutils.get_superuser() != ctx.message.author.id:
             embed = discord.Embed()
