@@ -186,6 +186,22 @@ async def on_command_error(ctx, error):
         raise error
 
 
+@bot.event
+async def on_member_join(member):
+    data = dbutils.read('users')
+
+    if str(member.id) in data:
+        return None
+    if member.bot:
+        return None
+    data[member.id] = {
+        "tornid": "",
+        "tornapikey": "",
+        "generaluse": False
+    }
+    dbutils.write("users", data)
+
+
 @bot.command()
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def ping(ctx):
