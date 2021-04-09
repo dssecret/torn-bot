@@ -21,11 +21,10 @@ import dbutils
 
 
 class Admin(commands.Cog):
-    def __init__(self, log_file, bot, client, access):
-        self.log_file = log_file
+    def __init__(self, logger, bot, client):
+        self.logger = logger
         self.bot = bot
         self.client = client
-        self.access = access
 
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -41,7 +40,7 @@ class Admin(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator', self.access)
+            self.logger.warning(f'{ctx.message.author.name} has attempted to run config, but is not an Administrator')
             return None
 
         embed = discord.Embed()
@@ -113,7 +112,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["channel"] = channel.name
                 dbutils.write("vault", data)
-                log(f'Vault Channel has been set to {data[str(ctx.guild.id)]["channel"]}.', self.log_file)
+                self.logger.info(f'Vault Channel has been set to {data[str(ctx.guild.id)]["channel"]}.')
                 embed.title = "Vault Channel"
                 embed.description = f'Vault Channel has been set to {data[str(ctx.guild.id)]["channel"]}.'
         elif arg == "vc2":
@@ -123,7 +122,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["channel2"] = channel.name
                 dbutils.write("vault", data)
-                log(f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.', self.log_file)
+                self.logger.info(f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.')
                 embed.title = "Vault Channel 2"
                 embed.description = f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.'
         elif arg == "vr":
@@ -133,7 +132,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["role"] = str(role.mention)
                 dbutils.write("vault", data)
-                log(f'Vault Role has been set to {data[str(ctx.guild.id)]["role"]}.', self.log_file)
+                self.logger.info(f'Vault Role has been set to {data[str(ctx.guild.id)]["role"]}.')
                 embed.title = "Vault Role"
                 embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role"]}.'
         elif arg == "vr2":
@@ -143,7 +142,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["role2"] = str(role.mention)
                 dbutils.write("vault", data)
-                log(f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.', self.log_file)
+                self.logger.info(f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.')
                 embed.title = "Vault Role"
                 embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.'
         elif arg == "prefix":
@@ -154,7 +153,7 @@ class Admin(commands.Cog):
                     guild["prefix"] = str(value)
 
             dbutils.write("guilds", data)
-            log(f'Bot Prefix has been set to {value}.', self.log_file)
+            self.logger.info(f'Bot Prefix has been set to {value}.')
             embed.title = "Bot Prefix"
             embed.description = f'Bot Prefix has been set to {value}.'
         elif arg == "key":
@@ -165,7 +164,7 @@ class Admin(commands.Cog):
                     guild["tornapikey"] = str(value)
 
             dbutils.write("guilds", data)
-            log(f'{ctx.message.author.name} has set the primary Torn API Key.', self.log_file)
+            self.logger.info(f'{ctx.message.author.name} has set the primary Torn API Key.')
             embed.title = "Torn API Key"
             embed.description = f'The Torn API key for the primary faction has been set by {ctx.message.author.name}.'
             await ctx.message.delete()
@@ -177,7 +176,7 @@ class Admin(commands.Cog):
                     guild["tornapikey2"] = str(value)
 
             dbutils.write("guilds", data)
-            log(f'{ctx.message.author.name} has set the secondary Torn API Key.', self.log_file)
+            self.logger.info(f'{ctx.message.author.name} has set the secondary Torn API Key.')
             embed.title = "Torn API Key"
             embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
             await ctx.message.delete()
@@ -188,7 +187,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["banking"] = str(channel.id)
                 dbutils.write("vault", data)
-                log(f'Banking Channel has been set to {data[str(ctx.guild.id)]["banking"]}.', self.log_file)
+                self.logger.info(f'Banking Channel has been set to {data[str(ctx.guild.id)]["banking"]}.')
                 embed.title = "Banking Channel"
                 embed.description = f'Banking Channel has been set to {channel.name}.'
         elif arg == "bc2":
@@ -198,7 +197,7 @@ class Admin(commands.Cog):
                 data = dbutils.read("vault")
                 data[str(ctx.guild.id)]["banking2"] = str(channel.id)
                 dbutils.write("vault", data)
-                log(f'Banking Channel 2 has been set to {data[str(ctx.guild.id)]["banking2"]}.', self.log_file)
+                self.logger.info(f'Banking Channel 2 has been set to {data[str(ctx.guild.id)]["banking2"]}.')
                 embed.title = "Banking Channel 2"
                 embed.description = f'Banking Channel 2 has been set to {channel.name}.'
         else:

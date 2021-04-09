@@ -20,11 +20,10 @@ from required import *
 
 
 class Torn(commands.Cog):
-    def __init__(self, log_file, bot, client, access):
-        self.log_file = log_file
+    def __init__(self, logger, bot, client):
+        self.logger = logger
         self.bot = bot
         self.client = client
-        self.access = access
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)
@@ -40,7 +39,7 @@ class Torn(commands.Cog):
             await ctx.send(embed=embed)
             return None
 
-        request = await tornget(ctx, f'https://api.torn.com/user/{id}?selections=discord&key=')
+        request = await tornget(ctx, f'https://api.torn.com/user/{id}?selections=discord&key=', self.logger)
 
         if request["discord"]["discordID"] == "":
             embed = discord.Embed()
@@ -49,8 +48,8 @@ class Torn(commands.Cog):
                                 "database, visit the official Torn Discord server and verify yourself."
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to set id, but is not verified in the official Discord '
-                f'server.', self.log_file)
+            self.logger.info(f'{ctx.message.author.name} has attempted to set id, but is not verified in the official'
+                             f' Discord server.')
             return None
 
         if request["discord"]["discordID"] != str(ctx.message.author.id):
@@ -59,8 +58,8 @@ class Torn(commands.Cog):
             embed.description = f'Your Discord ID is not the same as the Discord ID stored in Torn\'s' \
                                 f' database for your given Torn ID.'
             await ctx.send(embed=embed)
-            log(f'{ctx.message.author.name} has attempted to set their Torn ID to be {id}, but their Discord ID '
-                f'({ctx.message.author.id} does not match the value in Torn\'s DB.', self.log_file)
+            self.logger.info(f'{ctx.message.author.name} has attempted to set their Torn ID to be {id}, but their'
+                             f' Discord ID ({ctx.message.author.id} does not match the value in Torn\'s DB.')
             return None
 
         data = dbutils.read("users")
@@ -71,7 +70,7 @@ class Torn(commands.Cog):
         embed.title = "ID Set"
         embed.description = "Your ID has been set in the database."
         await ctx.send(embed=embed)
-        log(f'{ctx.message.author.name} has set their id which is {id}.', self.log_file)
+        self.logger.info(f'{ctx.message.author.name} has set their id to be {id}.')
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -85,7 +84,7 @@ class Torn(commands.Cog):
         if type(ctx.message.channel) != discord.DMChannel:
             await ctx.message.delete()
 
-        request = await tornget(ctx, f'https://api.torn.com/user/?selections=&key=', key=key)
+        request = await tornget(ctx, f'https://api.torn.com/user/?selections=&key=', self.logger, key=key)
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
             data = dbutils.read("users")
@@ -100,7 +99,7 @@ class Torn(commands.Cog):
         embed.title = "API Key Set"
         embed.description = f'{ctx.message.author.name} has set their API key.'
         await ctx.send(embed=embed)
-        log(f'{ctx.message.author.name} has set their Torn API key.', self.log_file)
+        self.logger.info(f'{ctx.message.author.name} has set their Torn API key.')
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -125,7 +124,7 @@ class Torn(commands.Cog):
         embed.title = "API Key"
         embed.description = f'The API key of {ctx.message.author.name} has been removed from the database.'
         await ctx.send(embed=embed)
-        log(f'{ctx.message.author.name} has removed their Torn API key.', self.log_file)
+        self.logger.info(f'{ctx.message.author.name} has removed their Torn API key.')
 
     @commands.command()
     @commands.cooldown(1, 15, commands.BucketType.user)

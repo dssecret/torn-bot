@@ -23,9 +23,8 @@ import asyncio
 
 
 class Moderation(commands.Cog):
-    def __init__(self, log_file, access):
-        self.log_file = log_file
-        self.access = access
+    def __init__(self, logger):
+        self.logger = logger
 
     @commands.command(pass_context=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -41,13 +40,13 @@ class Moderation(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run purge, but is not an Administrator.', self.access)
+            self.logger.warning(f'{ctx.message.author.name} has attempted to run purge, but is not an Administrator.')
             return None
 
         await ctx.message.delete()
         await ctx.message.channel.purge(limit=nummessages, check=None, before=None)
-        log(f'{nummessages} messages in {ctx.message.channel.name} have been purged by {ctx.message.author.mention}.',
-            self.log_file)
+        self.logger.info(f'{nummessages} messages in {ctx.message.channel.name} have been purged by '
+                         f'{ctx.message.author.mention}.')
         message = await ctx.send(f'{nummessages} messages have been purged by {ctx.message.author.mention}.')
         await asyncio.sleep(30)
         await message.delete()

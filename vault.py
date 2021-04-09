@@ -24,10 +24,9 @@ import asyncio
 
 
 class Vault(commands.Cog):
-    def __init__(self, bot, log_file, access):
+    def __init__(self, bot, logger):
         self.bot = bot
-        self.log_file = log_file
-        self.access_file = access
+        self.logger = logger
 
     @commands.command(aliases=["req", "with"])
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -58,34 +57,34 @@ class Vault(commands.Cog):
                                     f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
                                     f'`?addkey` command requires your Torn API key). This interaction has been logged.'
                 await ctx.send(embed=embed)
-                log(f'{ctx.message.author.id} (known as {ctx.message.author.name} does not have an accurate nickname, '
-                    f'and attempted to withdraw some money from the faction vault.', self.access_file)
+                self.logger.warning(f'{ctx.message.author.id} (known as {ctx.message.author.name} does not have an accurate nickname, '
+                    f'and attempted to withdraw some money from the faction vault.')
                 return None
 
         value = text_to_num(arg)
-        log(sender + " has submitted a request for " + arg + ".", self.log_file)
+        self.logger.info(f'{sender} has submitted a request for {arg}.')
 
-        primary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=")
+        primary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", self.logger)
 
         secondary_faction = None
         if dbutils.get_guild(ctx.guild.id, "tornapikey2") != "":
-            secondary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", guildkey=2)
+            secondary_faction = await tornget(ctx, "https://api.torn.com/faction/?selections=&key=", self.logger, 2)
 
         await ctx.message.delete()
 
         if senderid in primary_faction["members"]:
-            request = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
+            request = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", self.logger)
             request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
-                log(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
-                    f'the vault.', self.log_file)
+                self.logger.warning(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
+                    f'the vault.')
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
                 channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
 
-                log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
+                self.logger.info(f'{sender} has successfully requested {arg} from the faction vault.')
 
                 requestid = dbutils.read("requests")["nextrequest"]
 
@@ -115,18 +114,18 @@ class Vault(commands.Cog):
                 dbutils.write("requests", data)
 
         elif senderid in secondary_faction["members"]:
-            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", guildkey=2)
+            request = await tornget(ctx, "https://api.torn.com/faction?selections=donations&key=", self.logger, 2)
             request = request["donations"]
 
             if int(value) > request[senderid]["money_balance"]:
-                log(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
-                    f'the vault.', self.log_file)
+                self.logger.warning(f'{sender} has requested {arg}, but only has {request[senderid]["money_balance"]} in '
+                    f'the vault.')
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
                 channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel2"))
 
-                log(f'{sender} has successfully requested {arg} from the faction vault.', self.log_file)
+                self.logger.info(f'{sender} has successfully requested {arg} from the faction vault.')
 
                 requestid = dbutils.read("requests")["nextrequest"]
 
@@ -155,7 +154,7 @@ class Vault(commands.Cog):
                 }
                 dbutils.write("requests", data)
         else:
-            log(f'{sender} who is not a member of stored factions has requested {arg}.', self.log_file)
+            self.logger.warning(f'{sender} who is not a member of stored factions has requested {arg}.')
 
             embed = discord.Embed()
             embed.title = "Money Request"
@@ -231,7 +230,7 @@ class Vault(commands.Cog):
         sender = remove_torn_id(sender)
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
-            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=', self.logger)
             if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
                     verification["discord"]["discordID"] != "":
                 embed = discord.Embed()
@@ -241,13 +240,13 @@ class Vault(commands.Cog):
                                     f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
                                     f'`?addkey` command requires your Torn API key). This interaction has been logged.'
                 await ctx.send(embed=embed)
-                log(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to withdraw'
-                    f' some money from the faction vault.', self.access_file)
+                self.logger.warning(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to withdraw'
+                    f' some money from the faction vault.')
                 return None
 
-        log(f'{sender} is checking their balance in the faction vault.', self.log_file)
+        self.logger.info(f'{sender} is checking their balance in the faction vault.')
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", self.logger)
         response = response["donations"]
 
         primary_balance = 0
@@ -256,8 +255,7 @@ class Vault(commands.Cog):
 
         for user in response:
             if response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
-                    self.log_file)
+                self.logger.info(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.')
 
                 primary_balance = response[user]["money_balance"]
                 member = True
@@ -272,19 +270,17 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", guildkey=2)
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", self.logger, 2)
         response = response['donations']
 
         for user in response:
             if response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
-                    self.log_file)
+                self.logger.info(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.')
                 secondary_balance = response[user]["money_balance"]
                 member = True
 
         if member is not True:
-            log(f'{sender} who is not a member of any of the stored factions has requested their vault balance.',
-                self.log_file)
+            self.logger.log(f'{sender} who is not a member of any of the stored factions has requested their vault balance.')
 
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender
@@ -322,7 +318,7 @@ class Vault(commands.Cog):
         sender = remove_torn_id(sender)
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
-            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=', self.logger)
             if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
                     verification["discord"]["discordID"] != "":
                 embed = discord.Embed()
@@ -332,13 +328,13 @@ class Vault(commands.Cog):
                                     f' your ID to the database via the `?addid` or `addkey` commands (NOTE: the ' \
                                     f'`?addkey` command requires your Torn API key). This interaction has been logged.'
                 await ctx.send(embed=embed)
-                log(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to withdraw'
-                    f' some money from the faction vault.', self.access_file)
+                self.logger.warning(f'{ctx.message.author.id} does not have an accurate nickname, and attempted to '
+                                    f'ithdraw some money from the faction vault.')
                 return None
 
-        log(f'{sender} is checking their balance in the faction vault.', self.log_file)
+        self.logger.info(f'{sender} is checking their balance in the faction vault.')
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=")
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", self.logger)
         response = response["donations"]
 
         primary_balance = 0
@@ -347,8 +343,7 @@ class Vault(commands.Cog):
 
         for user in response:
             if response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
-                    self.log_file)
+                self.logger.info(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.')
 
                 primary_balance = response[user]["money_balance"]
                 member = True
@@ -363,19 +358,18 @@ class Vault(commands.Cog):
             await message.delete()
             return None
 
-        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", guildkey=2)
+        response = await tornget(ctx, "https://api.torn.com/faction/?selections=donations&key=", self.logger, 2)
         response = response['donations']
 
         for user in response:
             if response[user]["name"] == sender:
-                log(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.',
-                    self.log_file)
+                self.logger.info(f'{sender} has {num_to_text(response[user]["money_balance"])} in the faction vault.')
                 secondary_balance = response[user]["money_balance"]
                 member = True
 
         if member is not True:
-            log(f'{sender} who is not a member of any of the stored factions has requested their vault balance.',
-                self.log_file)
+            self.logger.warning(f'{sender} who is not a member of any of the stored factions has requested their '
+                                f'vault balance.')
 
             embed = discord.Embed()
             embed.title = "Vault Balance for " + sender

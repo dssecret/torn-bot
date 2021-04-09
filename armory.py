@@ -31,10 +31,9 @@ shorts = {
 
 
 class Armory(commands.Cog):
-    def __init__(self, bot, log_file, access):
+    def __init__(self, bot, logger):
         self.bot = bot
-        self.log_file = log_file
-        self.access_file = access
+        self.logger = logger
 
         self.autoscan.start()
 
@@ -76,7 +75,7 @@ class Armory(commands.Cog):
                                 f'This interaction has been logged.'
             await ctx.send(embed=embed)
 
-            log(f'{ctx.message.author.name} has attempted to run search, but is not an Administrator.', self.access_file)
+            self.logger.warning(f'{ctx.message.author.name} has attempted to run search, but is not an Administrator.')
             return None
 
         if stop == "now":

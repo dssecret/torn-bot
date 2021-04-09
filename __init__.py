@@ -39,6 +39,12 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+botlogger = logging.getLogger('bot')
+botlogger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='bot.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+botlogger.addHandler(handler)
+
 dbutils.initialize()
 
 guilds = dbutils.read("guilds")
@@ -54,8 +60,6 @@ intents.guilds = True
 intents.messages = True
 
 bot = commands.Bot(command_prefix=get_prefix, help_command=None, intents=intents)
-file = open(f'log.txt', "a")
-access = open(f'access.txt', "a")
 
 
 @bot.event
@@ -110,12 +114,12 @@ async def on_ready():
 
     print(f'Bot is in {guild_count} guilds.')
 
-    bot.add_cog(vault.Vault(bot, file, access))
-    bot.add_cog(admin.Admin(file, bot, client, access))
-    bot.add_cog(moderation.Moderation(file, access))
-    bot.add_cog(superuser.Superuser(client, file, bot, access))
-    bot.add_cog(torn.Torn(file, bot, client, access))
-    bot.add_cog(armory.Armory(bot, file, access))
+    bot.add_cog(vault.Vault(bot, botlogger))
+    bot.add_cog(admin.Admin(botlogger, bot, client))
+    bot.add_cog(moderation.Moderation(botlogger))
+    bot.add_cog(superuser.Superuser(client, botlogger, bot))
+    bot.add_cog(torn.Torn(botlogger, bot, client))
+    bot.add_cog(armory.Armory(bot, botlogger))
 
 
 @bot.event
@@ -210,7 +214,7 @@ async def ping(ctx):
     '''
 
     latency = bot.latency
-    log(f'Latency: {latency}', file)
+    botlogger.info(f'Latency: {latency}')
 
     embed = discord.Embed()
     embed.title = "Latency"
@@ -403,4 +407,3 @@ async def help(ctx, arg=None):
 
 if __name__ == "__main__":
     bot.run(dbutils.read("guilds")["bottoken"])
-    file.close()

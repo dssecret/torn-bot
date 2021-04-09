@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
  - Armory logger
  - Autodeletion of withdrawal messages in banking channel
 
+### Changed
+ - Log system to use logger in standard library
+
 ### Fixed
  - Lack of banking channel 2
  - Editing of withdrawal messages in banking channel

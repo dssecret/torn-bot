@@ -20,13 +20,13 @@ import dbutils
 
 
 class Superuser(commands.Cog):
-    def __init__(self, client, log_file, bot, access):
+    def __init__(self, client, logger, bot):
         self.client = client
-        self.log_file = log_file
+        self.logger = logger
         self.bot = bot
-        self.access = access
 
-    def is_superuser(self, id):
+    @staticmethod
+    def is_superuser(id):
         return True if dbutils.get_superuser() == id else False
 
     @commands.command()
@@ -40,7 +40,7 @@ class Superuser(commands.Cog):
         if not self.is_superuser(ctx.message.author.id):
             embed.title = "Permission Denied"
             embed.description = f'{ctx.message.author.name} is not the superuser. This incident will be reported.'
-            log(f'{ctx.message.author.name} attempted to shutdown the bot, but is not the superuser.', self.access)
+            self.logger.warning(f'{ctx.message.author.name} attempted to shutdown the bot, but is not the superuser.')
             await ctx.send(embed=embed)
             return None
 

@@ -66,11 +66,6 @@ def get_torn_id(name):
     return re.compile(r"\[(\d+)\]").findall(name)[0]
 
 
-def log(message, file):
-    file.write(str(datetime.datetime.now()) + " -- " + message + "\n")
-    file.flush()
-
-
 def commas(number):
     return "{:,}".format(number)
 
@@ -81,9 +76,7 @@ def get_prefix(bot, message):
             return guild["prefix"]
 
 
-async def tornget(ctx, url, guildkey=1, key=None, random=False):
-    if random:
-        raise NotImplementedError()
+async def tornget(ctx, url, logger, guildkey=1, key=None):
 
     if key is not None:
         apikey = key
@@ -103,8 +96,7 @@ async def tornget(ctx, url, guildkey=1, key=None, random=False):
                             f'HTTP status code {request.status_code} has been given at ' \
                             f'{datetime.datetime.now()}.'
         await ctx.send(embed=embed)
-        log(f'The Torn API (Key {guildkey}) has responded with HTTP status code {request.status_code}.',
-            open("log.txt", "a"))
+        logger.error(f'The Torn API (Key {guildkey}) has responded with HTTP status code {request.status_code}.')
         return Exception
 
     if 'error' in request.json():
@@ -115,7 +107,7 @@ async def tornget(ctx, url, guildkey=1, key=None, random=False):
                             f'{error["code"]} ({error["error"]}). Visit the [Torn API documentation]' \
                             f'(https://api.torn.com/) to see why the error was raised.'
         await ctx.send(embed=embed)
-        log(f'The Torn API (Key {guildkey}) has responded with error code {error["code"]}.', open("log.txt", "a"))
+        logger.error(f'The Torn API (Key {guildkey}) has responded with error code {error["code"]}.')
         raise Exception
 
     return request.json()
