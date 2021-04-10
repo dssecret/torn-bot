@@ -45,16 +45,26 @@ class Armory(commands.Cog):
 
         self.autoscan.start()
 
-    @tasks.loop(minutes=15)
+    @tasks.loop(minutes=30)
     async def autoscan(self):
         self.logger.info(f'The armory autoscan has started at {datetime.now()}')
         data = dbutils.read("armory")
 
         for guild in dbutils.read("guilds")["guilds"]:
             start = time.time()
-            armory = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}'
+            request = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}'
                                   f'&comment=TornBot').json()
-            armory = armory["armorynews"]
+
+            if request.status_code != 200:
+                self.logger.error(f'The Torn API has responded with HTTP status code {request.status_code}.')
+                return Exception
+
+            if 'error' in request.json():
+                error = request.json()['error']
+                self.logger.error(f'The Torn API has responded with error code {error["code"]}.')
+                raise Exception
+
+            armory = request["armorynews"]
             items_added = 0
 
             for key, action in armory.items():

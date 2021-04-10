@@ -77,7 +77,6 @@ def get_prefix(bot, message):
 
 
 async def tornget(ctx, url, logger, guildkey=1, key=None):
-
     if key is not None:
         apikey = key
     elif guildkey == 1:
