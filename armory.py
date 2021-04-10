@@ -45,8 +45,7 @@ class Armory(commands.Cog):
 
         self.autoscan.start()
 
-    @tasks.loop(hours=1)
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=15)
     async def autoscan(self):
         self.logger.info(f'The armory autoscan has started at {datetime.now()}')
         data = dbutils.read("armory")

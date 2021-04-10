@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
  - Log system to use logger in standard library
+ - Frequency of armory autoscans from 1 hour to 15 minutes
 
 ### Fixed
  - Lack of banking channel 2
