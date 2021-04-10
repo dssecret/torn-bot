@@ -187,7 +187,7 @@ async def on_command_error(ctx, error):
             await message.delete()
     else:
         print(error)
-        logger.error(error)
+        botlogger.error(error)
         raise error
 
 
