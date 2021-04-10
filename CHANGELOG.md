@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
  - Lack of banking channel 2
  - Editing of withdrawal messages in banking channel
+ - Armory cog search command with now as the stop parameter
 
 ### Removed
  - Reaction in withdrawal message

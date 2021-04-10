@@ -26,7 +26,15 @@ from datetime import datetime
 
 shorts = {
     "Beer": "Bottle of Beer",
-    "Xan": "Xanax"
+    "Xan": "Xanax",
+    "A+": "Blood Bag : A+",
+    "A-": "Blood Bag : A-",
+    "AB+": "Blood Bag : AB+",
+    "AB-": "Blood Bag : AB-",
+    "B-": "Blood Bag : B-",
+    "Irradiated": "Blood Bag : Irradiated",
+    "O+": "Blood Bag : O+",
+    "O-": "Blood Bag : O-"
 }
 
 
@@ -38,12 +46,16 @@ class Armory(commands.Cog):
         self.autoscan.start()
 
     @tasks.loop(hours=1)
+    @tasks.loop(minutes=1)
     async def autoscan(self):
+        self.logger.info(f'The armory autoscan has started at {datetime.now()}')
         data = dbutils.read("armory")
 
         for guild in dbutils.read("guilds")["guilds"]:
+            start = time.time()
             armory = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}').json()
             armory = armory["armorynews"]
+            items_added = 0
 
             for key, action in armory.items():
                 if action["timestamp"] <= int(dbutils.read("armory")[guild["id"]]["lastscan"]):
@@ -62,8 +74,11 @@ class Armory(commands.Cog):
                     "timestamp": timestamp
                 })
                 data[guild["id"]]["lastscan"] = int(time.time())
+                items_added += 1
 
             dbutils.write("armory", data)
+            self.logger.info(f'The scan of guild {guild} has been completed in {start - time.time()} seconds with '
+                             f'{items_added} actions added.')
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -79,11 +94,16 @@ class Armory(commands.Cog):
             return None
 
         if stop == "now":
-            stop = int(time.time())
+            stop = str(int(time.time()))
 
         actions = {}
 
-        for action in dbutils.read("armory")[str(ctx.guild.id)]["requests"]:
+        if item in shorts:
+            item = shorts[item]
+
+        data = dbutils.read("armory")[str(ctx.guild.id)]["requests"]
+
+        for action in data:
             if item == action["item"] and int(start) <= action["timestamp"] <= int(stop):
                 if action["user"] in actions:
                     actions[action["user"]] += 1
@@ -97,7 +117,7 @@ class Armory(commands.Cog):
 
         total_users = len(actions)
         start_time = datetime.fromtimestamp(int(start)).strftime("%c")
-        stop_time = datetime.fromtimestamp(stop).strftime("%c")
+        stop_time = datetime.fromtimestamp(int(stop)).strftime("%c")
 
         embed.description = f'Total Users: {total_users}\n' \
                             f'Start Time: {start_time}\n' \
@@ -110,7 +130,7 @@ class Armory(commands.Cog):
                 embed.title = f'Armory Log for {item}'
                 total_users = len(actions)
                 start_time = datetime.fromtimestamp(int(start)).strftime("%c")
-                stop_time = datetime.fromtimestamp(stop).strftime("%c")
+                stop_time = datetime.fromtimestamp(int(stop)).strftime("%c")
 
                 embed.description = f'Total Users: {total_users}\n' \
                                     f'Start Time: {start_time}\n' \
