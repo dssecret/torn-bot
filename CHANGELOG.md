@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
  - Armory logger
  - Autodeletion of withdrawal messages in banking channel
+ - Use of comments in API calls
 
 ### Changed
  - Log system to use logger in standard library

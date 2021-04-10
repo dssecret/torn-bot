@@ -52,7 +52,8 @@ class Armory(commands.Cog):
 
         for guild in dbutils.read("guilds")["guilds"]:
             start = time.time()
-            armory = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}').json()
+            armory = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}'
+                                  f'&comment=TornBot').json()
             armory = armory["armorynews"]
             items_added = 0
 
