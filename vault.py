@@ -46,7 +46,7 @@ class Vault(commands.Cog):
         sender = remove_torn_id(sender)
 
         if dbutils.get_user(ctx.message.author.id, "tornid") == "":
-            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=')
+            verification = await tornget(ctx, f'https://api.torn.com/user/{senderid}?selections=discord&key=', self.logger)
 
             if verification["discord"]["discordID"] != str(ctx.message.author.id) and \
                     verification["discord"]["discordID"] != "":

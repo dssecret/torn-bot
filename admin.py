@@ -60,8 +60,7 @@ class Admin(commands.Cog):
                 Vault Channel 2: {dbutils.read("vault")[str(ctx.guild.id)]["channel2"]}
                 Vault Role: {dbutils.read("vault")[str(ctx.guild.id)]["role"]}
                 Vault Role 2: {dbutils.read("vault")[str(ctx.guild.id)]["role2"]}
-                Banking Channel: {dbutils.read("vault")[str(ctx.guild.id)]["banking"]}
-                Banking Channel 2: {dbutils.read("vault")[str(ctx.guild.id)]["banking2"]}'''
+                Banking Channel: {dbutils.read("vault")[str(ctx.guild.id)]["banking"]}'''
             ).set_footer(text="Page 2/2")
 
             pages = [page1, page2]
