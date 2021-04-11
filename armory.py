@@ -53,7 +53,7 @@ class Armory(commands.Cog):
         for guild in dbutils.read("guilds")["guilds"]:
             start = time.time()
             request = requests.get(f'https://api.torn.com/faction/?selections=armorynewsfull&key={guild["tornapikey"]}'
-                                  f'&comment=TornBot').json()
+                                  f'&comment=TornBot')
 
             if request.status_code != 200:
                 self.logger.error(f'The Torn API has responded with HTTP status code {request.status_code}.')
@@ -63,6 +63,8 @@ class Armory(commands.Cog):
                 error = request.json()['error']
                 self.logger.error(f'The Torn API has responded with error code {error["code"]}.')
                 raise Exception
+
+            request = request.json()
 
             armory = request["armorynews"]
             items_added = 0
