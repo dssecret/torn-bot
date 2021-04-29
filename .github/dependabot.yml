@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: discord-py
+    versions:
+    - 1.7.0
+  - dependency-name: gitpython
+    versions:
+    - 3.1.13
