@@ -78,7 +78,8 @@ async def on_ready():
                 "id": str(guild.id),
                 "prefix": "?",
                 "tornapikey": "",
-                "tornapikey2": ""
+                "tornapikey2": "",
+                "tornapikey3": ""
             })
             dbutils.write("guilds", guilds)
 
@@ -142,7 +143,8 @@ async def on_guild_join(guild):
             "id": str(guild.id),
             "prefix": "?",
             "tornapikey": "",
-            "tornapikey2": ""
+            "tornapikey2": "",
+            "tornapikey3": ""
         })
         dbutils.write("guilds", guilds)
     if str(guild.id) not in vaults:

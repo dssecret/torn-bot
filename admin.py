@@ -179,6 +179,18 @@ class Admin(commands.Cog):
             embed.title = "Torn API Key"
             embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
             await ctx.message.delete()
+        elif arg == "key3":
+            data = dbutils.read("guilds")
+
+            for guild in data["guilds"]:
+                if guild["id"] == str(ctx.guild.id):
+                    guild["tornapikey3"] = str(value)
+
+            dbutils.write("guilds", data)
+            self.logger.info(f'{ctx.message.author.name} has set the secondary Torn API Key.')
+            embed.title = "Torn API Key"
+            embed.description = f'The Torn API key for the secondary faction has been set by {ctx.message.author.name}.'
+            await ctx.message.delete()
         elif arg == "bc":
             for channel in ctx.guild.channels:
                 if str(channel.id) != value[2:-1]:

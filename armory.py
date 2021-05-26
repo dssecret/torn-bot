@@ -43,7 +43,7 @@ class Armory(commands.Cog):
         self.bot = bot
         self.logger = logger
 
-        self.autoscan.start()
+        # self.autoscan.start()
 
     @tasks.loop(minutes=30)
     async def autoscan(self):

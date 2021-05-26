@@ -83,6 +83,8 @@ async def tornget(ctx, url, logger, guildkey=1, key=None):
         apikey = dbutils.get_guild(ctx.guild.id, "tornapikey")
     elif guildkey == 2:
         apikey = dbutils.get_guild(ctx.guild.id, "tornapikey2")
+    elif guildkey == 3:
+        apikey = dbutils.get_guild(ctx.guild.id, "tornapikey3")
     else:
         raise ValueError()
 
