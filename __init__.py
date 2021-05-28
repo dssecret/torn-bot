@@ -299,6 +299,11 @@ async def info(ctx):
 
 
 @bot.command()
+async def slap(ctx, member: discord.Member):
+    await ctx.send("https://media0.giphy.com/media/3XlEk2RxPS1m8/giphy.gif?cid=ecf05e47aoaaoysgo5u0f7wwb6ld83m973qehz7twfaue7zt&rid=giphy.gif&ct=g")
+
+
+@bot.command()
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, arg=None):
     '''
