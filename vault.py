@@ -231,11 +231,11 @@ class Vault(commands.Cog):
         embed.title = original.embeds[0].title
 
         if dbutils.read("requests")[request]["faction"] == 1:
-            channel = discord.utils.get(ctx.guild.channels, name=int(dbutils.get_vault(ctx.guild.id, "channel")))
+            channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel"))
         elif dbutils.read("requests")[request]["faction"] == 2:
-            channel = discord.utils.get(ctx.guild.channels, name=int(dbutils.get_vault(ctx.guild.id, "channel2")))
+            channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel2"))
         else:
-            channel = discord.utils.get(ctx.guild.channels, name=int(dbutils.get_vault(ctx.guild.id, "channel3")))
+            channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel3"))
         message = await channel.fetch_message(int(dbutils.read("requests")[request]["withdrawmessage"]))
 
         embed.add_field(name='Original Message', value=message.embeds[0].description.split(".")[0])
