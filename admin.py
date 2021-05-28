@@ -124,6 +124,16 @@ class Admin(commands.Cog):
                 self.logger.info(f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.')
                 embed.title = "Vault Channel 2"
                 embed.description = f'Vault Channel 2 has been set to {data[str(ctx.guild.id)]["channel2"]}.'
+        elif arg == "vc3":
+            for channel in ctx.guild.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["channel3"] = channel.name
+                dbutils.write("vault", data)
+                self.logger.info(f'Vault Channel 3 has been set to {data[str(ctx.guild.id)]["channel3"]}.')
+                embed.title = "Vault Channel 3"
+                embed.description = f'Vault Channel 3 has been set to {data[str(ctx.guild.id)]["channel3"]}.'
         elif arg == "vr":
             for role in ctx.guild.roles:
                 if role.mention != value:
@@ -144,6 +154,16 @@ class Admin(commands.Cog):
                 self.logger.info(f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.')
                 embed.title = "Vault Role"
                 embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role2"]}.'
+        elif arg == "vr3":
+            for role in ctx.guild.roles:
+                if role.mention != value:
+                    continue
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["role3"] = str(role.mention)
+                dbutils.write("vault", data)
+                self.logger.info(f'Vault Role has been set to {data[str(ctx.guild.id)]["role3"]}.')
+                embed.title = "Vault Role"
+                embed.description = f'Vault Role has been set to {data[str(ctx.guild.id)]["role3"]}.'
         elif arg == "prefix":
             data = dbutils.read("guilds")
 
@@ -211,6 +231,16 @@ class Admin(commands.Cog):
                 self.logger.info(f'Banking Channel 2 has been set to {data[str(ctx.guild.id)]["banking2"]}.')
                 embed.title = "Banking Channel 2"
                 embed.description = f'Banking Channel 2 has been set to {channel.name}.'
+        elif arg == "bc3":
+            for channel in ctx.guild.channels:
+                if str(channel.id) != value[2:-1]:
+                    continue
+                data = dbutils.read("vault")
+                data[str(ctx.guild.id)]["banking3"] = str(channel.id)
+                dbutils.write("vault", data)
+                self.logger.info(f'Banking Channel 3 has been set to {data[str(ctx.guild.id)]["banking3"]}.')
+                embed.title = "Banking Channel 3"
+                embed.description = f'Banking Channel 3 has been set to {channel.name}.'
         else:
             embed.title = "Configuration"
             embed.description = "This key is not a valid configuration key."

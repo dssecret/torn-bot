@@ -140,7 +140,7 @@ class Vault(commands.Cog):
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
                                     f'enter `?f {requestid}` in this channel.'
-                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role2"), embed=embed)
 
                 data = dbutils.read("requests")
                 data["nextrequest"] += 1
@@ -162,7 +162,7 @@ class Vault(commands.Cog):
                 await ctx.send(f'You do not have {arg} in the faction vault.')
                 return None
             else:
-                channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel2"))
+                channel = discord.utils.get(ctx.guild.channels, name=dbutils.get_vault(ctx.guild.id, "channel3"))
 
                 self.logger.info(f'{sender} has successfully requested {arg} from the faction vault.')
 
@@ -177,7 +177,7 @@ class Vault(commands.Cog):
                 embed.title = f'Money Request #{dbutils.read("requests")["nextrequest"]}'
                 embed.description = f'{sender} is requesting {arg} from the faction vault. To fulfill this request, ' \
                                     f'enter `?f {requestid}` in this channel.'
-                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role"), embed=embed)
+                message = await channel.send(dbutils.get_vault(ctx.guild.id, "role3"), embed=embed)
 
                 data = dbutils.read("requests")
                 data["nextrequest"] += 1
