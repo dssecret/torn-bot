@@ -28,7 +28,7 @@ class Vault(commands.Cog):
         self.bot = bot
         self.logger = logger
 
-    @commands.command(aliases=["req", "with"])
+    @commands.command(aliases=["req", "with", "w"])
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def withdraw(self, ctx, arg):
         '''
