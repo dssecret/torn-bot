@@ -118,7 +118,7 @@ class Vault(commands.Cog):
                 }
                 dbutils.write("requests", data)
 
-        elif str(senderid) in secondary_faction["donations"]:
+        elif not secondary_faction and str(senderid) in secondary_faction["donations"]:
             if int(value) > secondary_faction["donations"][str(senderid)]["money_balance"]:
                 self.logger.warning(f'{sender} has requested {arg}, but only has '
                                     f'{secondary_faction["donations"][str(senderid)]["money_balance"]} in the vault.')
@@ -155,7 +155,7 @@ class Vault(commands.Cog):
                     "faction": 2
                 }
                 dbutils.write("requests", data)
-        elif str(senderid) in tertiary_faction["donations"]:
+        elif not tertiary_faction and str(senderid) in tertiary_faction["donations"]:
             if int(value) > tertiary_faction["donations"][str(senderid)]["money_balance"]:
                 self.logger.warning(f'{sender} has requested {arg}, but only has '
                                     f'{tertiary_faction["donations"][str(senderid)]["money_balance"]} in the vault.')

@@ -89,6 +89,7 @@ async def tornget(ctx, url, logger, guildkey=1, key=None):
         raise ValueError()
 
     request = requests.get(f'{url}{apikey}&comment=TornBot')
+    print(f'{url}{apikey}&comment=TornBot')
 
     if request.status_code != 200:
         embed = discord.Embed()
