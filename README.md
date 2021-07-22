@@ -1,5 +1,7 @@
 # torn-bot
 
+# WARNING: This project is no longer maintained in favor of [Tornium](https://torn.deek.sh).
+
 torn-bot is a Discord bot for [Torn City](https://www.torn.com) using the [discord.py](https://github.com/Rapptz/discord.py) module.
 
 A full list of commands can be found [on the Wiki page under Commands](https://github.com/dssecret/torn-bot/wiki/Commands).
